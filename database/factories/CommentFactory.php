@@ -11,15 +11,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comment>
+ * @extends Factory<Comment>
  */
 class CommentFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $commentableClasses = [
@@ -28,7 +23,7 @@ class CommentFactory extends Factory
             Selection::class,
         ];
 
-        $commentableClass = $this->faker->randomElement($commentableClasses);
+        $commentableClass = fake()->randomElement($commentableClasses);
 
         $commentable = $commentableClass::query()->inRandomOrder()->first()
             ?? $commentableClass::factory()->create();
@@ -37,8 +32,8 @@ class CommentFactory extends Factory
             'commentable_id' => $commentable->id,
             'commentable_type' => $commentableClass,
             'user_id' => User::inRandomOrder()->value('id') ?? User::factory(),
-            'is_spoiler' => $this->faker->boolean(10), // 10% ймовірність, що це спойлер
-            'body' => $this->faker->paragraph(),
+            'is_spoiler' => fake()->boolean(10), // 10% ймовірність, що це спойлер
+            'body' => fake()->paragraph(),
         ];
     }
 

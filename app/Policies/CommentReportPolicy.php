@@ -4,71 +4,42 @@ namespace App\Policies;
 
 use App\Models\CommentReport;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CommentReportPolicy
 {
-    /**
-     * Determine whether the user can view any comment reports.
-     */
+    use HandlesAuthorization;
+
+    public function before(User $user, $ability): ?bool
+    {
+        if ($user->isAdmin()) {
+            return true; // Адміни можуть усе
+        }
+        return null;
+    }
+
     public function viewAny(User $user): bool
     {
-        // Only admins can view any comment reports
-        return $user->hasRole('admin');
+        return true; // Усі можуть бачити скарги
     }
 
-    /**
-     * Determine whether the user can view the comment report.
-     */
     public function view(User $user, CommentReport $commentReport): bool
     {
-        // Allow viewing if the user is an admin or the one who created the report
-        return $user->hasRole('admin') || $user->id === $commentReport->user_id;
+        return true; // Усі можуть бачити окрему скаргу
     }
 
-    /**
-     * Determine whether the user can create a comment report.
-     */
     public function create(User $user): bool
     {
-        // Any authenticated user can create a report
-        return $user !== null;
+        return auth()->check(); // Лише авторизовані
     }
 
-    /**
-     * Determine whether the user can update the comment report.
-     */
     public function update(User $user, CommentReport $commentReport): bool
     {
-        // Typically, reports should not be updated by their creators,
-        // so allow only admins to update
-        return $user->hasRole('admin');
+        return $user->id === $commentReport->user_id; // Лише автор
     }
 
-    /**
-     * Determine whether the user can delete the comment report.
-     */
     public function delete(User $user, CommentReport $commentReport): bool
     {
-        // Allow deletion if the user is an admin or the owner of the report
-        return $user->hasRole('admin') || $user->id === $commentReport->user_id;
-    }
-
-    /**
-     * Determine whether the user can restore the comment report.
-     */
-    public function restore(User $user, CommentReport $commentReport): bool
-    {
-        // Allow restore only for admins or the owner of the report
-        return $user->hasRole('admin') || $user->id === $commentReport->user_id;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the comment report.
-     */
-    public function forceDelete(User $user, CommentReport $commentReport): bool
-    {
-        // Only admins may permanently delete reports
-        return $user->hasRole('admin');
+        return $user->id === $commentReport->user_id; // Лише автор
     }
 }

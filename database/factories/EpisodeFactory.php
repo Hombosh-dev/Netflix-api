@@ -8,36 +8,31 @@ use App\Models\Movie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Episode>
+ * @extends Factory<Episode>
  */
 class EpisodeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $movie = Movie::query()->inRandomOrder()->first() ?? Movie::factory();
         $isMovieKind = $movie->kind === Kind::MOVIE; // Перевірка типу Movie
 
-        $name = $this->faker->sentence(3);
+        $name = fake()->sentence(3);
 
         return [
             'movie_id' => $movie->id,
             'number' => $this->generateUniqueNumber($movie->id, $isMovieKind),
-            'slug' => $name,
+            'slug' => Episode::generateSlug($name),
             'name' => $name,
-            'description' => $this->faker->paragraph(),
-            'duration' => $this->faker->numberBetween(20, 120), // Duration in minutes
-            'air_date' => $this->faker->optional()->dateTimeBetween('-2 years', 'now'),
-            'is_filler' => $this->faker->boolean(10), // 10% chance of being filler
+            'description' => fake()->paragraph(),
+            'duration' => fake()->numberBetween(20, 120), // Duration in minutes
+            'air_date' => fake()->optional()->dateTimeBetween('-2 years', 'now'),
+            'is_filler' => fake()->boolean(10), // 10% chance of being filler
             'pictures' => json_encode($this->generatePictureUrls(rand(1, 3))),
             'video_players' => $this->generateVideoPlayers(),
-            'meta_title' => $this->faker->optional()->sentence(5),
-            'meta_description' => $this->faker->optional()->sentence(10),
-            'meta_image' => $this->faker->optional()->imageUrl(),
+            'meta_title' => Episode::makeMetaTitle($name),
+            'meta_description' => fake()->optional()->sentence(10),
+            'meta_image' => fake()->optional()->imageUrl(),
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -63,15 +58,15 @@ class EpisodeFactory extends Factory
 
     private function generatePictureUrls(int $count): array
     {
-        return $this->faker->randomElements([
-            $this->faker->imageUrl(640, 480, 'movies', true, 'Episode 1'),
-            $this->faker->imageUrl(640, 480, 'movies', true, 'Episode 2'),
-            $this->faker->imageUrl(640, 480, 'movies', true, 'Episode 3'),
+        return fake()->randomElements([
+            fake()->imageUrl(640, 480, 'movies', true, 'Episode 1'),
+            fake()->imageUrl(640, 480, 'movies', true, 'Episode 2'),
+            fake()->imageUrl(640, 480, 'movies', true, 'Episode 3'),
         ], $count);
     }
 
     /**
-     # @return Collection<VideoPlayer>
+     * # @return Collection<VideoPlayer>
      */
     private function generateVideoPlayers(): int
     {
@@ -81,7 +76,7 @@ class EpisodeFactory extends Factory
 
     public function forMovie(Movie $movie): self
     {
-        return $this->state(fn () => [
+        return $this->state(fn() => [
             'movie_id' => $movie->id,
         ]);
     }

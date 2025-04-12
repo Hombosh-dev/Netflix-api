@@ -10,25 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
- * @property string $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Comment|null $comment
- * @property-read \App\Models\User|null $user
- * @method static Builder<static>|CommentLike byComment(string $commentId)
- * @method static Builder<static>|CommentLike byUser(string $userId)
- * @method static \Database\Factories\CommentLikeFactory factory($count = null, $state = [])
- * @method static Builder<static>|CommentLike newModelQuery()
- * @method static Builder<static>|CommentLike newQuery()
- * @method static Builder<static>|CommentLike onlyDislikes()
- * @method static Builder<static>|CommentLike onlyLikes()
- * @method static Builder<static>|CommentLike query()
- * @method static Builder<static>|CommentLike whereCreatedAt($value)
- * @method static Builder<static>|CommentLike whereId($value)
- * @method static Builder<static>|CommentLike whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin IdeHelperCommentLike
  */
 class CommentLike extends Model
 {

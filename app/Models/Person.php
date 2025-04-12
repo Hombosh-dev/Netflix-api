@@ -2,88 +2,104 @@
 
 namespace App\Models;
 
+use App\Enums\Gender;
+use App\Enums\PersonType;
+use App\Models\Traits\HasSeo;
+use Database\Factories\PersonFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
+
 
 /**
- * 
- *
- * @property string $movie_id
- * @property string $person_id
- * @property string|null $voice_person_id
- * @property string $character_name
- * @property-read \App\Models\Movie $movie
- * @property-read \App\Models\People $person
- * @property-read \App\Models\People|null $voicePerson
- * @method static \Database\Factories\PersonFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person whereCharacterName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person whereMovieId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person wherePersonId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Person whereVoicePersonId($value)
- * @mixin \Eloquent
+ * @mixin IdeHelperPerson
  */
 class Person extends Model
 {
-    /** @use HasFactory<\Database\Factories\PersonFactory> */
-    use HasFactory, HasUlids;
-
-    /**
-     * The table associated with the model.
-     */
-    protected $table = 'movie_person';
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * Since we have a composite primary key (movie_id, person_id) and use ULIDs,
-     * we disable auto-incrementing.
-     */
-    public $incrementing = false;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * The migration does not include timestamp columns.
-     */
-    public $timestamps = false;
-
-    /**
-     * The attributes that are mass assignable.
-     */
-    protected $fillable = [
-        'movie_id',
-        'person_id',
-        'voice_person_id',
-        'character_name',
-    ];
-
-    /**
-     * Get the movie that this pivot belongs to.
-     */
-    public function movie(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /** @use HasFactory<PersonFactory> */
+    use HasFactory, HasUlids, HasSeo;
+    
+    public function scopeByType(Builder $query, PersonType $type): Builder
     {
-        return $this->belongsTo(Movie::class, 'movie_id');
+        return $query->where('type', $type->value);
     }
 
-    /**
-     * Get the person associated with this pivot.
-     */
-    public function person(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function scopeByName(Builder $query, string $name): Builder
     {
-        // If your primary people model is called "People"
-        // you can adjust the class name as needed.
-        return $this->belongsTo(People::class, 'person_id');
+        return $query->where('name', 'like', '%'.$name.'%');
     }
 
-    /**
-     * Get the voice person if one exists.
-     */
-    public function voicePerson(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function scopeByGender(Builder $query, string $gender): Builder
     {
-        return $this->belongsTo(People::class, 'voice_person_id');
+        return $query->where('gender', $gender);
+    }
+
+    public function scopeSearch(Builder $query, string $search): Builder
+    {
+        return $query
+            ->select('people.*') // Вибираємо колонки з таблиці `people`
+            ->addSelect(DB::raw("ts_rank(people.searchable, websearch_to_tsquery('ukrainian', ?)) AS rank"))
+            ->addSelect(DB::raw("ts_headline('ukrainian', people.name, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS name_highlight"))
+            ->addSelect(DB::raw("ts_headline('ukrainian', people.original_name, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS original_name_highlight"))
+            ->addSelect(DB::raw("ts_headline('ukrainian', people.description, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS description_highlight"))
+            ->addSelect(DB::raw("ts_headline('ukrainian', movie_person.character_name, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS character_name_highlight"))
+            ->addSelect(DB::raw('similarity(people.name, ?) AS similarity'))
+            ->leftJoin('movie_person', 'people.id', '=', 'movie_person.person_id')
+            ->whereRaw("people.searchable @@ websearch_to_tsquery('ukrainian', ?)",
+                [$search, $search, $search, $search, $search, $search, $search])
+            ->orWhereRaw('people.name % ?', [$search])
+            ->orWhereRaw('movie_person.character_name % ?', [$search])
+            ->orderByDesc('rank')
+            ->orderByDesc('similarity');
+    }
+
+    public function movies(): BelongsToMany
+    {
+        //return $this->belongsToMany(Movie::class, 'movie_person')
+        return $this->belongsToMany(Movie::class)
+            ->withPivot('character_name');
+    }
+
+    public function userLists(): MorphMany
+    {
+        return $this->morphMany(UserList::class, 'listable');
+    }
+
+    public function selections(): MorphToMany
+    {
+        return $this->morphToMany(Selection::class, 'selectionable');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => PersonType::class,
+            'gender' => Gender::class,
+            'birthday' => 'date',
+        ];
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->original_name
+                ? "{$this->name} ({$this->original_name})"
+                : $this->name,
+        );
+    }
+
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->birthday
+                ? now()->diffInYears($this->birthday)
+                : null,
+        );
     }
 }

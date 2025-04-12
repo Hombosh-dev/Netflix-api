@@ -13,43 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * 
- *
- * @property string $id
- * @property string $commentable_type
- * @property string $commentable_id
- * @property string $user_id
- * @property bool $is_spoiler
- * @property string $body
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $parent_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Comment> $children
- * @property-read int|null $children_count
- * @property-read Model|\Eloquent $commentable
- * @property-read mixed $is_reply
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CommentLike> $likes
- * @property-read int|null $likes_count
- * @property-read Comment|null $parent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CommentReport> $reports
- * @property-read int|null $reports_count
- * @property-read \App\Models\User $user
- * @method static \Database\Factories\CommentFactory factory($count = null, $state = [])
- * @method static Builder<static>|Comment newModelQuery()
- * @method static Builder<static>|Comment newQuery()
- * @method static Builder<static>|Comment query()
- * @method static Builder<static>|Comment replies()
- * @method static Builder<static>|Comment roots()
- * @method static Builder<static>|Comment whereBody($value)
- * @method static Builder<static>|Comment whereCommentableId($value)
- * @method static Builder<static>|Comment whereCommentableType($value)
- * @method static Builder<static>|Comment whereCreatedAt($value)
- * @method static Builder<static>|Comment whereId($value)
- * @method static Builder<static>|Comment whereIsSpoiler($value)
- * @method static Builder<static>|Comment whereParentId($value)
- * @method static Builder<static>|Comment whereUpdatedAt($value)
- * @method static Builder<static>|Comment whereUserId($value)
- * @mixin \Eloquent
+ * @mixin IdeHelperComment
  */
 class Comment extends Model
 {
@@ -59,6 +23,16 @@ class Comment extends Model
     public function commentable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function getTranslatedTypeAttribute(): string
+    {
+        return match ($this->commentable_type) {
+            Movie::class => 'Фільм',
+            Episode::class => 'Епізод',
+            Selection::class => 'Підбірка',
+            default => 'Невідомий контент',
+        };
     }
 
     public function parent(): BelongsTo

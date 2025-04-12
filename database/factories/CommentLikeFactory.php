@@ -3,19 +3,15 @@
 namespace Database\Factories;
 
 use App\Models\Comment;
+use App\Models\CommentLike;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CommentLike>
+ * @extends Factory<CommentLike>
  */
 class CommentLikeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $comment = Comment::inRandomOrder()->first();
@@ -23,7 +19,7 @@ class CommentLikeFactory extends Factory
         return [
             'comment_id' => $comment->id,
             'user_id' => User::factory() ?? User::factory(),
-            'is_liked' => $this->faker->boolean(),
+            'is_liked' => fake()->boolean(),
         ];
     }
 

@@ -7,11 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('people', function (Blueprint $table) {
@@ -47,9 +43,6 @@ return new class extends Migration
         DB::unprepared('CREATE INDEX people_trgm_name_idx ON people USING GIN (name gin_trgm_ops)');
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('people');

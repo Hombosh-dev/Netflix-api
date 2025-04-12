@@ -7,11 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -30,7 +26,7 @@ return new class extends Migration
             $table->boolean('is_auto_play')->default(false);
             $table->boolean('is_auto_skip_intro')->default(false);
             $table->boolean('is_private_favorites')->default(false);
-    });
+        });
 
         Schema::table('sessions', function (Blueprint $table) {
             $table->dropIndex(['user_id']);
@@ -39,9 +35,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {

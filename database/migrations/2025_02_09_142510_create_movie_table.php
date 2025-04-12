@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\Kind;
 use App\Enums\Status;
-use App\Models\Movie;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('movies', function (Blueprint $table) {
@@ -61,10 +59,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('movies');
-
-        DB::unprepared('DROP TYPE source');
-        DB::unprepared('DROP TYPE restricted_rating');
-        DB::unprepared('DROP TYPE period');
+        
         DB::unprepared('DROP TYPE status');
         DB::unprepared('DROP TYPE kind');
 

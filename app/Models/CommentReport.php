@@ -11,31 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
- * @property string $id
- * @property string $comment_id
- * @property string $user_id
- * @property bool $is_liked
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property CommentReportType $type
- * @property-read \App\Models\Comment $comment
- * @property-read \App\Models\User $user
- * @method static Builder<static>|CommentReport byComment(string $commentId)
- * @method static Builder<static>|CommentReport byUser(string $userId)
- * @method static \Database\Factories\CommentReportFactory factory($count = null, $state = [])
- * @method static Builder<static>|CommentReport newModelQuery()
- * @method static Builder<static>|CommentReport newQuery()
- * @method static Builder<static>|CommentReport query()
- * @method static Builder<static>|CommentReport unViewed()
- * @method static Builder<static>|CommentReport whereCommentId($value)
- * @method static Builder<static>|CommentReport whereCreatedAt($value)
- * @method static Builder<static>|CommentReport whereId($value)
- * @method static Builder<static>|CommentReport whereIsLiked($value)
- * @method static Builder<static>|CommentReport whereUpdatedAt($value)
- * @method static Builder<static>|CommentReport whereUserId($value)
- * @mixin \Eloquent
+ * @mixin IdeHelperCommentReport
  */
 class CommentReport extends Model
 {

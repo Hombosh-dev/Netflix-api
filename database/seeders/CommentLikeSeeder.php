@@ -10,9 +10,6 @@ use Illuminate\Database\Seeder;
 
 class CommentLikeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $comments = Comment::all();

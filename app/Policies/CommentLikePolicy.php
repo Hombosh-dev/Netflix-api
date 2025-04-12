@@ -4,63 +4,37 @@ namespace App\Policies;
 
 use App\Models\CommentLike;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class CommentLikePolicy
 {
-    /**
-     * Determine whether the user can view any comment likes.
-     */
+    use HandlesAuthorization;
+
+    public function before(User $user, $ability): ?bool
+    {
+        if ($user->isAdmin()) {
+            return true; // Адміни можуть усе
+        }
+        return null;
+    }
+
     public function viewAny(User $user): bool
     {
-        return true;
+        return true; // Усі можуть бачити лайки
     }
 
-    /**
-     * Determine whether the user can view the comment like.
-     */
-    public function view(User $user, CommentLike $like): bool
+    public function view(User $user, CommentLike $commentLike): bool
     {
-        return true;
+        return true; // Усі можуть бачити окремий лайк
     }
 
-    /**
-     * Determine whether the user can create comment likes.
-     */
     public function create(User $user): bool
     {
-        return $user !== null;
+        return auth()->check(); // Лише авторизовані
     }
 
-    /**
-     * Determine whether the user can update the comment like.
-     */
-    public function update(User $user, CommentLike $like): bool
+    public function delete(User $user, CommentLike $commentLike): bool
     {
-        return $user->id === $like->user_id;
-    }
-
-    /**
-     * Determine whether the user can delete the comment like.
-     */
-    public function delete(User $user, CommentLike $like): bool
-    {
-        return $user->id === $like->user_id || $user->hasRole('admin');
-    }
-
-    /**
-     * Determine whether the user can restore the comment like.
-     */
-    public function restore(User $user, CommentLike $like): bool
-    {
-        return $user->id === $like->user_id || $user->hasRole('admin');
-    }
-
-    /**
-     * Determine whether the user can permanently delete the comment like.
-     */
-    public function forceDelete(User $user, CommentLike $like): bool
-    {
-        return $user->hasRole('admin');
+        return $user->id === $commentLike->user_id; // Лише власник
     }
 }

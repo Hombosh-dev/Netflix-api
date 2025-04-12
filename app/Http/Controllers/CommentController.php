@@ -2,59 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Comment\CreateCommentAction;
-use App\Actions\Comment\DeleteCommentAction;
-use App\Actions\Comment\ReadCommentAction;
-use App\Actions\Comment\UpdateCommentAction;
-use App\Http\Requests\Comment\CreateCommentRequest;
+use App\Actions\Comments\CreateCommentAction;
+use App\Actions\Comments\DeleteCommentAction;
+use App\Actions\Comments\ListChildrenAction;
+use App\Actions\Comments\ListLikesAction;
+use App\Actions\Comments\ListRecentCommentsAction;
+use App\Actions\Comments\ListRepliesAction;
+use App\Actions\Comments\ListReportsAction;
+use App\Actions\Comments\ListRootsAction;
+use App\Actions\Comments\ShowCommentAction;
+use App\Actions\Comments\UpdateCommentAction;
+use App\Http\Requests\Comment\StoreCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\Comment\CommentResource;
 use App\Models\Comment;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Повертає колекцію всіх записів Comment.
-     */
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(ListRecentCommentsAction $action)
     {
-        $comments = Comment::all();
-        return CommentResource::collection($comments);
+        $sort = request('sort', 'recent'); // 'recent' або 'popular'
+        $perPage = request('per_page', 10);
+        return CommentResource::collection($action->execute($sort, $perPage));
     }
 
-    /**
-     * Зберігає новий запис Comment.
-     */
-    public function store(CreateCommentRequest $request, CreateCommentAction $createComment): CommentResource
+    public function store(StoreCommentRequest $request, CreateCommentAction $action)
     {
-        $comment = $createComment->execute($request->validated());
-        return new CommentResource($comment);
+        return new CommentResource($action->execute($request));
     }
 
-    /**
-     * Повертає дані конкретного Comment.
-     */
-    public function show(Comment $comment, ReadCommentAction $getComment): CommentResource
+    public function show(Comment $comment, ShowCommentAction $action)
     {
-        return new CommentResource($comment);
+        return new CommentResource($action->execute($comment));
     }
 
-    /**
-     * Оновлює дані конкретного Comment.
-     */
-    public function update(UpdateCommentRequest $request, Comment $comment, UpdateCommentAction $updateComment): CommentResource
+    public function update(Comment $comment, UpdateCommentRequest $request, UpdateCommentAction $action)
     {
-        $updateComment->execute($comment, $request->validated());
-        return new CommentResource($comment);
+        return new CommentResource($action->execute($comment, $request));
     }
 
-    /**
-     * Видаляє запис Comment.
-     */
-    public function destroy(Comment $comment, DeleteCommentAction $deleteComment): \Illuminate\Http\Response
+    public function destroy(Comment $comment, DeleteCommentAction $action)
     {
-        $deleteComment->execute($comment);
+        $action->execute($comment);
         return response()->noContent();
+    }
+
+    public function replies(ListRepliesAction $action)
+    {
+        return CommentResource::collection($action->execute());
+    }
+
+    public function roots(ListRootsAction $action)
+    {
+        return CommentResource::collection($action->execute());
+    }
+
+    public function likes(Comment $comment, ListLikesAction $action)
+    {
+        return $action->execute($comment); // Окремий ресурс для лайків
+    }
+
+    public function reports(Comment $comment, ListReportsAction $action)
+    {
+        return $action->execute($comment); // Окремий ресурс для скарг
+    }
+
+    public function children(Comment $comment, ListChildrenAction $action)
+    {
+        return CommentResource::collection($action->execute($comment));
     }
 }

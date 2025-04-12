@@ -3,26 +3,37 @@
 namespace Database\Seeders;
 
 use App\Models\Movie;
-use App\Models\People;
+use App\Models\Person;
 use App\Models\Selection;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
+// Виправлено з People на Person
 
 class SelectionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        // Створюємо 20 підбірок
         $selections = Selection::factory(20)->create();
 
         $selections->each(function (Selection $selection) {
-            $movies = Movie::inRandomOrder()->take(rand(5, 10))->pluck('id');
-            $persons = People::inRandomOrder()->take(rand(5, 10))->pluck('id');
+            // Вибираємо унікальні фільми
+            $movies = Movie::inRandomOrder()
+                ->limit(rand(5, 10))
+                ->pluck('id')
+                ->toArray();
 
-            $selection->movies()->attach($movies);
-            $selection->persons()->attach($persons);
+            // Вибираємо унікальних персон
+            $persons = Person::inRandomOrder()
+                ->limit(rand(5, 10))
+                ->pluck('id')
+                ->toArray();
+
+            // Прив’язуємо фільми до підбірки
+            $selection->movies()->sync($movies);
+
+            // Прив’язуємо персон до підбірки
+            $selection->persons()->sync($persons);
         });
     }
 }

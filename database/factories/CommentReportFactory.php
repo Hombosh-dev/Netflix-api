@@ -4,27 +4,23 @@ namespace Database\Factories;
 
 use App\Enums\CommentReportType;
 use App\Models\Comment;
+use App\Models\CommentReport;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CommentReport>
+ * @extends Factory<CommentReport>
  */
 class CommentReportFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
             'comment_id' => Comment::factory(),
             'user_id' => User::inRandomOrder()->value('id') ?? User::factory(),
-            'type' => $this->faker->randomElement(CommentReportType::cases()),
-            'is_viewed' => $this->faker->boolean(50),
-            'body' => $this->faker->optional()->paragraph(),
+            'type' => fake()->randomElement(CommentReportType::cases()),
+            'is_viewed' => fake()->boolean(50),
+            'body' => fake()->optional()->paragraph(),
         ];
     }
 

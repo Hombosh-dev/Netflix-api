@@ -6,66 +6,60 @@ use App\Actions\Person\CreatePersonAction;
 use App\Actions\Person\DeletePersonAction;
 use App\Actions\Person\ReadPersonAction;
 use App\Actions\Person\UpdatePersonAction;
-use App\Http\Requests\Person\CreatePersonRequest;
-use App\Http\Requests\Person\UpdatePersonRequest;
-use App\Http\Resources\PersonResource;
-use App\Models\Person;
+use App\Http\Requests\People\CreatePeopleRequest;
+use App\Http\Requests\People\UpdatePeopleRequest;
+use App\Http\Resources\PeopleResource;
+use App\Models\People;
 use Illuminate\Auth\Access\AuthorizationException;
-use Symfony\Component\HttpFoundation\Response;
 
 class PersonController extends Controller
 {
     /**
-     * Повертає колекцію всіх записів Person.
+     * Повертає колекцію всіх записів People.
      */
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        $persons = Person::all();
-        return PersonResource::collection($persons);
+        $people = People::all();
+        return PeopleResource::collection($people);
     }
 
     /**
-     * Створює новий запис Person.
+     * Створює новий запис People.
      * @throws AuthorizationException
      */
-    public function store(CreatePersonRequest $request, CreatePersonAction $createAction): PersonResource
+    public function store(CreatePeopleRequest $request, CreatePersonAction $createAction): PeopleResource
     {
-        $person = $createAction->execute($request->validated());
-        return new PersonResource($person);
+        $people = $createAction->execute($request->validated());
+        return new PeopleResource($people);
     }
 
     /**
-     * Повертає дані конкретного Person.
-     *
-     * Для пошуку за композитним ключем (movie_id та person_id) можна використовувати спеціальний метод ReadPersonAction.
+     * Повертає дані конкретного People.
      */
-    public function show(string $movie_id, string $person_id, ReadPersonAction $readAction): \Illuminate\Http\JsonResponse|PersonResource
+    public function show(People $people, ReadPersonAction $readAction): PeopleResource
     {
-        $person = $readAction->execute($movie_id, $person_id);
-        if (!$person) {
-            return response()->json(['message' => 'Record not found'], Response::HTTP_NOT_FOUND);
-        }
-        return new PersonResource($person);
+        return new PeopleResource($people);
     }
 
     /**
-     * Оновлює дані конкретного Person.
-     *
-     * Для оновлення можна використовувати стандартне route model binding, якщо ви його налаштували.
-     */
-    public function update(UpdatePersonRequest $request, Person $person, UpdatePersonAction $updateAction): PersonResource
-    {
-        $updateAction->execute($person, $request->validated());
-        return new PersonResource($person);
-    }
-
-    /**
-     * Видаляє запис Person.
+     * Оновлює дані конкретного People.
      * @throws AuthorizationException
      */
-    public function destroy(Person $person, DeletePersonAction $deleteAction): \Illuminate\Http\Response
+    public function update(
+        UpdatePeopleRequest $request,
+        People $people,
+        UpdatePersonAction $updateAction
+    ): PeopleResource {
+        $updateAction->execute($people, $request->validated());
+        return new PeopleResource($people);
+    }
+
+    /**
+     * Видаляє запис People.
+     */
+    public function destroy(People $people, DeletePersonAction $deleteAction): \Illuminate\Http\Response
     {
-        $deleteAction->execute($person);
+        $deleteAction->execute($people);
         return response()->noContent();
     }
 }

@@ -2,30 +2,26 @@
 
 namespace Database\Factories;
 
+use App\Models\Studio;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Studio>
+ * @extends Factory<Studio>
  */
 class StudioFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $company = $this->faker->unique()->company();
+        $company = fake()->unique()->company();
 
         return [
-            'slug' => $company,
+            'slug' => Studio::generateSlug($company),
             'name' => $company,
-            'description' => $this->faker->paragraph(),
-            'image' => $this->faker->imageUrl(),
-            'meta_title' => $this->faker->sentence(),
-            'meta_description' => $this->faker->sentence(),
-            'meta_image' => $this->faker->imageUrl(),
+            'description' => fake()->paragraph(),
+            'image' => fake()->imageUrl(),
+            'meta_title' => Studio::makeMetaTitle($company),
+            'meta_description' => fake()->sentence(),
+            'meta_image' => fake()->imageUrl(),
         ];
     }
 }

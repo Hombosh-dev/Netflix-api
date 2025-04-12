@@ -2,58 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CommentReport\CreateCommentReportAction;
-use App\Actions\CommentReport\DeleteCommentReportAction;
-use App\Actions\CommentReport\ReadCommentReportAction;
-use App\Http\Requests\CommentReport\CreateCommentReportRequest;
+use App\Actions\CommentReports\CreateCommentReportAction;
+use App\Actions\CommentReports\DeleteCommentReportAction;
+use App\Actions\CommentReports\ListByCommentAction;
+use App\Actions\CommentReports\ListByTypeAction;
+use App\Actions\CommentReports\ListByUserAction;
+use App\Actions\CommentReports\ListCommentReportsAction;
+use App\Actions\CommentReports\ListUnviewedAction;
+use App\Actions\CommentReports\ShowCommentReportAction;
+use App\Actions\CommentReports\UpdateCommentReportAction;
+use App\Enums\CommentReportType;
+use App\Http\Requests\CommentReport\StoreCommentReportRequest;
 use App\Http\Requests\CommentReport\UpdateCommentReportRequest;
-use App\Http\Resources\CommentReportResource;
+use App\Http\Resources\CommentReport\CommentReportCollection;
+use App\Http\Resources\CommentReport\CommentReportResource;
+use App\Models\Comment;
 use App\Models\CommentReport;
-use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 
 class CommentReportController extends Controller
 {
-    /**
-     * Повертає колекцію всіх записів CommentReport.
-     */
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(ListCommentReportsAction $action)
     {
-        $reports = CommentReport::all();
-        return CommentReportResource::collection($reports);
+        return new CommentReportCollection($action->execute());
     }
 
-    /**
-     * Зберігає новий запис CommentReport.
-     */
-    public function store(CreateCommentReportRequest $request, CreateCommentReportAction $createAction): CommentReportResource
+    public function store(StoreCommentReportRequest $request, CreateCommentReportAction $action)
     {
-        $report = $createAction->execute($request->validated());
-        return new CommentReportResource($report);
+        Gate::authorize('create', CommentReport::class);
+        $data = $request->validated();
+        return new CommentReportResource($action->execute($data));
     }
 
-    /**
-     * Повертає дані конкретного CommentReport.
-     */
-    public function show(CommentReport $commentReport, ReadCommentReportAction $readAction): CommentReportResource
+    public function show(CommentReport $commentReport, ShowCommentReportAction $action)
     {
-        return new CommentReportResource($commentReport);
+        return new CommentReportResource($action->execute($commentReport));
     }
 
-    /**
-     * Оновлює дані конкретного CommentReport.
-     */
-    public function update(UpdateCommentReportRequest $request, CommentReport $commentReport, UpdateCommentReportAction $updateAction): CommentReportResource
-    {
-        $updateAction->execute($commentReport, $request->validated());
-        return new CommentReportResource($commentReport);
+    public function update(
+        CommentReport $commentReport,
+        UpdateCommentReportRequest $request,
+        UpdateCommentReportAction $action
+    ) {
+        Gate::authorize('update', $commentReport);
+        $data = $request->validated();
+        return new CommentReportResource($action->execute($commentReport, $data));
     }
 
-    /**
-     * Видаляє запис CommentReport.
-     */
-    public function destroy(CommentReport $commentReport, DeleteCommentReportAction $deleteAction): \Illuminate\Http\Response
+    public function destroy(CommentReport $commentReport, DeleteCommentReportAction $action)
     {
-        $deleteAction->execute($commentReport);
+        Gate::authorize('delete', $commentReport);
+        $action->execute($commentReport);
         return response()->noContent();
+    }
+
+    public function byType(CommentReportType $type, ListByTypeAction $action)
+    {
+        return new CommentReportCollection($action->execute($type));
+    }
+
+    public function byUser(User $user, ListByUserAction $action)
+    {
+        return new CommentReportCollection($action->execute($user));
+    }
+
+    public function byComment(Comment $comment, ListByCommentAction $action)
+    {
+        return new CommentReportCollection($action->execute($comment));
+    }
+
+    public function unviewed(ListUnviewedAction $action)
+    {
+        return new CommentReportCollection($action->execute());
     }
 }

@@ -2,56 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CommentLike\CreateCommentLikeAction;
-use App\Actions\CommentLike\DeleteCommentLikeAction;
-use App\Actions\CommentLike\ReadCommentLikeAction;
-use App\Actions\CommentLike\UpdateCommentLikeAction;
-use App\Http\Requests\CommentLike\CreateCommentLikeRequest;
-use App\Http\Requests\CommentLike\UpdateCommentLikeRequest;
-use App\Http\Resources\CommentLikeResource;
+use App\Actions\CommentLikes\CreateCommentLikeAction;
+use App\Actions\CommentLikes\DeleteCommentLikeAction;
+use App\Actions\CommentLikes\ListByCommentAction;
+use App\Actions\CommentLikes\ListByUserAction;
+use App\Actions\CommentLikes\ListCommentLikesAction;
+use App\Actions\CommentLikes\ListOnlyDislikesAction;
+use App\Actions\CommentLikes\ListOnlyLikesAction;
+use App\Actions\CommentLikes\ShowCommentLikeAction;
+use App\Http\Requests\CommentLike\StoreCommentLikeRequest;
+use App\Http\Resources\CommentLike\CommentLikeCollection;
+use App\Http\Resources\CommentLike\CommentLikeResource;
+use App\Models\Comment;
 use App\Models\CommentLike;
-use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
-class CommentLikeController extends Controller
+class CommentLikeController extends Controller implements HasMiddleware
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public static function middleware()
     {
-        $likes = CommentLike::all();
-        return CommentLikeResource::collection($likes);
+        return [
+            new Middleware('throttle:100,1440', only: ['store']), // 100 запитів на день (1440 хвилин)
+        ];
     }
 
-    /**
-     * Зберігає новий запис CommentLike.
-     */
-    public function store(CreateCommentLikeRequest $request, CreateCommentLikeAction $createCommentLike): CommentLikeResource
+    public function index(ListCommentLikesAction $action)
     {
-        $like = $createCommentLike->execute($request->validated());
-        return new CommentLikeResource($like);
+        return new CommentLikeCollection($action->execute());
     }
 
-    /**
-     * Повертає дані конкретного CommentLike.
-     */
-    public function show(CommentLike $commentLike, ReadCommentLikeAction $getCommentLike): CommentLikeResource
+    public function store(StoreCommentLikeRequest $request, CreateCommentLikeAction $action)
     {
-        return new CommentLikeResource($commentLike);
+        Gate::authorize('create', CommentLike::class);
+        return new CommentLikeResource($action->execute($request));
     }
 
-    /**
-     * Оновлює дані конкретного CommentLike.
-     */
-    public function update(UpdateCommentLikeRequest $request, CommentLike $commentLike, UpdateCommentLikeAction $updateCommentLike): CommentLikeResource
+    public function show(CommentLike $commentLike, ShowCommentLikeAction $action)
     {
-        $updateCommentLike->execute($commentLike, $request->validated());
-        return new CommentLikeResource($commentLike);
+        return new CommentLikeResource($action->execute($commentLike));
     }
 
-    /**
-     * Видаляє запис CommentLike.
-     */
-    public function destroy(CommentLike $commentLike, DeleteCommentLikeAction $deleteCommentLike): \Illuminate\Http\Response
+    public function destroy(CommentLike $commentLike, DeleteCommentLikeAction $action)
     {
-        $deleteCommentLike->execute($commentLike);
+        Gate::authorize('delete', $commentLike);
+        $action->execute($commentLike);
         return response()->noContent();
+    }
+
+    public function byUser(User $user, ListByUserAction $action)
+    {
+        return new CommentLikeCollection($action->execute($user));
+    }
+
+    public function byComment(Comment $comment, ListByCommentAction $action)
+    {
+        return new CommentLikeCollection($action->execute($comment));
+    }
+
+    public function onlyLikes(ListOnlyLikesAction $action)
+    {
+        return new CommentLikeCollection($action->execute());
+    }
+
+    public function onlyDislikes(ListOnlyDislikesAction $action)
+    {
+        return new CommentLikeCollection($action->execute());
     }
 }

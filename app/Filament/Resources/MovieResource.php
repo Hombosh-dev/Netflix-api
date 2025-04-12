@@ -4,9 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Kind;
 use App\Filament\Resources\MovieResource\Pages;
-use App\Filament\Resources\MovieResource\RelationManagers;
 use App\Models\Movie;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -19,11 +17,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\BooleanColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MovieResource extends Resource
 {
@@ -143,6 +138,7 @@ class MovieResource extends Resource
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
@@ -173,9 +169,9 @@ class MovieResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListMovies::route('/'),
+            'index' => Pages\ListMovies::route('/'),
             'create' => Pages\CreateMovie::route('/create'),
-            'edit'   => Pages\EditMovie::route('/{record}/edit'),
+            'edit' => Pages\EditMovie::route('/{record}/edit'),
         ];
     }
 }
