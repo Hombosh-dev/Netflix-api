@@ -13,7 +13,19 @@ class EditMovie extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\ViewAction::make()
+                ->label(__('Переглянути')),
+
+            Actions\DeleteAction::make()
+                ->label(__('Видалити'))
+                ->modalHeading(__('Видалення фільму'))
+                ->modalDescription(__('Ви впевнені, що хочете видалити цей фільм?'))
+                ->modalSubmitActionLabel(__('Так, видалити')),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -13,7 +13,16 @@ class EditCommentReport extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label(__('Видалити'))
+                ->modalHeading(__('Видалення скарги'))
+                ->modalDescription(__('Ви впевнені, що хочете видалити цю скаргу?'))
+                ->modalSubmitActionLabel(__('Так, видалити')),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

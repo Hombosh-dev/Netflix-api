@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\RatingsResource\Pages;
+namespace App\Filament\Resources\RatingResource\Pages;
 
 use App\Filament\Resources\RatingResource;
 use Filament\Actions;

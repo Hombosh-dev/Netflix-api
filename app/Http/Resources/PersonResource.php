@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Person
+ */
 class PersonResource extends JsonResource
 {
     /**
@@ -15,10 +19,15 @@ class PersonResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'movie_id'       => $this->movie_id,
-            'person_id'      => $this->person_id,
-            'voice_person_id'=> $this->voice_person_id,
-            'character_name' => $this->character_name,
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'photo' => $this->photo,
+            'birth_date' => $this->birth_date?->format('Y-m-d'),
+            'death_date' => $this->death_date?->format('Y-m-d'),
+            'biography' => $this->biography,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

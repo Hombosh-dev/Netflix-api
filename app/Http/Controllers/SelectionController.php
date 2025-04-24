@@ -2,62 +2,123 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Selection\CreateSelectionAction;
-use App\Actions\Selection\DeleteSelectionAction;
-use App\Actions\Selection\ReadSelectionAction;
-use App\Actions\Selection\UpdateSelectionAction;
-use App\Http\Requests\Selection\CreateSelectionRequest;
-use App\Http\Requests\Selection\UpdateSelectionRequest;
+use App\Actions\Selections\CreateSelection;
+use App\Actions\Selections\GetSelections;
+use App\Actions\Selections\UpdateSelection;
+use App\DTOs\Selections\SelectionIndexDTO;
+use App\DTOs\Selections\SelectionStoreDTO;
+use App\DTOs\Selections\SelectionUpdateDTO;
+use App\Http\Requests\Selections\SelectionDeleteRequest;
+use App\Http\Requests\Selections\SelectionIndexRequest;
+use App\Http\Requests\Selections\SelectionStoreRequest;
+use App\Http\Requests\Selections\SelectionUpdateRequest;
+use App\Http\Resources\MovieResource;
+use App\Http\Resources\PersonResource;
 use App\Http\Resources\SelectionResource;
 use App\Models\Selection;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SelectionController extends Controller
 {
     /**
-     * Повертає колекцію всіх записів Selection.
+     * Get paginated list of selections with filtering, sorting and pagination
+     *
+     * @param  SelectionIndexRequest  $request
+     * @param  GetSelections  $action
+     * @return AnonymousResourceCollection
      */
-    public function index()
+    public function index(SelectionIndexRequest $request, GetSelections $action): AnonymousResourceCollection
     {
-        $selections = Selection::all();
+        $dto = SelectionIndexDTO::fromRequest($request);
+        $selections = $action->handle($dto);
+
         return SelectionResource::collection($selections);
     }
 
     /**
-     * Створює новий запис Selection.
+     * Get detailed information about a specific selection
+     *
+     * @param  Selection  $selection
+     * @return SelectionResource
      */
-    public function store(CreateSelectionRequest $request, CreateSelectionAction $createAction)
+    public function show(Selection $selection): SelectionResource
     {
-        $selection = $createAction->execute($request->validated());
+        return new SelectionResource($selection->load(['user', 'movies', 'persons'])->loadCount(['movies', 'userLists']));
+    }
+
+    /**
+     * Get movies associated with a specific selection
+     *
+     * @param  Selection  $selection
+     * @return AnonymousResourceCollection
+     */
+    public function movies(Selection $selection): AnonymousResourceCollection
+    {
+        $movies = $selection->movies()->paginate();
+
+        return MovieResource::collection($movies);
+    }
+
+    /**
+     * Get persons associated with a specific selection
+     *
+     * @param  Selection  $selection
+     * @return AnonymousResourceCollection
+     */
+    public function persons(Selection $selection): AnonymousResourceCollection
+    {
+        $persons = $selection->persons()->paginate();
+
+        return PersonResource::collection($persons);
+    }
+
+    /**
+     * Store a newly created selection
+     *
+     * @param  SelectionStoreRequest  $request
+     * @param  CreateSelection  $action
+     * @return SelectionResource
+     */
+    public function store(SelectionStoreRequest $request, CreateSelection $action): SelectionResource
+    {
+        $dto = SelectionStoreDTO::fromRequest($request);
+        $selection = $action->handle($dto);
+
         return new SelectionResource($selection);
     }
 
     /**
-     * Повертає дані конкретного Selection.
+     * Update the specified selection
+     *
+     * @param  SelectionUpdateRequest  $request
+     * @param  Selection  $selection
+     * @param  UpdateSelection  $action
+     * @return SelectionResource
      */
-    public function show(Selection $selection, ReadSelectionAction $readAction): SelectionResource
+    public function update(SelectionUpdateRequest $request, Selection $selection, UpdateSelection $action): SelectionResource
     {
+        $dto = SelectionUpdateDTO::fromRequest($request);
+        $selection = $action->handle($selection, $dto);
+
         return new SelectionResource($selection);
     }
 
     /**
-     * Оновлює дані конкретного Selection.
-     * @throws AuthorizationException
+     * Remove the specified selection
+     *
+     * @param  SelectionDeleteRequest  $request
+     * @param  Selection  $selection
+     * @return JsonResponse
      */
-    public function update(UpdateSelectionRequest $request, Selection $selection, UpdateSelectionAction $updateAction): SelectionResource
+    public function destroy(SelectionDeleteRequest $request, Selection $selection): JsonResponse
     {
-        $updateAction->execute($selection, $request->validated());
-        return new SelectionResource($selection);
-    }
+        $selection->movies()->detach();
+        $selection->persons()->detach();
+        $selection->delete();
 
-    /**
-     * Видаляє запис Selection.
-     * @throws AuthorizationException
-     */
-    public function destroy(Selection $selection, DeleteSelectionAction $deleteAction): \Illuminate\Http\Response
-    {
-        $deleteAction->execute($selection);
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Selection deleted successfully',
+        ]);
     }
 }

@@ -47,7 +47,7 @@ class CommentSeeder extends Seeder
 
         foreach ($parentComments as $parent) {
             Comment::factory()
-                ->replyTo($parent)
+                ->asReplyTo($parent)
                 ->forUser($users->random())
                 ->count(rand(1, 3))
                 ->create();

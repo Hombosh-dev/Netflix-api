@@ -3,11 +3,16 @@
 namespace Database\Factories;
 
 use App\Enums\ApiSourceName;
+use App\Enums\AttachmentType;
 use App\Enums\Kind;
 use App\Enums\MovieRelateType;
 use App\Enums\Status;
 use App\Models\Movie;
 use App\Models\Studio;
+use App\Models\Tag;
+use App\ValueObjects\ApiSource;
+use App\ValueObjects\Attachment;
+use App\ValueObjects\RelatedMovie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,26 +27,26 @@ class MovieFactory extends Factory
         $studio = Studio::query()->inRandomOrder()->first() ?? Studio::factory()->create();
 
         return [
-            'api_sources' => $this->generateApiSources(), // Складний JSON для API джерел
+            'api_sources' => json_encode($this->generateApiSources()), // Complex JSON for API sources
             'name' => $name,
             'slug' => Movie::generateSlug($name),
             'description' => fake()->paragraph(),
-            'image_name' => fake()->imageUrl(640, 480, 'movies', true, 'Movie Poster'), // Як у Netflix
-            'aliases' => json_encode(fake()->words(3)), // Масив рядків у JSON
+            'image_name' => fake()->imageUrl(640, 480, 'movies', true, 'Movie Poster'), // Like on Netflix
+            'aliases' => json_encode(fake()->words(3)), // Array of strings in JSON
             'kind' => fake()->randomElement(Kind::cases())->value, // Enum Kind
             'status' => fake()->randomElement(Status::cases())->value, // Enum Status
             'studio_id' => $studio->id,
-            'poster' => fake()->imageUrl(300, 450, 'movies', true, 'Poster'), // Вертикальний постер
-            'duration' => fake()->numberBetween(60, 180), // Тривалість у хвилинах
-            'countries' => json_encode($this->generateCountries()), // JSON масив країн
-            'episodes_count' => fake()->boolean() ? fake()->numberBetween(1, 50) : null, // Для серіалів
+            'poster' => fake()->imageUrl(300, 450, 'movies', true, 'Poster'), // Vertical poster
+            'duration' => fake()->numberBetween(60, 180), // Duration in minutes
+            'countries' => json_encode($this->generateCountries()), // JSON array of countries
+            'episodes_count' => fake()->boolean() ? fake()->numberBetween(1, 50) : null, // For TV series
             'first_air_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'last_air_date' => fake()->boolean() ? fake()->dateTimeBetween('-5 years', 'now')->format('Y-m-d') : null,
-            'imdb_score' => fake()->randomFloat(2, 1, 10), // Оцінка від 1 до 10
-            'attachments' => $this->generateAttachments(), // Складний JSON для прикріплень
-            'related' => $this->generateRelated(), // Складний JSON для пов’язаних фільмів
-            'similars' => $this->generateSimilars(), // JSON схожих фільмів (без самопосилань)
-            'is_published' => fake()->boolean(80), // 80% шансів бути опублікованим
+            'imdb_score' => fake()->randomFloat(2, 1, 10), // Rating from 1 to 10
+            'attachments' => json_encode($this->generateAttachments()), // Complex JSON for attachments
+            'related' => json_encode($this->generateRelated()), // Complex JSON for related movies
+            'similars' => $this->generateSimilars(), // JSON array of similar movies (without self-references)
+            'is_published' => fake()->boolean(80), // 80% chance to be published
             'meta_title' => fake()->sentence(5),
             'meta_description' => fake()->text(150),
             'meta_image' => fake()->imageUrl(1200, 630, 'seo', true, 'SEO Image'),
@@ -51,21 +56,19 @@ class MovieFactory extends Factory
     }
 
     /**
-     * Генерує складний JSON для api_sources.
+     * Generates an array of ApiSource objects.
      */
-    private function generateApiSources(): string
+    private function generateApiSources(): array
     {
         $sources = fake()->randomElements(ApiSourceName::cases(), fake()->numberBetween(1, 3));
-        $result = array_map(fn($source) => [
-            'source' => $source->value,
-            'id' => fake()->uuid(),
-        ], $sources);
-
-        return json_encode($result);
+        return array_map(fn($source) => new ApiSource(
+            source: $source,
+            id: fake()->uuid()
+        ), $sources);
     }
 
     /**
-     * Генерує JSON масив країн.
+     * Generates a JSON array of countries.
      */
     private function generateCountries(): array
     {
@@ -76,57 +79,57 @@ class MovieFactory extends Factory
     }
 
     /**
-     * Генерує складний JSON для attachments.
+     * Generates an array of Attachment objects.
      */
-    private function generateAttachments(): string
+    private function generateAttachments(): array
     {
         $attachments = [];
         $count = fake()->numberBetween(0, 3);
         for ($i = 0; $i < $count; $i++) {
-            $attachments[] = [
-                'type' => fake()->randomElement(['trailer', 'teaser', 'behind_the_scenes']),
-                'url' => fake()->url(),
-                'title' => fake()->sentence(4),
-                'duration' => fake()->numberBetween(30, 300), // Секунди
-            ];
+            $attachments[] = new Attachment(
+                type: fake()->randomElement(AttachmentType::cases()),
+                url: fake()->url(),
+                title: fake()->sentence(4),
+                duration: fake()->numberBetween(30, 300) // Seconds
+            );
         }
 
-        return json_encode($attachments);
+        return $attachments;
     }
 
     /**
-     * Генерує складний JSON для related.
+     * Generates an array of RelatedMovie objects.
      */
-    private function generateRelated(): string
+    private function generateRelated(): array
     {
         $related = [];
         $count = fake()->numberBetween(0, 2);
         for ($i = 0; $i < $count; $i++) {
-            $related[] = [
-                'movie_id' => Str::ulid(), // Унікальний ULID
-                'type' => fake()->randomElement(MovieRelateType::cases())->value, // Enum MovieRelateType
-            ];
+            $related[] = new RelatedMovie(
+                movie_id: Str::ulid(), // Unique ULID
+                type: fake()->randomElement(MovieRelateType::cases()) // Enum MovieRelateType
+            );
         }
 
-        return json_encode($related);
+        return $related;
     }
 
     /**
-     * Генерує JSON для similars (без самопосилань).
+     * Generates JSON for similars (without self-references).
      */
     private function generateSimilars(): string
     {
         $similars = [];
         $count = fake()->numberBetween(0, 4);
         for ($i = 0; $i < $count; $i++) {
-            $similars[] = Str::ulid(); // Унікальний ULID
+            $similars[] = Str::ulid(); // Unique ULID
         }
 
         return json_encode($similars);
     }
 
     /**
-     * Призначає конкретну студію для фільму.
+     * Assigns a specific studio to the movie.
      */
     public function forStudio(Studio $studio): self
     {
@@ -136,7 +139,7 @@ class MovieFactory extends Factory
     }
 
     /**
-     * Встановлює конкретний тип фільму.
+     * Sets a specific movie kind.
      */
     public function withKind(Kind $kind): self
     {
@@ -146,7 +149,7 @@ class MovieFactory extends Factory
     }
 
     /**
-     * Встановлює конкретний статус фільму.
+     * Sets a specific movie status.
      */
     public function withStatus(Status $status): self
     {
@@ -156,7 +159,7 @@ class MovieFactory extends Factory
     }
 
     /**
-     * Встановлює опублікований статус.
+     * Sets published status.
      */
     public function published(): self
     {

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Interfaces\Commentable;
+use App\Interfaces\Listable;
+use App\Models\Builders\EpisodeQueryBuilder;
 use App\Models\Traits\HasSeo;
-use Carbon\Carbon;
+use App\Models\Traits\HasUserInteractions;
+use App\Models\Traits\HasFiles;
 use Database\Factories\EpisodeFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -13,67 +16,180 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Query\Builder;
 
 /**
+ * Episode model representing TV series episodes.
+ *
  * @mixin IdeHelperEpisode
  */
-class Episode extends Model
+class Episode extends Model implements Listable, Commentable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasUlids, HasSeo;
+    use HasFactory, HasUlids, HasSeo, HasUserInteractions, HasFiles;
 
+    /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  Builder  $query
+     * @return EpisodeQueryBuilder
+     */
+    public function newEloquentBuilder($query): EpisodeQueryBuilder
+    {
+        return new EpisodeQueryBuilder($query);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
             'pictures' => AsCollection::class,
-            'video_players' => 'array',
+            'video_players' => AsCollection::class,
             'air_date' => 'date',
+            'is_filler' => 'boolean',
         ];
     }
 
-    public function scopeForMovie(Builder $query, string $movieId): Builder
-    {
-        return $query->where('movie_id', $movieId);
-    }
-
-    public function scopeAiredAfter(Builder $query, Carbon $date): Builder
-    {
-        return $query->where('air_date', '>=', $date);
-    }
-
+    /**
+     * Get the movie that owns the episode.
+     *
+     * @return BelongsTo
+     */
     public function movie(): BelongsTo
     {
         return $this->belongsTo(Movie::class);
     }
 
+    /**
+     * Get all user lists associated with this model.
+     *
+     * @return MorphMany
+     */
     public function userLists(): MorphMany
     {
         return $this->morphMany(UserList::class, 'listable');
     }
 
+    /**
+     * Get all comments associated with this model.
+     *
+     * @return MorphMany
+     */
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    /**
+     * Get the primary picture URL attribute.
+     *
+     * @return Attribute
+     */
     protected function pictureUrl(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->pictures->isNotEmpty()
-                ? asset("storage/{$this->pictures->first()}")
-                : null
+            get: function () {
+                if (empty($this->pictures)) {
+                    return null;
+                }
+
+                $pictures = is_string($this->pictures) ? json_decode($this->pictures, true) : $this->pictures;
+
+                if (empty($pictures)) {
+                    return null;
+                }
+
+                $firstPicture = is_array($pictures) ? reset($pictures) : $pictures;
+
+                return is_string($firstPicture) ? $this->getFileUrl($firstPicture) : null;
+            }
         );
     }
 
+    /**
+     * Get all picture URLs attribute.
+     *
+     * @return Attribute
+     */
     protected function picturesUrl(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->pictures->isNotEmpty()
-                ? $this->pictures->map(fn ($picture) => asset("storage/{$picture}"))
-                : null
+            get: function () {
+                if (empty($this->pictures)) {
+                    return [];
+                }
+
+                $pictures = is_string($this->pictures) ? json_decode($this->pictures, true) : $this->pictures;
+
+                if (empty($pictures)) {
+                    return [];
+                }
+
+                return collect($pictures)->map(function ($picture) {
+                    return is_string($picture) ? $this->getFileUrl($picture) : null;
+                })->filter()->values()->toArray();
+            }
         );
     }
 
+    /**
+     * Get the meta image URL attribute.
+     *
+     * @return Attribute
+     */
+    protected function metaImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->getFileUrl($this->meta_image)
+        );
+    }
+
+    /**
+     * Get the formatted duration attribute.
+     *
+     * @return Attribute
+     */
+    protected function formattedDuration(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->duration ? $this->formatDuration($this->duration) : null
+        );
+    }
+
+    /**
+     * Get the full name attribute (with episode number).
+     *
+     * @return Attribute
+     */
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => "Episode {$this->number}: {$this->name}"
+        );
+    }
+
+    /**
+     * Get the comments count attribute.
+     *
+     * @return Attribute
+     */
+    protected function commentsCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->comments()->count()
+        );
+    }
+
+    /**
+     * Format a duration in minutes to a human-readable string.
+     *
+     * @param  int  $duration  Duration in minutes
+     * @return string Formatted duration
+     */
     private function formatDuration(int $duration): string
     {
         $hours = floor($duration / 60);

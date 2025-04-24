@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Builders\CommentQueryBuilder;
 use Database\Factories\CommentFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Query\Builder;
 
 /**
  * @mixin IdeHelperComment
@@ -19,6 +20,24 @@ class Comment extends Model
 {
     /** @use HasFactory<CommentFactory> */
     use HasFactory, HasUlids;
+
+    /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  Builder  $query
+     * @return CommentQueryBuilder
+     */
+    public function newEloquentBuilder($query): CommentQueryBuilder
+    {
+        return new CommentQueryBuilder($query);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_spoiler' => 'boolean',
+        ];
+    }
 
     public function commentable(): MorphTo
     {
@@ -88,14 +107,14 @@ class Comment extends Model
     protected function isReply(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->parent_id !== null
+            get: fn() => $this->parent_id !== null
         );
     }
 
     protected function body(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => trim($value)
+            set: fn($value) => trim($value)
         );
     }
 }

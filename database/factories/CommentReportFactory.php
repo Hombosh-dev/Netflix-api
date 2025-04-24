@@ -15,27 +15,41 @@ class CommentReportFactory extends Factory
 {
     public function definition(): array
     {
+        $comment = Comment::inRandomOrder()->first() ?? Comment::factory()->create();
+
         return [
-            'comment_id' => Comment::factory(),
-            'user_id' => User::inRandomOrder()->value('id') ?? User::factory(),
+            'comment_id' => $comment->id,
+            'user_id' => User::query()->inRandomOrder()->value('id') ?? User::factory(),
             'type' => fake()->randomElement(CommentReportType::cases()),
-            'is_viewed' => fake()->boolean(50),
-            'body' => fake()->optional()->paragraph(),
+            'body' => fake()->optional(0.7)->paragraph(), // 70% chance to have a description
+            'is_viewed' => fake()->boolean(30), // 30% chance to be viewed by moderator
         ];
     }
 
-    public function forCommentAndUser(Comment $comment, User $user): self
+    /**
+     * Configure the report as viewed by a moderator.
+     */
+    public function viewed(): self
     {
-        return $this->state([
-            'comment_id' => $comment->id,
-            'user_id' => $user->id,
-        ]);
+        return $this->state(fn () => ['is_viewed' => true]);
     }
 
+    /**
+     * Configure the report with a specific report type.
+     */
     public function withType(CommentReportType $type): self
     {
-        return $this->state([
-            'type' => $type->value,
+        return $this->state(fn () => ['type' => $type]);
+    }
+
+    /**
+     * Configure the report for a specific comment and user.
+     */
+    public function forCommentAndUser(Comment $comment, User $user): self
+    {
+        return $this->state(fn () => [
+            'comment_id' => $comment->id,
+            'user_id' => $user->id,
         ]);
     }
 }

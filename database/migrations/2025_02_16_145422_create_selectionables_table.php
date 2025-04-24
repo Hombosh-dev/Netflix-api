@@ -14,7 +14,7 @@ return new class extends Migration {
 
             $table->primary([
                 'selection_id', 'selectionable_id', 'selectionable_type'
-            ]); // Комбінація полів для унікальності
+            ]); 
         });
     }
 

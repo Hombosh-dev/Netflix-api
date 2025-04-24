@@ -2,25 +2,26 @@
 
 namespace App\Filament\Resources\MovieResource\RelationManagers;
 
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Actions\AttachAction;
+use Filament\Tables\Actions\DetachAction;
+use Filament\Tables\Actions\DetachBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TagsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'Tags';
+    protected static string $relationship = 'tags';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                //
             ]);
     }
 
@@ -29,22 +30,27 @@ class TagsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->label(__('Назва'))
+                    ->searchable(),
+
+                TextColumn::make('slug')
+                    ->label(__('Slug'))
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                AttachAction::make()
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->select(['id', 'name']))
+                    ->preloadRecordSelect(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                DetachAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                DetachBulkAction::make(),
             ]);
     }
 }

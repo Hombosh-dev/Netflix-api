@@ -13,30 +13,24 @@ enum ApiSourceName: string implements HasColor, HasIcon, HasLabel
     case IMDB = 'imdb';
     case ANILIST = 'anilist';
 
-    /**
-     * Повертає перекладену назву джерела API для Filament із файлу локалізації.
-     */
+    
     public function getLabel(): ?string
     {
         return __('api_source_name.'.$this->value);
     }
 
-    /**
-     * Повертає колір для відображення у Filament.
-     */
+    
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::TMDB => 'success',  // Зелений для TMDB
-            self::SHIKI => 'primary',  // Фіолетовий для Shiki
-            self::IMDB => 'warning',  // Жовтий для IMDB
-            self::ANILIST => 'info',  // Блакитний для Anilist
+            self::TMDB => 'success',  
+            self::SHIKI => 'primary',  
+            self::IMDB => 'warning',  
+            self::ANILIST => 'info',  
         };
     }
 
-    /**
-     * Повертає іконку для Filament.
-     */
+    
     public function getIcon(): ?string
     {
         return match ($this) {

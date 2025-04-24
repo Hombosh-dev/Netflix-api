@@ -2,73 +2,149 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CommentLikes\CreateCommentLikeAction;
-use App\Actions\CommentLikes\DeleteCommentLikeAction;
-use App\Actions\CommentLikes\ListByCommentAction;
-use App\Actions\CommentLikes\ListByUserAction;
-use App\Actions\CommentLikes\ListCommentLikesAction;
-use App\Actions\CommentLikes\ListOnlyDislikesAction;
-use App\Actions\CommentLikes\ListOnlyLikesAction;
-use App\Actions\CommentLikes\ShowCommentLikeAction;
-use App\Http\Requests\CommentLike\StoreCommentLikeRequest;
-use App\Http\Resources\CommentLike\CommentLikeCollection;
-use App\Http\Resources\CommentLike\CommentLikeResource;
+use App\Actions\CommentLikes\CreateCommentLike;
+use App\Actions\CommentLikes\GetCommentLikes;
+use App\DTOs\CommentLikes\CommentLikeIndexDTO;
+use App\DTOs\CommentLikes\CommentLikeStoreDTO;
+use App\DTOs\CommentLikes\CommentLikeUpdateDTO;
+use App\Http\Requests\CommentLikes\CommentLikeDeleteRequest;
+use App\Http\Requests\CommentLikes\CommentLikeIndexRequest;
+use App\Http\Requests\CommentLikes\CommentLikeStoreRequest;
+use App\Http\Requests\CommentLikes\CommentLikeUpdateRequest;
+use App\Http\Resources\CommentLikeResource;
 use App\Models\Comment;
 use App\Models\CommentLike;
 use App\Models\User;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class CommentLikeController extends Controller implements HasMiddleware
+class CommentLikeController extends Controller
 {
-    public static function middleware()
+    /**
+     * Get paginated list of comment likes with filtering, sorting and pagination
+     *
+     * @param  CommentLikeIndexRequest  $request
+     * @param  GetCommentLikes  $action
+     * @return AnonymousResourceCollection
+     */
+    public function index(CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        return [
-            new Middleware('throttle:100,1440', only: ['store']), // 100 запитів на день (1440 хвилин)
-        ];
+        $dto = CommentLikeIndexDTO::fromRequest($request);
+        $commentLikes = $action->handle($dto);
+
+        return CommentLikeResource::collection($commentLikes);
     }
 
-    public function index(ListCommentLikesAction $action)
+    /**
+     * Get detailed information about a specific comment like
+     *
+     * @param  CommentLike  $commentLike
+     * @return CommentLikeResource
+     */
+    public function show(CommentLike $commentLike): CommentLikeResource
     {
-        return new CommentLikeCollection($action->execute());
+        return new CommentLikeResource($commentLike->load(['user', 'comment']));
     }
 
-    public function store(StoreCommentLikeRequest $request, CreateCommentLikeAction $action)
+    /**
+     * Store a newly created comment like
+     *
+     * @param  CommentLikeStoreRequest  $request
+     * @param  CreateCommentLike  $action
+     * @return CommentLikeResource|JsonResponse
+     */
+    public function store(CommentLikeStoreRequest $request, CreateCommentLike $action): CommentLikeResource|JsonResponse
     {
-        Gate::authorize('create', CommentLike::class);
-        return new CommentLikeResource($action->execute($request));
+        $dto = CommentLikeStoreDTO::fromRequest($request);
+
+        // Check if the user has already liked this comment
+        $existingLike = CommentLike::where('user_id', $request->user()->id)
+            ->where('comment_id', $request->input('comment_id'))
+            ->first();
+
+        if ($existingLike) {
+            // If we want to update the existing like (e.g., change from like to dislike)
+            if ($existingLike->is_liked !== $request->boolean('is_liked', true)) {
+                $existingLike->is_liked = $request->boolean('is_liked', true);
+                $existingLike->save();
+
+                return new CommentLikeResource($existingLike->load(['user', 'comment']));
+            }
+
+            return response()->json(['message' => 'You have already liked this comment'], 422);
+        }
+
+        $commentLike = $action->handle($dto);
+
+        return new CommentLikeResource($commentLike->load(['user', 'comment']));
     }
 
-    public function show(CommentLike $commentLike, ShowCommentLikeAction $action)
+    /**
+     * Update the specified comment like
+     *
+     * @param  CommentLikeUpdateRequest  $request
+     * @param  CommentLike  $commentLike
+     * @return CommentLikeResource
+     */
+    public function update(CommentLikeUpdateRequest $request, CommentLike $commentLike): CommentLikeResource
     {
-        return new CommentLikeResource($action->execute($commentLike));
+        $dto = CommentLikeUpdateDTO::fromRequest($request);
+
+        // Update the comment like
+        if ($dto->isLiked !== null) {
+            $commentLike->is_liked = $dto->isLiked;
+        }
+
+        $commentLike->save();
+
+        return new CommentLikeResource($commentLike->load(['user', 'comment']));
     }
 
-    public function destroy(CommentLike $commentLike, DeleteCommentLikeAction $action)
+    /**
+     * Remove the specified comment like
+     *
+     * @param  CommentLikeDeleteRequest  $request
+     * @param  CommentLike  $commentLike
+     * @return JsonResponse
+     */
+    public function destroy(CommentLikeDeleteRequest $request, CommentLike $commentLike): JsonResponse
     {
-        Gate::authorize('delete', $commentLike);
-        $action->execute($commentLike);
-        return response()->noContent();
+        $commentLike->delete();
+
+        return response()->json(['message' => 'Like removed successfully']);
     }
 
-    public function byUser(User $user, ListByUserAction $action)
+    /**
+     * Get likes for a specific comment
+     *
+     * @param  Comment  $comment
+     * @param  CommentLikeIndexRequest  $request
+     * @param  GetCommentLikes  $action
+     * @return AnonymousResourceCollection
+     */
+    public function forComment(Comment $comment, CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        return new CommentLikeCollection($action->execute($user));
+        $request->merge(['comment_id' => $comment->id]);
+        $dto = CommentLikeIndexDTO::fromRequest($request);
+        $commentLikes = $action->handle($dto);
+
+        return CommentLikeResource::collection($commentLikes);
     }
 
-    public function byComment(Comment $comment, ListByCommentAction $action)
+    /**
+     * Get likes by a specific user
+     *
+     * @param  User  $user
+     * @param  CommentLikeIndexRequest  $request
+     * @param  GetCommentLikes  $action
+     * @return AnonymousResourceCollection
+     */
+    public function forUser(User $user, CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        return new CommentLikeCollection($action->execute($comment));
-    }
+        $request->merge(['user_id' => $user->id]);
+        $dto = CommentLikeIndexDTO::fromRequest($request);
+        $commentLikes = $action->handle($dto);
 
-    public function onlyLikes(ListOnlyLikesAction $action)
-    {
-        return new CommentLikeCollection($action->execute());
-    }
-
-    public function onlyDislikes(ListOnlyDislikesAction $action)
-    {
-        return new CommentLikeCollection($action->execute());
+        return CommentLikeResource::collection($commentLikes);
     }
 }

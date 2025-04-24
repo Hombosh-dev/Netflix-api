@@ -13,7 +13,19 @@ class EditPerson extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\ViewAction::make()
+                ->label(__('Переглянути')),
+
+            Actions\DeleteAction::make()
+                ->label(__('Видалити'))
+                ->modalHeading(__('Видалення персони'))
+                ->modalDescription(__('Ви впевнені, що хочете видалити цю персону?'))
+                ->modalSubmitActionLabel(__('Так, видалити')),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

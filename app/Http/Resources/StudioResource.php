@@ -2,30 +2,32 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Studio;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Studio
+ */
 class StudioResource extends JsonResource
 {
     /**
-     * Перетворює ресурс у масив для JSON-відповіді.
+     * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'slug' => $this->slug,
-            'meta_title' => $this->meta_title,
-            'meta_description' => $this->meta_description,
-            'meta_image' => $this->meta_image,
             'name' => $this->name,
+            'slug' => $this->slug,
             'description' => $this->description,
             'image' => $this->image,
             'aliases' => $this->aliases,
-            'is_genre' => $this->is_genre,
+            'movies_count' => $this->when($this->movies_count !== null, fn() => $this->movies_count),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

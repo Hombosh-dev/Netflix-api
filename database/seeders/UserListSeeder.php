@@ -14,11 +14,11 @@ class UserListSeeder extends Seeder
 {
     public function run(): void
     {
-        // Всі користувачі
+        // All users
         $users = User::all();
 
         foreach ($users as $user) {
-            // Улюблені фільми
+            // Favorite movies
             $favoriteMovies = Movie::inRandomOrder()->take(rand(5, 15))->get();
             foreach ($favoriteMovies as $movie) {
                 $user->userLists()->create([
@@ -28,7 +28,7 @@ class UserListSeeder extends Seeder
                 ]);
             }
 
-            // Улюблені персони
+            // Favorite people
             $favoritePeople = Person::inRandomOrder()->take(rand(5, 15))->get();
             foreach ($favoritePeople as $person) {
                 $user->userLists()->create([
@@ -38,7 +38,7 @@ class UserListSeeder extends Seeder
                 ]);
             }
 
-            // Улюблені теги
+            // Favorite tags
             $favoriteTags = Tag::inRandomOrder()->take(rand(5, 15))->get();
             foreach ($favoriteTags as $tag) {
                 $user->userLists()->create([
@@ -48,7 +48,7 @@ class UserListSeeder extends Seeder
                 ]);
             }
 
-            // Переглядає епізоди
+            // Watching episodes
             $watchingEpisodes = Episode::inRandomOrder()->take(rand(5, 15))->get();
             foreach ($watchingEpisodes as $episode) {
                 $user->userLists()->create([

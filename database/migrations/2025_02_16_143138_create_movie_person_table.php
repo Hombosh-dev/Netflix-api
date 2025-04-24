@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->foreignUlid('voice_person_id')->nullable()->constrained('people')->cascadeOnDelete();
             $table->string('character_name', 128);
 
-            $table->primary(['movie_id', 'person_id']); // Первинний ключ на обидва поля
+            $table->primary(['movie_id', 'person_id']); 
         });
 
         DB::unprepared("

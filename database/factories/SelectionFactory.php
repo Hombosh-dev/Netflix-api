@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Selection;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,16 +12,18 @@ class SelectionFactory extends Factory
 {
     public function definition(): array
     {
-        $name = fake()->sentence;
+        $name = fake()->sentence(3);
 
         return [
-            'user_id' => User::inRandomOrder()->value('id') ?? User::factory(),
-            'slug' => Selection::generateSlug($name),
+            'user_id' => \App\Models\User::query()->inRandomOrder()->value('id') ?? \App\Models\User::factory(),
             'name' => $name,
-            'description' => fake()->optional()->paragraph,
-            'meta_title' => Selection::makeMetaTitle($name),
-            'meta_description' => fake()->optional()->text(376),
-            'meta_image' => fake()->imageUrl(2048, 2048),
+            'slug' => Selection::generateSlug($name),
+            'description' => fake()->paragraph(),
+            'meta_title' => $name . ' | ' . config('app.name'),
+            'meta_description' => fake()->sentence(10),
+            'meta_image' => fake()->imageUrl(1200, 630, 'selection', true),
         ];
     }
+
+
 }

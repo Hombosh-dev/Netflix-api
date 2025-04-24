@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Builders\StudioQueryBuilder;
+use App\Models\Traits\HasSearchable;
 use App\Models\Traits\HasSeo;
+use App\Models\Traits\HasFiles;
 use Database\Factories\StudioFactory;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Str;
 
 /**
  * @mixin IdeHelperStudio
@@ -17,34 +21,87 @@ use Illuminate\Support\Facades\DB;
 class Studio extends Model
 {
     /** @use HasFactory<StudioFactory> */
-    use HasFactory, HasUlids, HasSeo;
+    use HasFactory, HasUlids, HasSeo, HasSearchable, HasFiles;
 
     protected $hidden = [
         'searchable',
     ];
+
+    /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  Builder  $query
+     * @return StudioQueryBuilder
+     */
+    public function newEloquentBuilder($query): StudioQueryBuilder
+    {
+        return new StudioQueryBuilder($query);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'aliases' => AsCollection::class,
+        ];
+    }
 
     public function movies(): HasMany
     {
         return $this->hasMany(Movie::class);
     }
 
-    public function scopeByName(Builder $query, string $name): Builder
+    /**
+     * Get the image URL attribute.
+     *
+     * @return Attribute
+     */
+    protected function imageUrl(): Attribute
     {
-        return $query->where('name', 'like', '%'.$name.'%');
+        return Attribute::make(
+            get: fn() => $this->getFileUrl($this->image)
+        );
     }
 
-    public function scopeSearch(Builder $query, string $search): Builder
+    /**
+     * Get the meta image URL attribute.
+     *
+     * @return Attribute
+     */
+    protected function metaImageUrl(): Attribute
     {
-        return $query
-            ->select('*')
-            ->addSelect(DB::raw("ts_rank(searchable, websearch_to_tsquery('ukrainian', ?)) AS rank"))
-            ->addSelect(DB::raw("ts_headline('ukrainian', name, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS name_highlight"))
-            ->addSelect(DB::raw("ts_headline('ukrainian', description, websearch_to_tsquery('ukrainian', ?), 'HighlightAll=true') AS description_highlight"))
-            ->addSelect(DB::raw('similarity(name, ?) AS similarity'))
-            ->whereRaw("searchable @@ websearch_to_tsquery('ukrainian', ?)",
-                [$search, $search, $search, $search, $search])
-            ->orWhereRaw('name % ?', [$search])
-            ->orderByDesc('rank')
-            ->orderByDesc('similarity');
+        return Attribute::make(
+            get: fn() => $this->getFileUrl($this->meta_image)
+        );
+    }
+
+    /**
+     * Generate a unique slug for a studio name.
+     *
+     * @param string $name
+     * @return string
+     */
+    public static function generateSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        // Check if the slug already exists
+        while (self::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Generate a meta title for a studio.
+     *
+     * @param string $name
+     * @return string
+     */
+    public static function makeMetaTitle(string $name): string
+    {
+        return $name . ' | ' . config('app.name');
     }
 }

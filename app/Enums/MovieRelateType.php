@@ -18,35 +18,29 @@ enum MovieRelateType: string implements HasColor, HasIcon, HasLabel
     case ALTERNATIVE = 'alternative';
     case PREQUEL = 'prequel';
 
-    /**
-     * Повертає перекладену назву типу зв’язку для Filament із файлу локалізації.
-     */
+    
     public function getLabel(): ?string
     {
         return __('movie_relate_type.'.$this->value);
     }
 
-    /**
-     * Повертає колір для відображення у Filament.
-     */
+    
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::SEASON => 'info',       // Блакитний для сезону
-            self::SOURCE => 'gray',       // Сірий для джерела
-            self::SEQUEL => 'success',    // Зелений для сиквелу
-            self::SIDE_STORY => 'primary', // Фіолетовий для побічної історії
-            self::SUMMARY => 'warning',   // Жовтий для підсумку
-            self::OTHER => 'gray',        // Сірий для іншого
-            self::ADAPTATION => 'orange', // Помаранчевий для адаптації
-            self::ALTERNATIVE => 'pink',  // Рожевий для альтернативи
-            self::PREQUEL => 'danger',    // Червоний для приквелу
+            self::SEASON => 'info',       
+            self::SOURCE => 'gray',       
+            self::SEQUEL => 'success',    
+            self::SIDE_STORY => 'primary', 
+            self::SUMMARY => 'warning',   
+            self::OTHER => 'gray',        
+            self::ADAPTATION => 'orange', 
+            self::ALTERNATIVE => 'pink',  
+            self::PREQUEL => 'danger',    
         };
     }
 
-    /**
-     * Повертає іконку для Filament.
-     */
+    
     public function getIcon(): ?string
     {
         return match ($this) {

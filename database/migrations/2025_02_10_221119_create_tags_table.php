@@ -21,6 +21,19 @@ return new class extends Migration {
             $table->string('meta_image', 2048)->nullable();
             $table->timestamps();
         });
+
+        // Добавляем полнотекстовый поиск
+        DB::unprepared("
+            ALTER TABLE tags
+            ADD COLUMN searchable tsvector GENERATED ALWAYS AS (
+                setweight(to_tsvector('ukrainian', name), 'A') ||
+                setweight(to_tsvector('ukrainian', description), 'B') ||
+                setweight(to_tsvector('ukrainian', coalesce(aliases::text, '')), 'C')
+            ) STORED
+        ");
+
+        DB::unprepared('CREATE INDEX tags_searchable_index ON tags USING GIN (searchable)');
+        DB::unprepared('CREATE INDEX tags_trgm_name_idx ON tags USING GIN (name gin_trgm_ops)');
     }
 
     public function down(): void

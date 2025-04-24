@@ -16,7 +16,7 @@ class EpisodeSeeder extends Seeder
 
         foreach ($movies as $movie) {
             if ($movie->kind === Kind::MOVIE) {
-                // Для фільмів типу Movie завжди один епізод з номером 1
+                // For movies of the Movie type, there is always one episode with the number 1
                 Episode::factory()
                     ->forMovie($movie)
                     ->create(['number' => 1]);

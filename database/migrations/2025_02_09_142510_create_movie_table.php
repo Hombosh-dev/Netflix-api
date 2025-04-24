@@ -13,25 +13,25 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('movies', function (Blueprint $table) {
-            $table->ulid('id')->primary(); // Унікальний ідентифікатор
-            $table->json('api_sources')->default(DB::raw("'[]'::json")); // JSON для API ідентифікаторів (source, id)
-            $table->string('slug', 128)->unique(); // Унікальний slug
-            $table->string('name', 248); // Назва фільму
+            $table->ulid('id')->primary(); 
+            $table->json('api_sources')->default(DB::raw("'[]'::json")); 
+            $table->string('slug', 128)->unique(); 
+            $table->string('name', 248); 
             $table->text('description');
-            $table->string('image_name', 2048); // Шлях до зображення
-            $table->json('aliases')->default(DB::raw("'[]'::json")); // JSON для масиву аліасів
+            $table->string('image_name', 2048); 
+            $table->json('aliases')->default(DB::raw("'[]'::json")); 
             $table->foreignUlid('studio_id')->constrained()->cascadeOnDelete();
-            $table->json('countries')->default(DB::raw("'[]'::json")); // JSON країн розробників enum Country
-            $table->string('poster', 2048)->nullable(); // Шлях до постера
-            $table->integer('duration')->nullable(); // Тривалість у хвилинах
-            $table->integer('episodes_count')->nullable(); // Кількість епізодів
-            $table->date('first_air_date')->nullable(); // Дата початку ефіру
-            $table->date('last_air_date')->nullable(); // Дата завершення ефіру
-            $table->decimal('imdb_score', 4, 2)->nullable(); // Оцінка на IMDB
-            $table->json('attachments')->default(DB::raw("'[]'::json")); // JSON для масиву прикріплених елементів
-            $table->json('related')->default(DB::raw("'[]'::json")); // JSON для пов'язаних елементів
-            $table->json('similars')->default(DB::raw("'[]'::json")); // JSON для схожих фільмів
-            $table->boolean('is_published')->default(false); // Статус публікації
+            $table->json('countries')->default(DB::raw("'[]'::json")); 
+            $table->string('poster', 2048)->nullable(); 
+            $table->integer('duration')->nullable(); 
+            $table->integer('episodes_count')->nullable(); 
+            $table->date('first_air_date')->nullable(); 
+            $table->date('last_air_date')->nullable(); 
+            $table->decimal('imdb_score', 4, 2)->nullable(); 
+            $table->json('attachments')->default(DB::raw("'[]'::json")); 
+            $table->json('related')->default(DB::raw("'[]'::json")); 
+            $table->json('similars')->default(DB::raw("'[]'::json")); 
+            $table->boolean('is_published')->default(false); 
             $table->string('meta_title', 128)->nullable();
             $table->string('meta_description', 376)->nullable();
             $table->string('meta_image', 2048)->nullable();

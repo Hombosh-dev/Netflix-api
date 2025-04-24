@@ -10,22 +10,31 @@ class MovieResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
-     * @return array<string, mixed>
+     * @param  Request  $request
+     * @return array
      */
     public function toArray(Request $request): array
     {
         return [
-            'id'               => $this->id,
-            'slug'             => $this->slug,
-            'meta_title'       => $this->meta_title,
-            'meta_description' => $this->meta_description,
-            'meta_image'       => $this->meta_image,
-            'name'             => $this->name,
-            'description'      => $this->description,
-            'image'            => $this->image,
-            'aliases'          => $this->aliases,
-            'is_genre'         => $this->is_genre,
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            // 'backdrop' => $this->backdrop, // Removed as it doesn't exist in the model
+            'poster' => $this->poster,
+            'kind' => $this->kind->value,
+            'status' => $this->status->value,
+            'year' => $this->releaseYear,
+            'imdb_score' => $this->imdb_score,
+            'studio' => $this->whenLoaded('studio', function () {
+                return [
+                    'id' => $this->studio->id,
+                    'name' => $this->studio->name,
+                    'slug' => $this->studio->slug,
+                ];
+            }),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

@@ -1,0 +1,3 @@
+@echo off
+echo Running Feature Tests...
+php artisan test --testsuite=Feature

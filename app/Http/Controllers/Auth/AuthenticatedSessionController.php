@@ -2,36 +2,48 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\LoginUser;
+use App\Actions\Auth\LogoutUser;
+use App\DTOs\Auth\LoginDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Handle an incoming authentication request.
+     *
+     * @param Request $request
+     * @param LoginUser $action
+     * @return Response
+     * @throws ValidationException
      */
-    public function store(LoginRequest $request): Response
+    public function store(Request $request, LoginUser $action): Response
     {
-        $request->authenticate();
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+            'remember' => ['sometimes', 'boolean'],
+        ]);
 
-        $request->session()->regenerate();
+        $dto = LoginDTO::fromRequest($request);
+        $action->handle($dto);
 
         return response()->noContent();
     }
 
     /**
      * Destroy an authenticated session.
+     *
+     * @param Request $request
+     * @param LogoutUser $action
+     * @return Response
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request, LogoutUser $action): Response
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        $action->handle();
 
         return response()->noContent();
     }

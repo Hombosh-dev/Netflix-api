@@ -13,7 +13,19 @@ class EditStudio extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\ViewAction::make()
+                ->label(__('Переглянути')),
+
+            Actions\DeleteAction::make()
+                ->label(__('Видалити'))
+                ->modalHeading(__('Видалення студії'))
+                ->modalDescription(__('Ви впевнені, що хочете видалити цю студію?'))
+                ->modalSubmitActionLabel(__('Так, видалити')),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

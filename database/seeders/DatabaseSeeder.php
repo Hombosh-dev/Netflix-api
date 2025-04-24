@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             CommentSeeder::class,
             CommentLikeSeeder::class,
             CommentReportSeeder::class,
-            SelectionSeeder::class,
+            TariffSeeder::class,
+            UserSubscriptionSeeder::class,
+            PaymentSeeder::class,
         ]);
     }
 }

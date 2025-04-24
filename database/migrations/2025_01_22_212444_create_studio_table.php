@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->string("description", 512);
             $table->string("image", 1024)->nullable();
             $table->json('aliases')->nullable();
-            $table->boolean("is_genre")->default(false);
 
             $table->timestamp('created_at');
             $table->timestamp('updated_at');

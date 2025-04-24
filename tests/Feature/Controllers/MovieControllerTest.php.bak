@@ -1,0 +1,314 @@
+<?php
+
+namespace Tests\Feature\Controllers;
+
+use App\Enums\Kind;
+use App\Enums\Status;
+use App\Models\Movie;
+use App\Models\Studio;
+use App\Models\Tag;
+use App\Models\Person;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class MovieControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_index_returns_paginated_movies()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->count(5)->create([
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'slug',
+                        'description',
+                        'kind',
+                        'status',
+                        'year',
+                        'imdb_score',
+                    ],
+                ],
+                'links',
+                'meta',
+            ])
+            ->assertJsonCount(5, 'data');
+    }
+
+    public function test_index_with_search_query_returns_matching_movies()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->create([
+            'name' => 'Star Wars',
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'name' => 'Star Trek',
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'name' => 'Avengers',
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?q=star');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_index_filters_by_multiple_kinds()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->count(2)->create([
+            'kind' => Kind::MOVIE,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->count(2)->create([
+            'kind' => Kind::TV_SERIES,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->count(1)->create([
+            'kind' => Kind::ANIMATED_MOVIE,
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?kinds=movie,tv_series');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(4, 'data');
+    }
+
+    public function test_index_filters_by_multiple_statuses()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->count(2)->create([
+            'status' => Status::RELEASED,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->count(2)->create([
+            'status' => Status::ONGOING,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->count(1)->create([
+            'status' => Status::ANONS,
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?statuses=released,ongoing');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(4, 'data');
+    }
+
+    public function test_index_filters_by_imdb_score_range()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->create([
+            'imdb_score' => 9.0,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'imdb_score' => 8.0,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'imdb_score' => 7.0,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'imdb_score' => 6.0,
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?min_score=7.0&max_score=8.5');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_index_filters_by_multiple_studios()
+    {
+        // Arrange
+        $studio1 = Studio::factory()->create();
+        $studio2 = Studio::factory()->create();
+        $studio3 = Studio::factory()->create();
+
+        Movie::factory()->count(2)->create(['studio_id' => $studio1->id]);
+        Movie::factory()->count(2)->create(['studio_id' => $studio2->id]);
+        Movie::factory()->count(1)->create(['studio_id' => $studio3->id]);
+
+        // Act
+        $response = $this->getJson("/api/movies?studio_ids={$studio1->id},{$studio2->id}");
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(4, 'data');
+    }
+
+    public function test_index_filters_by_multiple_tags()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        $tag1 = Tag::factory()->create();
+        $tag2 = Tag::factory()->create();
+
+        $movie1 = Movie::factory()->create(['studio_id' => $studio->id]);
+        $movie2 = Movie::factory()->create(['studio_id' => $studio->id]);
+        $movie3 = Movie::factory()->create(['studio_id' => $studio->id]);
+
+        $movie1->tags()->attach($tag1);
+        $movie2->tags()->attach($tag2);
+        $movie3->tags()->attach([$tag1->id, $tag2->id]);
+
+        // Act
+        $response = $this->getJson("/api/movies?tag_ids={$tag1->id}");
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_index_filters_by_year_range()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->create([
+            'first_air_date' => '2020-01-01',
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'first_air_date' => '2021-01-01',
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'first_air_date' => '2022-01-01',
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'first_air_date' => '2023-01-01',
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?min_year=2021&max_year=2022');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_index_filters_by_duration_range()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        Movie::factory()->create([
+            'duration' => 90,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'duration' => 120,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'duration' => 150,
+            'studio_id' => $studio->id,
+        ]);
+        Movie::factory()->create([
+            'duration' => 180,
+            'studio_id' => $studio->id,
+        ]);
+
+        // Act
+        $response = $this->getJson('/api/movies?min_duration=100&max_duration=160');
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_show_returns_detailed_movie_information()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        $movie = Movie::factory()->create([
+            'studio_id' => $studio->id,
+        ]);
+        $tags = Tag::factory()->count(3)->create();
+        $movie->tags()->attach($tags);
+
+        // Act
+        $response = $this->getJson("/api/movies/{$movie->id}");
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'slug',
+                    'description',
+                    'backdrop',
+                    'poster',
+                    'image_name',
+                    'kind',
+                    'status',
+                    'duration',
+                    'formatted_duration',
+                    'countries',
+                    'aliases',
+                    'first_air_date',
+                    'year',
+                    'imdb_score',
+                    'is_published',
+                    'studio',
+                    'tags',
+                    'created_at',
+                    'updated_at',
+                    'seo',
+                ],
+            ]);
+    }
+
+    public function test_tags_returns_movie_tags()
+    {
+        // Arrange
+        $studio = Studio::factory()->create();
+        $movie = Movie::factory()->create([
+            'studio_id' => $studio->id,
+        ]);
+        $tags = Tag::factory()->count(3)->create();
+        $movie->tags()->attach($tags);
+
+        // Act
+        $response = $this->getJson("/api/movies/{$movie->id}/tags");
+
+        // Assert
+        $response->assertStatus(200)
+            ->assertJsonCount(3, 'data');
+    }
+}

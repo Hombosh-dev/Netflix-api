@@ -13,26 +13,26 @@ class SelectionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Створюємо 20 підбірок
+        // Create 20 selections
         $selections = Selection::factory(20)->create();
 
         $selections->each(function (Selection $selection) {
-            // Вибираємо унікальні фільми
+            // Choosing unique movies
             $movies = Movie::inRandomOrder()
                 ->limit(rand(5, 10))
                 ->pluck('id')
                 ->toArray();
 
-            // Вибираємо унікальних персон
+            // Choosing unique personalities
             $persons = Person::inRandomOrder()
                 ->limit(rand(5, 10))
                 ->pluck('id')
                 ->toArray();
 
-            // Прив’язуємо фільми до підбірки
+            // Linking movies to a selection
             $selection->movies()->sync($movies);
 
-            // Прив’язуємо персон до підбірки
+            // Linking people to a selection
             $selection->persons()->sync($persons);
         });
     }

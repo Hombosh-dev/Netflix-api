@@ -1,242 +1,286 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentLikeController;
 use App\Http\Controllers\CommentReportController;
+use App\Http\Controllers\EnumController;
 use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\PopularController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SelectionController;
+use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StudioController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TariffController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserListController;
+use App\Http\Controllers\UserSubscriptionController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group.
+|
 */
 
-// Movies
-Route::prefix('movies')->group(function () {
-    Route::get('/', [MovieController::class, 'index']); // Список усіх фільмів
-    Route::post('/', [MovieController::class, 'store']); // Створити фільм
-    Route::get('/{movie}', [MovieController::class, 'show'])->where('movie', '.*'); // Отримати фільм (slug)
-    Route::put('/{movie}', [MovieController::class, 'update'])->where('movie', '.*'); // Оновити фільм
-    Route::patch('/{movie}', [MovieController::class, 'updatePartial'])->where('movie', '.*'); // Часткове оновлення
-    Route::delete('/{movie}', [MovieController::class, 'destroy'])->where('movie', '.*'); // Видалити фільм
+// Public routes
+Route::group(['prefix' => 'v1'], function () {
+    // Authentication routes
+    Route::post('/register', [RegisteredUserController::class, 'store'])
+        ->middleware('guest')
+        ->name('register');
 
-    // Фільтри за Kind (enum)
-    Route::get('/kind/{kind}', [MovieController::class, 'byKind']); // Фільми за типом
-    Route::get('/status/{status}', [MovieController::class, 'byStatus']); // Фільми за статусом
-    Route::get('/imdb/{score}', [MovieController::class, 'byImdbScore']); // Фільми з IMDb >= score
-    Route::get('/search/{query}', [MovieController::class, 'search']); // Пошук
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('guest')
+        ->name('login');
 
-    // Зв’язки
-    Route::get('/{movie}/episodes', [MovieController::class, 'episodes'])->where('movie', '.*'); // Епізоди
-    Route::get('/{movie}/ratings', [MovieController::class, 'ratings'])->where('movie', '.*'); // Рейтинги
-    Route::get('/{movie}/tags', [MovieController::class, 'tags'])->where('movie', '.*'); // Теги
-    Route::get('/{movie}/persons', [MovieController::class, 'persons'])->where('movie', '.*'); // Персони
-    Route::get('/{movie}/comments', [MovieController::class, 'comments'])->where('movie', '.*'); // Коментарі
-    Route::get('/{movie}/user-lists', [MovieController::class, 'userLists'])->where('movie', '.*'); // Списки
-    Route::get('/{movie}/selections', [MovieController::class, 'selections'])->where('movie', '.*'); // Підбірки
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('guest')
+        ->name('password.email');
+
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('guest')
+        ->name('password.store');
+
+    // Public content routes
+    Route::get('/search', [SearchController::class, 'search']);
+    Route::get('/search/autocomplete', [SearchController::class, 'autocomplete']);
+
+    // Popular content
+    Route::get('/popular/movies', [PopularController::class, 'movies']);
+    Route::get('/popular/series', [PopularController::class, 'series']);
+    Route::get('/popular/people', [PopularController::class, 'people']);
+    Route::get('/popular/tags', [PopularController::class, 'tags']);
+    Route::get('/popular/selections', [PopularController::class, 'selections']);
+
+    Route::get('/movies', [MovieController::class, 'index']);
+    Route::get('/movies/{movie}', [MovieController::class, 'show']);
+    Route::get('/movies/{movie}/episodes', [MovieController::class, 'episodes']);
+    Route::get('/movies/{movie}/persons', [MovieController::class, 'persons']);
+    Route::get('/movies/{movie}/tags', [MovieController::class, 'tags']);
+    Route::get('/movies/{movie}/ratings', [MovieController::class, 'ratings']);
+    Route::get('/movies/{movie}/comments', [MovieController::class, 'comments']);
+
+    Route::get('/episodes', [EpisodeController::class, 'index']);
+    Route::get('/episodes/aired-after/{date}', [EpisodeController::class, 'airedAfter']);
+    Route::get('/episodes/{episode}', [EpisodeController::class, 'show']);
+    Route::get('/episodes/movie/{movie}', [EpisodeController::class, 'forMovie']);
+
+    Route::get('/people', [PersonController::class, 'index']);
+    Route::get('/people/{person}', [PersonController::class, 'show']);
+    Route::get('/people/{person}/movies', [PersonController::class, 'movies']);
+
+    Route::get('/studios', [StudioController::class, 'index']);
+    Route::get('/studios/{studio}', [StudioController::class, 'show']);
+
+    Route::get('/tags', [TagController::class, 'index']);
+    Route::get('/tags/{tag}', [TagController::class, 'show']);
+    Route::get('/tags/{tag}/movies', [TagController::class, 'movies']);
+
+    Route::get('/selections', [SelectionController::class, 'index']);
+    Route::get('/selections/{selection}', [SelectionController::class, 'show']);
+    Route::get('/selections/{selection}/movies', [SelectionController::class, 'movies']);
+    Route::get('/selections/{selection}/persons', [SelectionController::class, 'persons']);
+
+    // Comments
+    Route::get('/comments/recent', [CommentController::class, 'recent']);
+    Route::get('/comments/roots/{commentable_type}/{commentable_id}', [CommentController::class, 'roots']);
+
+    // Enum routes with SEO
+    Route::prefix('enums')->group(function () {
+        Route::get('/kinds', [EnumController::class, 'kinds']);
+        Route::get('/kinds/{kind}', [EnumController::class, 'kind']);
+
+        Route::get('/statuses', [EnumController::class, 'statuses']);
+        Route::get('/statuses/{status}', [EnumController::class, 'status']);
+
+        Route::get('/person-types', [EnumController::class, 'personTypes']);
+        Route::get('/person-types/{type}', [EnumController::class, 'personType']);
+
+        Route::get('/user-list-types', [EnumController::class, 'userListTypes']);
+        Route::get('/user-list-types/{type}', [EnumController::class, 'userListType']);
+
+        Route::get('/video-qualities', [EnumController::class, 'videoQualities']);
+        Route::get('/video-qualities/{quality}', [EnumController::class, 'videoQuality']);
+
+        Route::get('/genders', [EnumController::class, 'genders']);
+        Route::get('/genders/{gender}', [EnumController::class, 'gender']);
+
+        Route::get('/comment-report-types', [EnumController::class, 'commentReportTypes']);
+        Route::get('/comment-report-types/{type}', [EnumController::class, 'commentReportType']);
+
+        Route::get('/movie-relate-types', [EnumController::class, 'movieRelateTypes']);
+        Route::get('/movie-relate-types/{type}', [EnumController::class, 'movieRelateType']);
+
+        Route::get('/payment-statuses', [EnumController::class, 'paymentStatuses']);
+        Route::get('/payment-statuses/{status}', [EnumController::class, 'paymentStatus']);
+
+        Route::get('/api-source-names', [EnumController::class, 'apiSourceNames']);
+        Route::get('/api-source-names/{source}', [EnumController::class, 'apiSourceName']);
+
+        Route::get('/attachment-types', [EnumController::class, 'attachmentTypes']);
+        Route::get('/attachment-types/{type}', [EnumController::class, 'attachmentType']);
+    });
 });
 
-// Comments
-Route::prefix('comments')->group(function () {
-    Route::get('/', [CommentController::class, 'index']); // Усі коментарі
-    Route::post('/', [CommentController::class, 'store']); // Додати коментар
-    Route::get('/{comment}', [CommentController::class, 'show']); // Отримати коментар (ID)
-    Route::put('/{comment}', [CommentController::class, 'update']); // Оновити коментар
-    Route::delete('/{comment}', [CommentController::class, 'destroy']); // Видалити коментар
+// Protected routes (require authentication)
+Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
+    // User verification
+    Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
 
-    // Фільтри
-    Route::get('/replies', [CommentController::class, 'replies']); // Усі відповіді
-    Route::get('/roots', [CommentController::class, 'roots']); // Усі кореневі коментарі
+    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.send');
 
-    // Зв’язки
-    Route::get('/{comment}/likes', [CommentController::class, 'likes']); // Лайки
-    Route::get('/{comment}/reports', [CommentController::class, 'reports']); // Скарги
-    Route::get('/{comment}/children', [CommentController::class, 'children']); // Дочірні коментарі
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout');
+
+    // User profile
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    // Recommendations
+    Route::get('/recommendations', [RecommendationController::class, 'index']);
+    Route::get('/recommendations/movies', [RecommendationController::class, 'movies']);
+    Route::get('/recommendations/series', [RecommendationController::class, 'series']);
+    Route::get('/recommendations/similar/{movie}', [RecommendationController::class, 'similar']);
+    Route::get('/recommendations/because-you-watched/{movie}', [RecommendationController::class, 'becauseYouWatched']);
+    Route::get('/recommendations/continue-watching', [RecommendationController::class, 'continueWatching']);
+
+    // Users
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::put('/users/{user}', [UserController::class, 'update']);
+    Route::patch('/users/{user}', [UserController::class, 'updatePartial']);
+    Route::get('/users/{user}/user-lists', [UserController::class, 'userLists']);
+    Route::get('/users/{user}/ratings', [UserController::class, 'ratings']);
+    Route::get('/users/{user}/comments', [UserController::class, 'comments']);
+    Route::get('/users/{user}/subscriptions', [UserController::class, 'subscriptions']);
+
+    // User lists (favorites, watch later, etc.)
+    Route::get('/user-lists', [UserListController::class, 'index']);
+    Route::post('/user-lists', [UserListController::class, 'store']);
+    Route::get('/user-lists/{userList}', [UserListController::class, 'show']);
+    Route::delete('/user-lists/{userList}', [UserListController::class, 'destroy']);
+    Route::get('/user-lists/user/{user}', [UserListController::class, 'forUser']);
+    Route::get('/user-lists/type/{type}', [UserListController::class, 'byType']);
+
+    // Ratings
+    Route::get('/ratings', [RatingController::class, 'index']);
+    Route::post('/ratings', [RatingController::class, 'store']);
+    Route::get('/ratings/{rating}', [RatingController::class, 'show']);
+    Route::put('/ratings/{rating}', [RatingController::class, 'update']);
+    Route::delete('/ratings/{rating}', [RatingController::class, 'destroy']);
+    Route::get('/ratings/user/{user}', [RatingController::class, 'forUser']);
+    Route::get('/ratings/movie/{movie}', [RatingController::class, 'forMovie']);
+
+    // Comments
+    Route::get('/comments', [CommentController::class, 'index']);
+    Route::post('/comments', [CommentController::class, 'store']);
+    Route::get('/comments/{comment}', [CommentController::class, 'show']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    Route::get('/comments/user/{user}', [CommentController::class, 'forUser']);
+    Route::get('/comments/{comment}/replies', [CommentController::class, 'replies']);
+
+    // Comment likes
+    Route::get('/comment-likes', [CommentLikeController::class, 'index']);
+    Route::post('/comment-likes', [CommentLikeController::class, 'store']);
+    Route::get('/comment-likes/comment/{comment}', [CommentLikeController::class, 'forComment']);
+    Route::get('/comment-likes/user/{user}', [CommentLikeController::class, 'forUser']);
+    Route::get('/comment-likes/{commentLike}', [CommentLikeController::class, 'show']);
+    Route::put('/comment-likes/{commentLike}', [CommentLikeController::class, 'update']);
+    Route::delete('/comment-likes/{commentLike}', [CommentLikeController::class, 'destroy']);
+
+    // Comment reports
+    Route::post('/comment-reports', [CommentReportController::class, 'store']);
+    Route::get('/comment-reports/comment/{comment}', [CommentReportController::class, 'forComment']);
+
+    // Subscriptions and payments
+    Route::get('/tariffs', [TariffController::class, 'index']);
+    Route::get('/tariffs/{tariff}', [TariffController::class, 'show']);
+
+    Route::get('/user-subscriptions', [UserSubscriptionController::class, 'index']);
+    Route::post('/user-subscriptions', [UserSubscriptionController::class, 'store']);
+    Route::get('/user-subscriptions/{userSubscription}', [UserSubscriptionController::class, 'show']);
+    Route::get('/user-subscriptions/user/{user}', [UserSubscriptionController::class, 'forUser']);
+    Route::get('/user-subscriptions/active', [UserSubscriptionController::class, 'active']);
+
+    Route::get('/payments', [PaymentController::class, 'index']);
+    Route::post('/payments', [PaymentController::class, 'store']);
+    Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+    Route::get('/payments/user/{user}', [PaymentController::class, 'forUser']);
 });
 
-// Comment Likes
-Route::prefix('comment-likes')->group(function () {
-    Route::get('/', [CommentLikeController::class, 'index']); // Усі лайки
-    Route::post('/', [CommentLikeController::class, 'store']); // Додати лайк/дизлайк
-    Route::get('/{commentLike}', [CommentLikeController::class, 'show']); // Отримати лайк (ID)
-    Route::delete('/{commentLike}', [CommentLikeController::class, 'destroy']); // Видалити лайк
+// Admin routes
+Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']], function () {
+    // User management
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+    Route::patch('/users/{user}/ban', [UserController::class, 'ban']);
+    Route::patch('/users/{user}/unban', [UserController::class, 'unban']);
 
-    // Фільтри
-    Route::get('/user/{user}', [CommentLikeController::class, 'byUser']); // Лайки користувача
-    Route::get('/comment/{comment}', [CommentLikeController::class, 'byComment']); // Лайки коментаря
-    Route::get('/likes', [CommentLikeController::class, 'onlyLikes']); // Тільки лайки
-    Route::get('/dislikes', [CommentLikeController::class, 'onlyDislikes']); // Тільки дизлайки
+    // Content management
+    Route::post('/movies', [MovieController::class, 'store']);
+    Route::put('/movies/{movie}', [MovieController::class, 'update']);
+    Route::patch('/movies/{movie}', [MovieController::class, 'updatePartial']);
+    Route::delete('/movies/{movie}', [MovieController::class, 'destroy']);
+
+    Route::post('/episodes', [EpisodeController::class, 'store']);
+    Route::put('/episodes/{episode}', [EpisodeController::class, 'update']);
+    Route::delete('/episodes/{episode}', [EpisodeController::class, 'destroy']);
+
+    Route::post('/people', [PersonController::class, 'store']);
+    Route::put('/people/{person}', [PersonController::class, 'update']);
+    Route::delete('/people/{person}', [PersonController::class, 'destroy']);
+
+    Route::post('/studios', [StudioController::class, 'store']);
+    Route::put('/studios/{studio}', [StudioController::class, 'update']);
+    Route::delete('/studios/{studio}', [StudioController::class, 'destroy']);
+
+    Route::post('/tags', [TagController::class, 'store']);
+    Route::put('/tags/{tag}', [TagController::class, 'update']);
+    Route::delete('/tags/{tag}', [TagController::class, 'destroy']);
+
+    Route::post('/selections', [SelectionController::class, 'store']);
+    Route::put('/selections/{selection}', [SelectionController::class, 'update']);
+    Route::delete('/selections/{selection}', [SelectionController::class, 'destroy']);
+
+    // Moderation
+    Route::get('/comment-reports', [CommentReportController::class, 'index']);
+    Route::get('/comment-reports/unviewed', [CommentReportController::class, 'unviewed']);
+    Route::get('/comment-reports/{commentReport}', [CommentReportController::class, 'show']);
+    Route::put('/comment-reports/{commentReport}', [CommentReportController::class, 'update']);
+    Route::delete('/comment-reports/{commentReport}', [CommentReportController::class, 'destroy']);
+
+    // Subscription management
+    Route::post('/tariffs', [TariffController::class, 'store']);
+    Route::put('/tariffs/{tariff}', [TariffController::class, 'update']);
+    Route::delete('/tariffs/{tariff}', [TariffController::class, 'destroy']);
+
+    // Statistics and reports
+    Route::get('/stats/users', [StatsController::class, 'users']);
+    Route::get('/stats/content', [StatsController::class, 'content']);
+    Route::get('/stats/subscriptions', [StatsController::class, 'subscriptions']);
+    Route::get('/stats/payments', [StatsController::class, 'payments']);
 });
-
-// Comment Reports
-Route::prefix('comment-reports')->group(function () {
-    Route::get('/', [CommentReportController::class, 'index']); // Усі скарги
-    Route::post('/', [CommentReportController::class, 'store']); // Додати скаргу
-    Route::get('/{commentReport}', [CommentReportController::class, 'show']); // Отримати скаргу (ID)
-    Route::put('/{commentReport}', [CommentReportController::class, 'update']); // Оновити скаргу
-    Route::delete('/{commentReport}', [CommentReportController::class, 'destroy']); // Видалити скаргу
-
-    // Фільтри за CommentReportType (enum)
-    Route::get('/type/{type}', [CommentReportController::class, 'byType']); // Скарги за типом
-    Route::get('/user/{user}', [CommentReportController::class, 'byUser']); // Скарги від користувача
-    Route::get('/comment/{comment}', [CommentReportController::class, 'byComment']); // Скарги на коментар
-    Route::get('/unviewed', [CommentReportController::class, 'unviewed']); // Непереглянуті скарги
-});
-
-// Episodes
-Route::prefix('episodes')->group(function () {
-    Route::get('/', [EpisodeController::class, 'index']); // Усі епізоди
-    Route::post('/', [EpisodeController::class, 'store']); // Додати епізод
-    Route::get('/{episode}', [EpisodeController::class, 'show'])->where('episode', '.*'); // Отримати епізод (slug)
-    Route::put('/{episode}', [EpisodeController::class, 'update'])->where('episode', '.*'); // Оновити епізод
-    Route::delete('/{episode}', [EpisodeController::class, 'destroy'])->where('episode', '.*'); // Видалити епізод
-
-    // Фільтри
-    Route::get('/movie/{movie}', [EpisodeController::class, 'forMovie'])->where('movie', '.*'); // Епізоди для фільму
-    Route::get('/aired-after/{date}', [EpisodeController::class, 'airedAfter']); // Епізоди після дати
-});
-
-// Persons
-Route::prefix('persons')->group(function () {
-    Route::get('/', [PersonController::class, 'index']); // Усі персони
-    Route::post('/', [PersonController::class, 'store']); // Додати персону
-    Route::get('/{person}', [PersonController::class, 'show'])->where('person', '.*'); // Отримати персону (slug)
-    Route::put('/{person}', [PersonController::class, 'update'])->where('person', '.*'); // Оновити персону
-    Route::delete('/{person}', [PersonController::class, 'destroy'])->where('person', '.*'); // Видалити персону
-
-    // Фільтри за PersonType (enum)
-    Route::get('/type/{type}', [PersonController::class, 'byType']); // Персони за типом
-    Route::get('/gender/{gender}', [PersonController::class, 'byGender']); // Персони за гендером
-    Route::get('/name/{name}', [PersonController::class, 'byName']); // Персони за ім’ям
-    Route::get('/search/{query}', [PersonController::class, 'search']); // Пошук персон
-
-    // Зв’язки
-    Route::get('/{person}/movies', [PersonController::class, 'movies'])->where('person', '.*'); // Фільми персони
-    Route::get('/{person}/user-lists', [PersonController::class, 'userLists'])->where('person', '.*'); // Списки
-    Route::get('/{person}/selections', [PersonController::class, 'selections'])->where('person', '.*'); // Підбірки
-});
-
-// Ratings
-Route::prefix('ratings')->group(function () {
-    Route::get('/', [RatingController::class, 'index']); // Усі рейтинги
-    Route::post('/', [RatingController::class, 'store']); // Додати рейтинг
-    Route::get('/{rating}', [RatingController::class, 'show']); // Отримати рейтинг (ID)
-    Route::put('/{rating}', [RatingController::class, 'update']); // Оновити рейтинг
-    Route::delete('/{rating}', [RatingController::class, 'destroy']); // Видалити рейтинг
-
-    // Фільтри
-    Route::get('/user/{user}', [RatingController::class, 'forUser']); // Рейтинги користувача
-    Route::get('/movie/{movie}', [RatingController::class, 'forMovie'])->where('movie', '.*'); // Рейтинги фільму
-    Route::get('/between/{min}/{max}', [RatingController::class, 'betweenRatings']); // Рейтинги в діапазоні
-});
-
-// Selections
-Route::prefix('selections')->group(function () {
-    Route::get('/', [SelectionController::class, 'index']); // Усі підбірки
-    Route::post('/', [SelectionController::class, 'store']); // Додати підбірку
-    Route::get('/{selection}', [SelectionController::class, 'show'])->where('selection',
-        '.*'); // Отримати підбірку (slug)
-    Route::put('/{selection}', [SelectionController::class, 'update'])->where('selection', '.*'); // Оновити підбірку
-    Route::delete('/{selection}', [SelectionController::class, 'destroy'])->where('selection',
-        '.*'); // Видалити підбірку
-
-    // Фільтри
-    Route::get('/search/{query}', [SelectionController::class, 'search']); // Пошук підбірок
-
-    // Зв’язки
-    Route::get('/{selection}/movies', [SelectionController::class, 'movies'])->where('selection', '.*'); // Фільми
-    Route::get('/{selection}/persons', [SelectionController::class, 'persons'])->where('selection', '.*'); // Персони
-    Route::get('/{selection}/user-lists', [SelectionController::class, 'userLists'])->where('selection',
-        '.*'); // Списки
-    Route::get('/{selection}/comments', [SelectionController::class, 'comments'])->where('selection',
-        '.*'); // Коментарі
-});
-
-// Studios
-Route::prefix('studios')->group(function () {
-    Route::get('/', [StudioController::class, 'index']); // Усі студії
-    Route::post('/', [StudioController::class, 'store']); // Додати студію
-    Route::get('/{studio}', [StudioController::class, 'show'])->where('studio', '.*'); // Отримати студію (slug)
-    Route::put('/{studio}', [StudioController::class, 'update'])->where('studio', '.*'); // Оновити студію
-    Route::delete('/{studio}', [StudioController::class, 'destroy'])->where('studio', '.*'); // Видалити студію
-
-    // Фільтри
-    Route::get('/name/{name}', [StudioController::class, 'byName']); // Студії за назвою
-    Route::get('/search/{query}', [StudioController::class, 'search']); // Пошук студій
-
-    // Зв’язки
-    Route::get('/{studio}/movies', [StudioController::class, 'movies'])->where('studio', '.*'); // Фільми студії
-});
-
-// Tags
-Route::prefix('tags')->group(function () {
-    Route::get('/', [TagController::class, 'index']); // Усі теги
-    Route::post('/', [TagController::class, 'store']); // Додати тег
-    Route::get('/{tag}', [TagController::class, 'show'])->where('tag', '.*'); // Отримати тег (slug)
-    Route::put('/{tag}', [TagController::class, 'update'])->where('tag', '.*'); // Оновити тег
-    Route::delete('/{tag}', [TagController::class, 'destroy'])->where('tag', '.*'); // Видалити тег
-
-    // Фільтри
-    Route::get('/genres', [TagController::class, 'genres']); // Тільки жанри
-    Route::get('/search/{term}', [TagController::class, 'search']); // Пошук тегів
-
-    // Зв’язки
-    Route::get('/{tag}/movies', [TagController::class, 'movies'])->where('tag', '.*'); // Фільми з тегом
-    Route::get('/{tag}/user-lists', [TagController::class, 'userLists'])->where('tag', '.*'); // Списки з тегом
-});
-
-// Users
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']); // Усі користувачі
-    Route::post('/', [UserController::class, 'store']); // Створити користувача
-    Route::get('/{user}', [UserController::class, 'show']); // Отримати користувача (ID)
-    Route::put('/{user}', [UserController::class, 'update']); // Оновити користувача
-    Route::delete('/{user}', [UserController::class, 'destroy']); // Видалити користувача
-
-    // Фільтри за Role (enum)
-    Route::get('/role/{role}', [UserController::class, 'byRole']); // Користувачі за роллю
-    Route::get('/admins', [UserController::class, 'admins']); // Тільки адміни
-    Route::get('/vip', [UserController::class, 'vipCustomers']); // VIP користувачі
-    Route::get('/adults', [UserController::class, 'allowedAdults']); // Дорослий контент
-
-    // Зв’язки
-    Route::get('/{user}/ratings', [UserController::class, 'ratings']); // Рейтинги
-    Route::get('/{user}/comments', [UserController::class, 'comments']); // Коментарі
-    Route::get('/{user}/comment-likes', [UserController::class, 'commentLikes']); // Лайки коментарів
-    Route::get('/{user}/comment-reports', [UserController::class, 'commentReports']); // Скарги
-    Route::get('/{user}/selections', [UserController::class, 'selections']); // Підбірки
-    Route::get('/{user}/favorite-movies', [UserController::class, 'favoriteMovies']); // Улюблені фільми
-    Route::get('/{user}/favorite-people', [UserController::class, 'favoritePeople']); // Улюблені персони
-    Route::get('/{user}/favorite-tags', [UserController::class, 'favoriteTags']); // Улюблені теги
-    Route::get('/{user}/favorite-episodes', [UserController::class, 'favoriteEpisodes']); // Улюблені епізоди
-    Route::get('/{user}/watching-movies', [UserController::class, 'watchingMovies']); // Переглядаються
-    Route::get('/{user}/planned-movies', [UserController::class, 'plannedMovies']); // Заплановані
-    Route::get('/{user}/watched-movies', [UserController::class, 'watchedMovies']); // Переглянуті
-    Route::get('/{user}/stopped-movies', [UserController::class, 'stoppedMovies']); // Закинуті
-    Route::get('/{user}/rewatching-movies', [UserController::class, 'rewatchingMovies']); // Переглядаються повторно
-});
-
-// User Lists
-Route::prefix('user-lists')->group(function () {
-    Route::get('/', [UserListController::class, 'index']); // Усі списки
-    Route::post('/', [UserListController::class, 'store']); // Додати запис
-    Route::get('/{userList}', [UserListController::class, 'show']); // Отримати запис (ID)
-    Route::put('/{userList}', [UserListController::class, 'update']); // Оновити запис
-    Route::delete('/{userList}', [UserListController::class, 'destroy']); // Видалити запис
-
-    // Фільтри за UserListType (enum)
-    Route::get('/type/{type}', [UserListController::class, 'byType']); // Списки за типом
-    Route::get('/user/{user}', [UserListController::class, 'forUser']); // Списки користувача
-    Route::get('/user/{user}/type/{type}', [UserListController::class, 'forUserByType']); // Списки за типом
-});
-
-

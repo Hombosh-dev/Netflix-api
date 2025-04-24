@@ -18,35 +18,29 @@ enum CommentReportType: string implements HasColor, HasIcon, HasLabel
     case MEANINGLESS_EMPTY_TOPIC = 'meaningless_empty_topic';
     case DUPLICATE_TOPIC = 'duplicate_topic';
 
-    /**
-     * Повертає перекладену назву типу звіту для Filament із файлу локалізації.
-     */
+    
     public function getLabel(): ?string
     {
-        return __('comment_report.'.$this->value);
+        return __('enums.comment_report.'.$this->value);
     }
 
-    /**
-     * Повертає колір для відображення у Filament.
-     */
+    
     public function getColor(): string|array|null
     {
         return match ($this) {
-            self::INSULT => 'danger',               // Червоний для образ
-            self::FLOOD_OFFTOP_MEANINGLESS => 'gray', // Сірий для флуду/оффтопу
-            self::AD_SPAM => 'warning',             // Жовтий для реклами/спаму
-            self::SPOILER => 'info',                // Блакитний для спойлерів
-            self::PROVOCATION_CONFLICT => 'danger',  // Червоний для провокацій
-            self::INAPPROPRIATE_LANGUAGE => 'warning', // Жовтий для ненормативної лексики
-            self::FORBIDDEN_UNNECESSARY_CONTENT => 'danger', // Червоний для забороненого контенту
-            self::MEANINGLESS_EMPTY_TOPIC => 'gray',  // Сірий для беззмістовних тем
-            self::DUPLICATE_TOPIC => 'primary',       // Фіолетовий для дублікатів
+            self::INSULT => 'danger',               
+            self::FLOOD_OFFTOP_MEANINGLESS => 'gray', 
+            self::AD_SPAM => 'warning',             
+            self::SPOILER => 'info',                
+            self::PROVOCATION_CONFLICT => 'danger',  
+            self::INAPPROPRIATE_LANGUAGE => 'warning', 
+            self::FORBIDDEN_UNNECESSARY_CONTENT => 'danger', 
+            self::MEANINGLESS_EMPTY_TOPIC => 'gray',  
+            self::DUPLICATE_TOPIC => 'primary',       
         };
     }
 
-    /**
-     * Повертає іконку для Filament.
-     */
+    
     public function getIcon(): ?string
     {
         return match ($this) {

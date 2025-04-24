@@ -2,78 +2,136 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CommentReports\CreateCommentReportAction;
-use App\Actions\CommentReports\DeleteCommentReportAction;
-use App\Actions\CommentReports\ListByCommentAction;
-use App\Actions\CommentReports\ListByTypeAction;
-use App\Actions\CommentReports\ListByUserAction;
-use App\Actions\CommentReports\ListCommentReportsAction;
-use App\Actions\CommentReports\ListUnviewedAction;
-use App\Actions\CommentReports\ShowCommentReportAction;
-use App\Actions\CommentReports\UpdateCommentReportAction;
-use App\Enums\CommentReportType;
-use App\Http\Requests\CommentReport\StoreCommentReportRequest;
-use App\Http\Requests\CommentReport\UpdateCommentReportRequest;
-use App\Http\Resources\CommentReport\CommentReportCollection;
-use App\Http\Resources\CommentReport\CommentReportResource;
+use App\Actions\CommentReports\CreateCommentReport;
+use App\Actions\CommentReports\GetCommentReports;
+use App\Actions\CommentReports\UpdateCommentReport;
+use App\DTOs\CommentReports\CommentReportIndexDTO;
+use App\DTOs\CommentReports\CommentReportStoreDTO;
+use App\DTOs\CommentReports\CommentReportUpdateDTO;
+use App\Http\Requests\CommentReports\CommentReportDeleteRequest;
+use App\Http\Requests\CommentReports\CommentReportIndexRequest;
+use App\Http\Requests\CommentReports\CommentReportStoreRequest;
+use App\Http\Requests\CommentReports\CommentReportUpdateRequest;
+use App\Http\Resources\CommentReportResource;
 use App\Models\Comment;
 use App\Models\CommentReport;
-use App\Models\User;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CommentReportController extends Controller
 {
-    public function index(ListCommentReportsAction $action)
+    /**
+     * Get paginated list of comment reports with filtering, sorting and pagination
+     *
+     * @param  CommentReportIndexRequest  $request
+     * @param  GetCommentReports  $action
+     * @return AnonymousResourceCollection
+     */
+    public function index(CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
-        return new CommentReportCollection($action->execute());
+        $dto = CommentReportIndexDTO::fromRequest($request);
+        $commentReports = $action->handle($dto);
+
+        return CommentReportResource::collection($commentReports);
     }
 
-    public function store(StoreCommentReportRequest $request, CreateCommentReportAction $action)
+    /**
+     * Get detailed information about a specific comment report
+     *
+     * @param  CommentReport  $commentReport
+     * @return CommentReportResource
+     */
+    public function show(CommentReport $commentReport): CommentReportResource
     {
-        Gate::authorize('create', CommentReport::class);
-        $data = $request->validated();
-        return new CommentReportResource($action->execute($data));
+        return new CommentReportResource($commentReport->load(['user', 'comment']));
     }
 
-    public function show(CommentReport $commentReport, ShowCommentReportAction $action)
+    /**
+     * Store a newly created comment report
+     *
+     * @param  CommentReportStoreRequest  $request
+     * @param  CreateCommentReport  $action
+     * @return CommentReportResource|JsonResponse
+     */
+    public function store(CommentReportStoreRequest $request, CreateCommentReport $action): CommentReportResource|JsonResponse
     {
-        return new CommentReportResource($action->execute($commentReport));
+        $dto = CommentReportStoreDTO::fromRequest($request);
+
+        // Check if the user has already reported this comment with the same type
+        $existingReport = CommentReport::where('user_id', $request->user()->id)
+            ->where('comment_id', $request->input('comment_id'))
+            ->where('type', $request->input('type'))
+            ->first();
+            
+        if ($existingReport) {
+            return response()->json(['message' => 'You have already reported this comment for this reason'], 422);
+        }
+
+        $commentReport = $action->handle($dto);
+
+        return new CommentReportResource($commentReport->load(['user', 'comment']));
     }
 
-    public function update(
-        CommentReport $commentReport,
-        UpdateCommentReportRequest $request,
-        UpdateCommentReportAction $action
-    ) {
-        Gate::authorize('update', $commentReport);
-        $data = $request->validated();
-        return new CommentReportResource($action->execute($commentReport, $data));
+    /**
+     * Update the specified comment report
+     *
+     * @param  CommentReportUpdateRequest  $request
+     * @param  CommentReport  $commentReport
+     * @param  UpdateCommentReport  $action
+     * @return CommentReportResource
+     */
+    public function update(CommentReportUpdateRequest $request, CommentReport $commentReport, UpdateCommentReport $action): CommentReportResource
+    {
+        $dto = CommentReportUpdateDTO::fromRequest($request);
+        $commentReport = $action->handle($commentReport, $dto);
+
+        return new CommentReportResource($commentReport->load(['user', 'comment']));
     }
 
-    public function destroy(CommentReport $commentReport, DeleteCommentReportAction $action)
+    /**
+     * Remove the specified comment report
+     *
+     * @param  CommentReportDeleteRequest  $request
+     * @param  CommentReport  $commentReport
+     * @return JsonResponse
+     */
+    public function destroy(CommentReportDeleteRequest $request, CommentReport $commentReport): JsonResponse
     {
-        Gate::authorize('delete', $commentReport);
-        $action->execute($commentReport);
-        return response()->noContent();
+        $commentReport->delete();
+
+        return response()->json(['message' => 'Report removed successfully']);
     }
 
-    public function byType(CommentReportType $type, ListByTypeAction $action)
+    /**
+     * Get reports for a specific comment
+     *
+     * @param  Comment  $comment
+     * @param  CommentReportIndexRequest  $request
+     * @param  GetCommentReports  $action
+     * @return AnonymousResourceCollection
+     */
+    public function forComment(Comment $comment, CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
-        return new CommentReportCollection($action->execute($type));
+        $request->merge(['comment_id' => $comment->id]);
+        $dto = CommentReportIndexDTO::fromRequest($request);
+        $commentReports = $action->handle($dto);
+
+        return CommentReportResource::collection($commentReports);
     }
 
-    public function byUser(User $user, ListByUserAction $action)
+    /**
+     * Get unviewed reports
+     *
+     * @param  CommentReportIndexRequest  $request
+     * @param  GetCommentReports  $action
+     * @return AnonymousResourceCollection
+     */
+    public function unviewed(CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
-        return new CommentReportCollection($action->execute($user));
-    }
+        $request->merge(['is_viewed' => false]);
+        $dto = CommentReportIndexDTO::fromRequest($request);
+        $commentReports = $action->handle($dto);
 
-    public function byComment(Comment $comment, ListByCommentAction $action)
-    {
-        return new CommentReportCollection($action->execute($comment));
-    }
-
-    public function unviewed(ListUnviewedAction $action)
-    {
-        return new CommentReportCollection($action->execute());
+        return CommentReportResource::collection($commentReports);
     }
 }

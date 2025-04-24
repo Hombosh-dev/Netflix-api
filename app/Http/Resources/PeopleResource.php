@@ -8,31 +8,26 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PeopleResource extends JsonResource
 {
     /**
-     * Перетворює People у масив для JSON-відповіді.
+     * Transform the resource into an array.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray(Request $request): array
     {
         return [
-            'id'              => $this->id,
-            'slug'            => $this->slug,
-            'name'            => $this->name,
-            'original_name'   => $this->original_name,
-            'image'           => $this->image,
-            'description'     => $this->description,
-            'birthday'        => $this->birthday,
-            'birthplace'      => $this->birthplace,
-            'meta_title'      => $this->meta_title,
-            'meta_description'=> $this->meta_description,
-            'meta_image'      => $this->meta_image,
-            'type'            => $this->type,
-            'gender'          => $this->gender,
-            'full_name'       => $this->full_name,
-            'age'             => $this->age,
-            'created_at'      => $this->created_at,
-            'updated_at'      => $this->updated_at,
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'biography' => $this->biography,
+            'image' => $this->image,
+            'type' => $this->type->value,
+            'gender' => $this->gender->value,
+            'birth_date' => $this->birth_date,
+            'death_date' => $this->death_date,
+            'movies_count' => $this->when(isset($this->movies_count), $this->movies_count),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

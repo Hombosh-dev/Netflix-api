@@ -63,22 +63,6 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Model::shouldBeStrict();
 
-        Relation::enforceMorphMap([
-            'comment' => Comment::class,
-            'commentLike' => CommentLike::class,
-            'commentReport' => CommentReport::class,
-            'episode' => Episode::class,
-            'movie' => Movie::class,
-            'person' => Person::class,
-            'rating' => Rating::class,
-            'selection' => Selection::class,
-            'studio' => Studio::class,
-            'tag' => Tag::class,
-            'user' => User::class,
-            'userList' => UserList::class,
-        ]);
-
-
         Blueprint::macro('enumAlterColumn',
             function (
                 string $columnName,

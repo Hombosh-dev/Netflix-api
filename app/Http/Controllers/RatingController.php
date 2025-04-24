@@ -2,65 +2,126 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Rating\CreateRatingAction;
-use App\Actions\Rating\DeleteRatingAction;
-use App\Actions\Rating\ReadRatingAction;
-use App\Actions\Rating\UpdateRatingAction;
-use App\Http\Requests\Ratings\CreateRatingsRequest;
-use App\Http\Requests\Ratings\UpdateRatingsRequest;
-use App\Http\Resources\RatingsResource;
+use App\Actions\Ratings\CreateRating;
+use App\Actions\Ratings\GetRatings;
+use App\Actions\Ratings\UpdateRating;
+use App\DTOs\Ratings\RatingIndexDTO;
+use App\DTOs\Ratings\RatingStoreDTO;
+use App\Http\Requests\Ratings\RatingDeleteRequest;
+use App\Http\Requests\Ratings\RatingIndexRequest;
+use App\Http\Requests\Ratings\RatingStoreRequest;
+use App\Http\Requests\Ratings\RatingUpdateRequest;
+use App\Http\Resources\RatingResource;
+use App\Models\Movie;
 use App\Models\Rating;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RatingController extends Controller
 {
     /**
-     * Повертає колекцію всіх записів Ratings.
+     * Get paginated list of ratings with filtering, sorting and pagination
+     *
+     * @param  RatingIndexRequest  $request
+     * @param  GetRatings  $action
+     * @return AnonymousResourceCollection
      */
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(RatingIndexRequest $request, GetRatings $action): AnonymousResourceCollection
     {
-        $ratings = Rating::all();
-        return RatingsResource::collection($ratings);
+        $dto = RatingIndexDTO::fromRequest($request);
+        $ratings = $action->handle($dto);
+
+        return RatingResource::collection($ratings);
     }
 
     /**
-     * Створює новий запис Ratings.
-     * @throws AuthorizationException
+     * Store a newly created rating
+     *
+     * @param  RatingStoreRequest  $request
+     * @param  CreateRating  $action
+     * @return RatingResource
      */
-    public function store(CreateRatingsRequest $request, CreateRatingAction $createAction): RatingsResource
+    public function store(RatingStoreRequest $request, CreateRating $action): RatingResource
     {
-        $ratings = $createAction->execute($request->validated());
-        return new RatingsResource($ratings);
+        $dto = RatingStoreDTO::fromRequest($request);
+        $rating = $action->handle($dto);
+
+        return new RatingResource($rating->load(['user', 'movie']));
     }
 
     /**
-     * Повертає дані конкретного Ratings.
+     * Get detailed information about a specific rating
+     *
+     * @param  Rating  $rating
+     * @return RatingResource
      */
-    public function show(Rating $ratings, ReadRatingAction $readAction): RatingsResource
+    public function show(Rating $rating): RatingResource
     {
-        return new RatingsResource($ratings);
+        return new RatingResource($rating->load(['user', 'movie']));
     }
 
     /**
-     * Оновлює дані конкретного Ratings.
-     * @throws AuthorizationException
+     * Update the specified rating
+     *
+     * @param  RatingUpdateRequest  $request
+     * @param  Rating  $rating
+     * @param  UpdateRating  $action
+     * @return RatingResource
      */
-    public function update(
-        UpdateRatingsRequest $request,
-        Rating $ratings,
-        UpdateRatingAction $updateAction
-    ): RatingsResource {
-        $updateAction->execute($ratings, $request->validated());
-        return new RatingsResource($ratings);
+    public function update(RatingUpdateRequest $request, Rating $rating, UpdateRating $action): RatingResource
+    {
+        $dto = RatingStoreDTO::fromRequest($request);
+        $rating = $action->handle($rating, $dto);
+
+        return new RatingResource($rating->load(['user', 'movie']));
     }
 
     /**
-     * Видаляє запис Ratings.
-     * @throws AuthorizationException
+     * Remove the specified rating
+     *
+     * @param  RatingDeleteRequest  $request
+     * @param  Rating  $rating
+     * @return JsonResponse
      */
-    public function destroy(Rating $ratings, DeleteRatingAction $deleteAction): \Illuminate\Http\Response
+    public function destroy(RatingDeleteRequest $request, Rating $rating): JsonResponse
     {
-        $deleteAction->execute($ratings);
-        return response()->noContent();
+        $rating->delete();
+
+        return response()->json(['message' => 'Rating deleted successfully']);
+    }
+
+    /**
+     * Get ratings for a specific user
+     *
+     * @param  User  $user
+     * @param  RatingIndexRequest  $request
+     * @param  GetRatings  $action
+     * @return AnonymousResourceCollection
+     */
+    public function forUser(User $user, RatingIndexRequest $request, GetRatings $action): AnonymousResourceCollection
+    {
+        $request->merge(['user_id' => $user->id]);
+        $dto = RatingIndexDTO::fromRequest($request);
+        $ratings = $action->handle($dto);
+
+        return RatingResource::collection($ratings);
+    }
+
+    /**
+     * Get ratings for a specific movie
+     *
+     * @param  Movie  $movie
+     * @param  RatingIndexRequest  $request
+     * @param  GetRatings  $action
+     * @return AnonymousResourceCollection
+     */
+    public function forMovie(Movie $movie, RatingIndexRequest $request, GetRatings $action): AnonymousResourceCollection
+    {
+        $request->merge(['movie_id' => $movie->id]);
+        $dto = RatingIndexDTO::fromRequest($request);
+        $ratings = $action->handle($dto);
+
+        return RatingResource::collection($ratings);
     }
 }

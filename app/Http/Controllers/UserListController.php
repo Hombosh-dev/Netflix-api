@@ -2,62 +2,108 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\UserList\CreateUserListAction;
-use App\Actions\UserList\DeleteUserListAction;
-use App\Actions\UserList\ReadUserListAction;
-use App\Actions\UserList\UpdateUserListAction;
-use App\Http\Requests\UserList\CreateUserListRequest;
-use App\Http\Requests\UserList\UpdateUserListRequest;
+use App\Actions\UserLists\CreateUserList;
+use App\Actions\UserLists\GetUserLists;
+use App\DTOs\UserLists\UserListIndexDTO;
+use App\DTOs\UserLists\UserListStoreDTO;
+use App\Enums\UserListType;
+use App\Http\Requests\UserLists\UserListDeleteRequest;
+use App\Http\Requests\UserLists\UserListIndexRequest;
+use App\Http\Requests\UserLists\UserListStoreRequest;
 use App\Http\Resources\UserListResource;
+use App\Models\User;
 use App\Models\UserList;
-use Illuminate\Auth\Access\AuthorizationException;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserListController extends Controller
 {
     /**
-     * Повертає колекцію всіх записів UserList.
+     * Get paginated list of user lists with filtering, sorting and pagination
+     *
+     * @param  UserListIndexRequest  $request
+     * @param  GetUserLists  $action
+     * @return AnonymousResourceCollection
      */
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(UserListIndexRequest $request, GetUserLists $action): AnonymousResourceCollection
     {
-        $userLists = UserList::all();
+        $dto = UserListIndexDTO::fromRequest($request);
+        $userLists = $action->handle($dto);
+
         return UserListResource::collection($userLists);
     }
 
     /**
-     * Створює новий запис UserList.
+     * Store a newly created user list
+     *
+     * @param  UserListStoreRequest  $request
+     * @param  CreateUserList  $action
+     * @return UserListResource
      */
-    public function store(CreateUserListRequest $request, CreateUserListAction $createAction): UserListResource
+    public function store(UserListStoreRequest $request, CreateUserList $action): UserListResource
     {
-        $userList = $createAction->execute($request->validated());
-        return new UserListResource($userList);
+        $dto = UserListStoreDTO::fromRequest($request);
+        $userList = $action->handle($dto);
+
+        return new UserListResource($userList->load(['user', 'listable']));
     }
 
     /**
-     * Повертає дані конкретного UserList.
+     * Get detailed information about a specific user list
+     *
+     * @param  UserList  $userList
+     * @return UserListResource
      */
-    public function show(UserList $userList, ReadUserListAction $readAction): UserListResource
+    public function show(UserList $userList): UserListResource
     {
-        return new UserListResource($userList);
+        return new UserListResource($userList->load(['user', 'listable']));
     }
 
     /**
-     * Оновлює дані конкретного UserList.
-     * @throws AuthorizationException
+     * Remove the specified user list
+     *
+     * @param  UserListDeleteRequest  $request
+     * @param  UserList  $userList
+     * @return JsonResponse
      */
-    public function update(UpdateUserListRequest $request, UserList $userList, UpdateUserListAction $updateAction): UserListResource
+    public function destroy(UserListDeleteRequest $request, UserList $userList): JsonResponse
     {
-        $updateAction->execute($userList, $request->validated());
-        return new UserListResource($userList);
+        $userList->delete();
+
+        return response()->json(['message' => 'User list deleted successfully']);
     }
 
     /**
-     * Видаляє запис UserList.
-     * @throws AuthorizationException
+     * Get user lists for a specific user
+     *
+     * @param  User  $user
+     * @param  UserListIndexRequest  $request
+     * @param  GetUserLists  $action
+     * @return AnonymousResourceCollection
      */
-    public function destroy(UserList $userList, DeleteUserListAction $deleteAction): \Illuminate\Http\Response
+    public function forUser(User $user, UserListIndexRequest $request, GetUserLists $action): AnonymousResourceCollection
     {
-        $deleteAction->execute($userList);
-        return response()->noContent();
+        $request->merge(['user_id' => $user->id]);
+        $dto = UserListIndexDTO::fromRequest($request);
+        $userLists = $action->handle($dto);
+
+        return UserListResource::collection($userLists);
+    }
+
+    /**
+     * Get user lists by type
+     *
+     * @param  string  $type
+     * @param  UserListIndexRequest  $request
+     * @param  GetUserLists  $action
+     * @return AnonymousResourceCollection
+     */
+    public function byType(string $type, UserListIndexRequest $request, GetUserLists $action): AnonymousResourceCollection
+    {
+        $request->merge(['types' => [UserListType::from($type)->value]]);
+        $dto = UserListIndexDTO::fromRequest($request);
+        $userLists = $action->handle($dto);
+
+        return UserListResource::collection($userLists);
     }
 }

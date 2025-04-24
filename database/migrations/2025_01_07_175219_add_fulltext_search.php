@@ -71,9 +71,7 @@ return new class extends Migration {
         DB::unprepared('CREATE EXTENSION IF NOT EXISTS pg_trgm');
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         DB::statement('DROP TEXT SEARCH CONFIGURATION IF EXISTS ukrainian;');

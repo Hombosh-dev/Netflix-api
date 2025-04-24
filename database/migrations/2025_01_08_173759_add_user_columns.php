@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->boolean('is_auto_next')->default(false);
             $table->boolean('is_auto_play')->default(false);
             $table->boolean('is_auto_skip_intro')->default(false);
+            $table->boolean('is_banned')->default(false);
             $table->boolean('is_private_favorites')->default(false);
         });
 
