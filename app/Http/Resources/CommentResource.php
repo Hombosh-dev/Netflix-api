@@ -31,8 +31,8 @@ class CommentResource extends JsonResource
             'commentable_type' => $this->commentable_type,
             'commentable_id' => $this->commentable_id,
             'commentable_type_label' => $this->getTranslatedTypeAttribute(),
-            'likes_count' => $this->when($this->likes_count !== null, fn() => $this->likes_count),
-            'replies_count' => $this->when($this->children_count !== null, fn() => $this->children_count),
+            'likes_count' => $this->when(isset($this->likes_count), fn() => $this->likes_count ?? 0),
+            'replies_count' => $this->when(isset($this->children_count), fn() => $this->children_count ?? 0),
             'user' => new UserResource($this->whenLoaded('user')),
             'parent' => new CommentResource($this->whenLoaded('parent')),
             'commentable' => $this->when($this->relationLoaded('commentable'), function () {

@@ -33,6 +33,11 @@ class CommentLikePolicy
         return auth()->check(); // Лише авторизовані
     }
 
+    public function update(User $user, CommentLike $commentLike): bool
+    {
+        return $user->id === $commentLike->user_id; // Лише власник
+    }
+
     public function delete(User $user, CommentLike $commentLike): bool
     {
         return $user->id === $commentLike->user_id; // Лише власник

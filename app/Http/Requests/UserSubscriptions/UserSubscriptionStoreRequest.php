@@ -26,7 +26,7 @@ class UserSubscriptionStoreRequest extends FormRequest
             'user_id' => ['sometimes', 'string', 'exists:users,id'],
             'tariff_id' => ['required', 'string', 'exists:tariffs,id'],
             'start_date' => ['sometimes', 'date'],
-            'end_date' => ['required', 'date', 'after:start_date'],
+            'end_date' => ['sometimes', 'date', 'after:start_date'],
             'is_active' => ['sometimes', 'boolean'],
             'auto_renew' => ['sometimes', 'boolean'],
         ];

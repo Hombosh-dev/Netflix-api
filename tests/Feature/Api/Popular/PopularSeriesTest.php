@@ -24,12 +24,15 @@ test('popular series endpoint returns series ordered by imdb score', function ()
     // Mock the action to avoid database queries
     $this->mock(GetPopularSeries::class, function ($mock) use ($highRatedSeries, $mediumRatedSeries) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto->limit === 10;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection([$highRatedSeries, $mediumRatedSeries]));
     });
 
     // Act
-    $response = $this->getJson('/api/v1/popular/series');
+    $response = $this->getJson('/api/v1/popular/series?limit=10');
 
     // Assert
     $response->assertStatus(200)
@@ -47,6 +50,9 @@ test('popular series endpoint respects limit parameter', function () {
     // Mock the action to avoid database queries
     $this->mock(GetPopularSeries::class, function ($mock) use ($series) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto->limit === 3;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection($series->take(3)->all()));
     });

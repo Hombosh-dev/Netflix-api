@@ -22,7 +22,7 @@ class PeopleResource extends JsonResource
             'biography' => $this->biography,
             'image' => $this->image,
             'type' => $this->type->value,
-            'gender' => $this->gender->value,
+            'gender' => $this->gender?->value,
             'birth_date' => $this->birth_date,
             'death_date' => $this->death_date,
             'movies_count' => $this->when(isset($this->movies_count), $this->movies_count),

@@ -25,12 +25,15 @@ test('popular selections endpoint returns published selections ordered by user l
     // Mock the action to avoid database queries
     $this->mock(GetPopularSelections::class, function ($mock) use ($popularSelection, $lessPopularSelection) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto->limit === 10;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection([$popularSelection, $lessPopularSelection]));
     });
 
     // Act
-    $response = $this->getJson('/api/v1/popular/selections');
+    $response = $this->getJson('/api/v1/popular/selections?limit=10');
 
     // Assert
     $response->assertStatus(200)

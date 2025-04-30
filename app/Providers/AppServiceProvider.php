@@ -12,6 +12,7 @@ use App\Models\Rating;
 use App\Models\Selection;
 use App\Models\Studio;
 use App\Models\Tag;
+use App\Models\Tariff;
 use App\Models\User;
 use App\Models\UserList;
 use App\Policies\CommentLikePolicy;
@@ -24,6 +25,7 @@ use App\Policies\RatingPolicy;
 use App\Policies\SelectionPolicy;
 use App\Policies\StudioPolicy;
 use App\Policies\TagPolicy;
+use App\Policies\TariffPolicy;
 use App\Policies\UserListPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         Selection::class => SelectionPolicy::class,
         Studio::class => StudioPolicy::class,
         Tag::class => TagPolicy::class,
+        Tariff::class => TariffPolicy::class,
         User::class => UserPolicy::class,
         UserList::class => UserListPolicy::class,
     ];
@@ -62,6 +66,11 @@ class AppServiceProvider extends ServiceProvider
         });
         Model::unguard();
         Model::shouldBeStrict();
+
+        // Register policies
+        foreach ($this->policies as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
 
         Blueprint::macro('enumAlterColumn',
             function (

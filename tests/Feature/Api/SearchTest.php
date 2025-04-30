@@ -130,11 +130,7 @@ test('search endpoint returns results for specific content types', function () {
     ]);
 });
 
-// Цей тест пропущено, оскільки він вимагає зміни в класі SearchDTO
 test('search endpoint returns empty results for empty query', function () {
-    // Пропускаємо цей тест
-    $this->markTestSkipped('This test requires changes in the SearchDTO class to handle null values.');
-
     // Мокуємо Action класи замість моделей
     $this->mock(PerformSearch::class, function ($mock) {
         $mock->shouldReceive('handle')

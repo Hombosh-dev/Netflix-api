@@ -8,6 +8,7 @@ use App\Enums\AttachmentType;
 use App\Enums\Kind;
 use App\Enums\MovieRelateType;
 use App\Enums\Status;
+use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;

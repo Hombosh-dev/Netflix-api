@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Users;
 
 use App\Models\User;
+use App\Models\Scopes\BannedScope;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserBanRequest extends FormRequest
@@ -12,11 +13,24 @@ class UserBanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->route('user');
+        $action = $this->route()->getActionMethod();
 
-        // Use the policy to check if the user can update the user
-        // Ban/unban is considered an update operation with special field
-        return $this->user()->can('update', $user);
+        // Використовуємо різні політики для блокування та розблокування
+        if ($action === 'ban') {
+            $user = $this->route('user');
+            return $this->user()->can('ban', $user);
+        } else {
+            // Для розблокування використовуємо спеціальний параметр id
+            $id = $this->route('id');
+            $user = User::withoutGlobalScope('App\Models\Scopes\BannedScope')->find($id);
+
+            if (!$user) {
+                return false;
+            }
+
+            // Для розблокування використовуємо ту ж політику, що й для оновлення
+            return $this->user()->can('update', $user);
+        }
     }
 
     /**

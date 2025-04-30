@@ -105,6 +105,29 @@ class UserController extends Controller
      */
     public function destroy(UserDeleteRequest $request, User $user): JsonResponse
     {
+        // Перевірка, чи користувач намагається видалити себе
+        if ($request->user()->id === $user->id) {
+            return response()->json([
+                'message' => 'Cannot delete your own account'
+            ], 403);
+        }
+
+        // Перевірка, чи користувач намагається видалити адміністратора
+        if ($user->isAdmin()) {
+            return response()->json([
+                'message' => 'Cannot delete an admin user'
+            ], 403);
+        }
+
+        // Перевірка, чи є у користувача пов'язані дані
+        // Тут можна додати перевірки для інших пов'язаних даних, якщо потрібно
+        // Наприклад, перевірка наявності коментарів, рейтингів тощо
+        if ($user->comments()->exists()) {
+            return response()->json([
+                'message' => 'Cannot delete user with comments. Delete comments first.'
+            ], 422);
+        }
+
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully']);
@@ -118,8 +141,22 @@ class UserController extends Controller
      * @param  UpdateUser  $action
      * @return UserResource
      */
-    public function ban(UserBanRequest $request, User $user, UpdateUser $action): UserResource
+    public function ban(UserBanRequest $request, User $user, UpdateUser $action): UserResource|JsonResponse
     {
+        // Перевірка, чи користувач намагається заблокувати себе
+        if ($request->user()->id === $user->id) {
+            return response()->json([
+                'message' => 'Cannot ban yourself'
+            ], 403);
+        }
+
+        // Перевірка, чи користувач намагається заблокувати адміністратора
+        if ($user->isAdmin()) {
+            return response()->json([
+                'message' => 'Cannot ban an admin user'
+            ], 403);
+        }
+
         $request->merge(['is_banned' => true]);
         $dto = UserUpdateDTO::fromRequest($request);
         $user = $action->handle($user, $dto);
@@ -135,8 +172,15 @@ class UserController extends Controller
      * @param  UpdateUser  $action
      * @return UserResource
      */
-    public function unban(UserBanRequest $request, User $user, UpdateUser $action): UserResource
+    public function unban(UserBanRequest $request, string $id, UpdateUser $action): UserResource
     {
+        // Отримуємо користувача без застосування BannedScope
+        $user = User::withoutGlobalScope('App\Models\Scopes\BannedScope')->find($id);
+
+        if (!$user) {
+            abort(404, 'User not found');
+        }
+
         $request->merge(['is_banned' => false]);
         $dto = UserUpdateDTO::fromRequest($request);
         $user = $action->handle($user, $dto);

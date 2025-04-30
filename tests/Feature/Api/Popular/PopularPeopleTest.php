@@ -26,12 +26,15 @@ test('popular people endpoint returns people ordered by movies count', function 
     // Mock the action to avoid database queries
     $this->mock(GetPopularPeople::class, function ($mock) use ($popularPerson, $lessPopularPerson) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto->limit === 10;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection([$popularPerson, $lessPopularPerson]));
     });
 
     // Act
-    $response = $this->getJson('/api/v1/popular/people');
+    $response = $this->getJson('/api/v1/popular/people?limit=10');
 
     // Assert
     $response->assertStatus(200)
@@ -42,11 +45,16 @@ test('popular people endpoint returns people ordered by movies count', function 
 
 test('popular people endpoint respects limit parameter', function () {
     // Arrange
-    $people = Person::factory()->count(5)->create();
+    $people = Person::factory()->count(5)->create([
+        'type' => PersonType::ACTOR,
+    ]);
 
     // Mock the action to avoid database queries
     $this->mock(GetPopularPeople::class, function ($mock) use ($people) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto->limit === 3;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection($people->take(3)->all()));
     });

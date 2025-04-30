@@ -44,8 +44,8 @@ test('episode has correct accessors', function () {
         'pictures' => ['episodes/test.jpg'],
     ]);
 
-    expect($episode->pictureUrl)->toContain('storage/episodes/test.jpg')
-        ->and($episode->picturesUrl->first())->toContain('storage/episodes/test.jpg')
+    expect($episode->picturesUrl)->toBeArray()
+        ->and($episode->picturesUrl[0])->toContain('storage/episodes/test.jpg')
         ->and($episode->formattedDuration)->toBe('45 хв')
         ->and($episode->fullName)->toBe('Episode 5: Test Episode');
 });

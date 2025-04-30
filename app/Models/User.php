@@ -20,6 +20,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\HasFiles;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * User model representing application users.
@@ -29,7 +30,7 @@ use App\Models\Traits\HasFiles;
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasUlids, Notifiable, HasFiles;
+    use HasApiTokens, HasFactory, HasUlids, Notifiable, HasFiles;
 
     /**
      * The attributes that should be hidden for serialization.

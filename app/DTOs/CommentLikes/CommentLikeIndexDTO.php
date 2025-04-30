@@ -40,10 +40,10 @@ class CommentLikeIndexDTO extends BaseDTO
             'comment_id' => 'commentId',
             'user_id' => 'userId',
             'is_liked' => 'isLiked',
-            'page',
+            'page' => 'page',
             'per_page' => 'perPage',
-            'sort',
-            'direction',
+            'sort' => 'sort',
+            'direction' => 'direction',
         ];
     }
 }

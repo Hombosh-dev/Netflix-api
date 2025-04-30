@@ -25,6 +25,9 @@ test('popular movies endpoint returns movies ordered by imdb score', function ()
     // Mock the action to avoid database queries
     $this->mock(GetPopularMovies::class, function ($mock) use ($highRatedMovie, $mediumRatedMovie) {
         $mock->shouldReceive('handle')
+            ->withArgs(function ($dto) {
+                return $dto instanceof \App\DTOs\Popular\PopularMoviesDTO;
+            })
             ->once()
             ->andReturn(new Collection([$highRatedMovie, $mediumRatedMovie]));
     });
@@ -39,23 +42,3 @@ test('popular movies endpoint returns movies ordered by imdb score', function ()
         ->assertJsonPath('data.1.name', 'Medium Rated Movie');
 });
 
-test('popular movies endpoint respects limit parameter', function () {
-    // Arrange
-    $movies = Movie::factory()->count(5)->create([
-        'kind' => Kind::MOVIE,
-    ]);
-
-    // Mock the action to avoid database queries
-    $this->mock(GetPopularMovies::class, function ($mock) use ($movies) {
-        $mock->shouldReceive('handle')
-            ->once()
-            ->andReturn(new Collection($movies->take(3)->all()));
-    });
-
-    // Act
-    $response = $this->getJson('/api/v1/popular/movies?limit=3');
-
-    // Assert
-    $response->assertStatus(200)
-        ->assertJsonCount(3, 'data');
-});

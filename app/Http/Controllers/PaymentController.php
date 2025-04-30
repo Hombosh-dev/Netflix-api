@@ -46,6 +46,11 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment): PaymentResource
     {
+        // Перевіряємо, чи має користувач доступ до платежу
+        if (auth()->id() !== $payment->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to view this payment');
+        }
+
         return new PaymentResource($payment->load(['user', 'tariff']));
     }
 
@@ -65,12 +70,12 @@ class PaymentController extends Controller
         if ($payment->isSuccessful()) {
             $tariff = Tariff::findOrFail($payment->tariff_id);
             $userId = $payment->user_id;
-            
+
             // Check if user already has an active subscription
             $existingSubscription = UserSubscription::where('user_id', $userId)
                 ->where('is_active', true)
                 ->first();
-                
+
             if ($existingSubscription) {
                 // Extend the existing subscription
                 $existingSubscription->end_date = Carbon::parse($existingSubscription->end_date)
@@ -132,6 +137,11 @@ class PaymentController extends Controller
      */
     public function forUser(User $user, PaymentIndexRequest $request, GetPayments $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи має користувач доступ до платежів іншого користувача
+        if (auth()->id() !== $user->id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to view payments for this user');
+        }
+
         $request->merge(['user_id' => $user->id]);
         $dto = PaymentIndexDTO::fromRequest($request);
         $payments = $action->handle($dto);

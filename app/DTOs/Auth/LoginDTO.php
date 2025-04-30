@@ -3,6 +3,7 @@
 namespace App\DTOs\Auth;
 
 use App\DTOs\BaseDTO;
+use Illuminate\Http\Request;
 
 class LoginDTO extends BaseDTO
 {
@@ -32,5 +33,20 @@ class LoginDTO extends BaseDTO
             'password',
             'remember',
         ];
+    }
+
+    /**
+     * Create a new DTO instance from request.
+     *
+     * @param Request $request
+     * @return static
+     */
+    public static function fromRequest(Request $request): static
+    {
+        return new static(
+            email: $request->input('email'),
+            password: $request->input('password'),
+            remember: (bool) $request->input('remember', false),
+        );
     }
 }

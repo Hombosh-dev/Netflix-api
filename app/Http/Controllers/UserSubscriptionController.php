@@ -45,6 +45,11 @@ class UserSubscriptionController extends Controller
      */
     public function show(UserSubscription $userSubscription): UserSubscriptionResource
     {
+        // Перевіряємо, чи має користувач доступ до підписки
+        if (auth()->id() !== $userSubscription->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to view this subscription');
+        }
+
         return new UserSubscriptionResource($userSubscription->load(['user', 'tariff']));
     }
 
@@ -62,7 +67,7 @@ class UserSubscriptionController extends Controller
         $existingSubscription = UserSubscription::where('user_id', $userId)
             ->where('is_active', true)
             ->first();
-            
+
         if ($existingSubscription) {
             return response()->json([
                 'message' => 'User already has an active subscription',
@@ -73,8 +78,8 @@ class UserSubscriptionController extends Controller
         // If no end_date is provided, calculate it based on the tariff duration
         if (!$request->has('end_date')) {
             $tariff = Tariff::findOrFail($request->input('tariff_id'));
-            $startDate = $request->has('start_date') 
-                ? Carbon::parse($request->input('start_date')) 
+            $startDate = $request->has('start_date')
+                ? Carbon::parse($request->input('start_date'))
                 : now();
             $endDate = $startDate->copy()->addDays($tariff->duration_days);
             $request->merge(['start_date' => $startDate, 'end_date' => $endDate]);
@@ -128,6 +133,11 @@ class UserSubscriptionController extends Controller
      */
     public function forUser(User $user, UserSubscriptionIndexRequest $request, GetUserSubscriptions $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи має користувач доступ до підписок іншого користувача
+        if (auth()->id() !== $user->id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to view subscriptions for this user');
+        }
+
         $request->merge(['user_id' => $user->id]);
         $dto = UserSubscriptionIndexDTO::fromRequest($request);
         $userSubscriptions = $action->handle($dto);

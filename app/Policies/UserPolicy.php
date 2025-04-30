@@ -39,6 +39,38 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
+        // Адміністратор не може видалити себе
+        if ($user->id === $model->id) {
+            return false;
+        }
+
+        // Адміністратор не може видалити іншого адміністратора
+        if ($model->isAdmin()) {
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the user can ban another user.
+     *
+     * @param User $user
+     * @param User $model
+     * @return bool
+     */
+    public function ban(User $user, User $model): bool
+    {
+        // Користувач не може заблокувати себе
+        if ($user->id === $model->id) {
+            return false;
+        }
+
+        // Користувач не може заблокувати адміністратора
+        if ($model->isAdmin()) {
+            return false;
+        }
+
         return false;
     }
 }

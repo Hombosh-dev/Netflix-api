@@ -140,6 +140,7 @@ Route::group(['prefix' => 'v1'], function () {
     });
 });
 
+
 // Protected routes (require authentication)
 Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
     // User verification
@@ -221,9 +222,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
 
     Route::get('/user-subscriptions', [UserSubscriptionController::class, 'index']);
     Route::post('/user-subscriptions', [UserSubscriptionController::class, 'store']);
-    Route::get('/user-subscriptions/{userSubscription}', [UserSubscriptionController::class, 'show']);
-    Route::get('/user-subscriptions/user/{user}', [UserSubscriptionController::class, 'forUser']);
     Route::get('/user-subscriptions/active', [UserSubscriptionController::class, 'active']);
+    Route::get('/user-subscriptions/user/{user}', [UserSubscriptionController::class, 'forUser']);
+    Route::get('/user-subscriptions/{userSubscription}', [UserSubscriptionController::class, 'show']);
 
     Route::get('/payments', [PaymentController::class, 'index']);
     Route::post('/payments', [PaymentController::class, 'store']);
@@ -238,7 +239,9 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']]
     Route::post('/users', [UserController::class, 'store']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::patch('/users/{user}/ban', [UserController::class, 'ban']);
-    Route::patch('/users/{user}/unban', [UserController::class, 'unban']);
+
+    // Використовуємо спеціальний параметр для розблокування користувача
+    Route::patch('/users/{id}/unban', [UserController::class, 'unban'])->where('id', '[0-9a-zA-Z]+');
 
     // Content management
     Route::post('/movies', [MovieController::class, 'store']);

@@ -134,14 +134,10 @@ test('rating belongs to user and movie', function () {
         'user_id' => $user->id,
         'movie_id' => $movie->id,
         'number' => 8,
-        'review' => 'This is a great movie!',
     ]);
     
-    // Act - завантажуємо зв'язки
-    $rating->load(['user', 'movie']);
-    
-    // Assert - перевіряємо зв'язки
-    expect($rating->user)->toBeInstanceOf(User::class)
+    // Assert
+    expect($rating->refresh()->user)->toBeInstanceOf(User::class)
         ->and($rating->user->id)->toBe($user->id)
         ->and($rating->movie)->toBeInstanceOf(Movie::class)
         ->and($rating->movie->id)->toBe($movie->id);

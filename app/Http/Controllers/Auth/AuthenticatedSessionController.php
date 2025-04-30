@@ -6,8 +6,11 @@ use App\Actions\Auth\LoginUser;
 use App\Actions\Auth\LogoutUser;
 use App\DTOs\Auth\LoginDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
@@ -17,10 +20,10 @@ class AuthenticatedSessionController extends Controller
      *
      * @param Request $request
      * @param LoginUser $action
-     * @return Response
+     * @return JsonResponse
      * @throws ValidationException
      */
-    public function store(Request $request, LoginUser $action): Response
+    public function store(Request $request, LoginUser $action): JsonResponse
     {
         $request->validate([
             'email' => ['required', 'string', 'email'],
@@ -31,7 +34,19 @@ class AuthenticatedSessionController extends Controller
         $dto = LoginDTO::fromRequest($request);
         $action->handle($dto);
 
-        return response()->noContent();
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Видаляємо старі токени користувача (опціонально)
+        // $user->tokens()->delete();
+
+        // Створюємо новий токен через Sanctum
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => new UserResource($user),
+            'token' => $token,
+        ]);
     }
 
     /**
@@ -39,12 +54,17 @@ class AuthenticatedSessionController extends Controller
      *
      * @param Request $request
      * @param LogoutUser $action
-     * @return Response
+     * @return JsonResponse
      */
-    public function destroy(Request $request, LogoutUser $action): Response
+    public function destroy(Request $request, LogoutUser $action): JsonResponse
     {
+        // Revoke the token that was used to authenticate the current request
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
         $action->handle();
 
-        return response()->noContent();
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }

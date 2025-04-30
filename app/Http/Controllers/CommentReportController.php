@@ -55,6 +55,11 @@ class CommentReportController extends Controller
      */
     public function store(CommentReportStoreRequest $request, CreateCommentReport $action): CommentReportResource|JsonResponse
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $dto = CommentReportStoreDTO::fromRequest($request);
 
         // Check if the user has already reported this comment with the same type
@@ -62,7 +67,7 @@ class CommentReportController extends Controller
             ->where('comment_id', $request->input('comment_id'))
             ->where('type', $request->input('type'))
             ->first();
-            
+
         if ($existingReport) {
             return response()->json(['message' => 'You have already reported this comment for this reason'], 422);
         }
@@ -112,6 +117,11 @@ class CommentReportController extends Controller
      */
     public function forComment(Comment $comment, CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $request->merge(['comment_id' => $comment->id]);
         $dto = CommentReportIndexDTO::fromRequest($request);
         $commentReports = $action->handle($dto);

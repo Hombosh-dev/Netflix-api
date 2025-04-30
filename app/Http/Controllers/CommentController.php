@@ -35,6 +35,11 @@ class CommentController extends Controller
      */
     public function index(CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $dto = CommentIndexDTO::fromRequest($request);
         $comments = $action->handle($dto);
 
@@ -50,6 +55,11 @@ class CommentController extends Controller
      */
     public function show(Comment $comment, GetCommentDetails $action): CommentResource
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $comment = $action->handle($comment);
 
         return new CommentResource($comment);
@@ -65,6 +75,11 @@ class CommentController extends Controller
      */
     public function replies(Comment $comment, CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $request->merge(['parent_id' => $comment->id]);
         $dto = CommentIndexDTO::fromRequest($request);
         $replies = $action->handle($dto);
@@ -142,6 +157,11 @@ class CommentController extends Controller
      */
     public function forUser(User $user, CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $request->merge(['user_id' => $user->id]);
         $dto = CommentIndexDTO::fromRequest($request);
         $comments = $action->handle($dto);
@@ -158,6 +178,11 @@ class CommentController extends Controller
      */
     public function store(CommentStoreRequest $request, CreateComment $action): CommentResource
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $dto = CommentStoreDTO::fromRequest($request);
         $comment = $action->handle($dto);
 
@@ -174,6 +199,16 @@ class CommentController extends Controller
      */
     public function update(CommentUpdateRequest $request, Comment $comment, UpdateComment $action): CommentResource
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
+        // Перевіряємо, чи користувач має право оновлювати цей коментар
+        if (auth()->id() !== $comment->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to update this comment');
+        }
+
         $dto = CommentUpdateDTO::fromRequest($request);
         $comment = $action->handle($comment, $dto);
 
@@ -189,6 +224,16 @@ class CommentController extends Controller
      */
     public function destroy(CommentDeleteRequest $request, Comment $comment): JsonResponse
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
+        // Перевіряємо, чи користувач має право видаляти цей коментар
+        if (auth()->id() !== $comment->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'You do not have permission to delete this comment');
+        }
+
         $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully']);

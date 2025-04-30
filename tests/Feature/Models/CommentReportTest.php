@@ -149,11 +149,9 @@ test('can create multiple reports for one comment from different users', functio
 // Додаємо тест для перевірки зв'язків з іншими моделями
 test('comment report belongs to user and comment', function () {
     // Arrange
-    $user = User::factory()->create();
-    $reporter = User::factory()->create(); // Користувач, який створює скаргу
+    $reporter = User::factory()->create();
     $movie = Movie::factory()->create();
     $comment = Comment::factory()->create([
-        'user_id' => $user->id,
         'commentable_id' => $movie->id,
         'commentable_type' => Movie::class,
     ]);
@@ -161,16 +159,10 @@ test('comment report belongs to user and comment', function () {
     $commentReport = CommentReport::factory()->create([
         'user_id' => $reporter->id,
         'comment_id' => $comment->id,
-        'type' => CommentReportType::AD_SPAM,
-        'is_viewed' => false,
-        'body' => 'This comment is spam',
     ]);
 
-    // Act - завантажуємо зв'язки
-    $commentReport->load(['user', 'comment']);
-
     // Assert - перевіряємо зв'язки
-    expect($commentReport->user)->toBeInstanceOf(User::class)
+    expect($commentReport->refresh()->user)->toBeInstanceOf(User::class)
         ->and($commentReport->user->id)->toBe($reporter->id)
         ->and($commentReport->comment)->toBeInstanceOf(Comment::class)
         ->and($commentReport->comment->id)->toBe($comment->id);

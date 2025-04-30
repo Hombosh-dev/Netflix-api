@@ -49,7 +49,7 @@ class SearchDTO extends BaseDTO
         }
 
         return new static(
-            query: $request->input('q', ''),
+            query: $request->input('q') ?? '',
             types: $types
         );
     }

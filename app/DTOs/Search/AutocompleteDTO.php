@@ -29,5 +29,17 @@ class AutocompleteDTO extends BaseDTO
         ];
     }
 
-
+    /**
+     * Create a new DTO instance from request.
+     * Override to handle 'q' parameter mapping to 'query'.
+     *
+     * @param  Request  $request
+     * @return static
+     */
+    public static function fromRequest(Request $request): static
+    {
+        return new static(
+            query: $request->input('q') ?? ''
+        );
+    }
 }

@@ -28,6 +28,11 @@ class TariffController extends Controller
      */
     public function index(TariffIndexRequest $request, GetTariffs $action): AnonymousResourceCollection
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $dto = TariffIndexDTO::fromRequest($request);
         $tariffs = $action->handle($dto);
 
@@ -42,6 +47,11 @@ class TariffController extends Controller
      */
     public function show(Tariff $tariff): TariffResource
     {
+        // Перевіряємо, чи користувач авторизований
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         return new TariffResource($tariff->loadCount('userSubscriptions'));
     }
 

@@ -2,6 +2,7 @@
 
 use App\Actions\Popular\GetPopularTags;
 use App\Models\Tag;
+use App\DTOs\Popular\PopularTagsDTO;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -23,12 +24,15 @@ test('popular tags endpoint returns tags ordered by movies count', function () {
     // Mock the action to avoid database queries
     $this->mock(GetPopularTags::class, function ($mock) use ($popularTag, $lessPopularTag) {
         $mock->shouldReceive('handle')
+            ->withArgs(function (PopularTagsDTO $dto) {
+                return $dto->limit === 10;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection([$popularTag, $lessPopularTag]));
     });
 
     // Act
-    $response = $this->getJson('/api/v1/popular/tags');
+    $response = $this->getJson('/api/v1/popular/tags?limit=10');
 
     // Assert
     $response->assertStatus(200)
@@ -44,6 +48,9 @@ test('popular tags endpoint respects limit parameter', function () {
     // Mock the action to avoid database queries
     $this->mock(GetPopularTags::class, function ($mock) use ($tags) {
         $mock->shouldReceive('handle')
+            ->withArgs(function (PopularTagsDTO $dto) {
+                return $dto->limit === 3;
+            })
             ->once()
             ->andReturn(new \Illuminate\Database\Eloquent\Collection($tags->take(3)->all()));
     });

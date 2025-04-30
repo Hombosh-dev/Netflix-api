@@ -20,7 +20,7 @@ class GetComments
     public function handle(CommentIndexDTO $dto): LengthAwarePaginator
     {
         // Start with base query
-        $query = Comment::query()->with(['user']);
+        $query = Comment::query()->with(['user'])->withCount(['likes', 'children']);
 
         // Apply search if query is provided
         if ($dto->query) {

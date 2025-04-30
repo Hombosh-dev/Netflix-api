@@ -716,6 +716,8 @@ namespace App\Models{
  * @property-read int|null $stopped_movies_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSubscription> $subscriptions
  * @property-read int|null $subscriptions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserList> $userLists
  * @property-read int|null $user_lists_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserList> $watchedMovies
