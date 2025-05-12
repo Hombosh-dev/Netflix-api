@@ -28,4 +28,27 @@ class RatingStoreRequest extends FormRequest
             'review' => ['sometimes', 'nullable', 'string', 'max:2000'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'movie_id' => [
+                'description' => 'ID фільму, якому виставляється рейтинг.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'number' => [
+                'description' => 'Числовий рейтинг від 1 до 10.',
+                'example' => 8,
+            ],
+            'review' => [
+                'description' => 'Текстовий відгук про фільм (необов’язково).',
+                'example' => 'Дуже цікавий фільм з чудовою грою акторів та захоплюючим сюжетом.',
+            ],
+        ];
+    }
 }

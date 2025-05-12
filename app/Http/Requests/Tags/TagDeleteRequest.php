@@ -13,7 +13,7 @@ class TagDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $tag = $this->route('tag');
-        
+
         return $this->user()->can('delete', $tag);
     }
 
@@ -25,5 +25,30 @@ class TagDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'tag' => [
+                'description' => 'Slug тегу, який потрібно видалити.',
+                'example' => 'action-abc123',
+            ],
+        ];
     }
 }

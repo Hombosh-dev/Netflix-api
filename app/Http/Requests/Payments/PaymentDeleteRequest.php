@@ -13,7 +13,7 @@ class PaymentDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $payment = $this->route('payment');
-        
+
         return $this->user()->can('delete', $payment);
     }
 
@@ -25,5 +25,30 @@ class PaymentDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'payment' => [
+                'description' => 'ID платежу, який потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
     }
 }

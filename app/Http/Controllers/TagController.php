@@ -65,6 +65,7 @@ class TagController extends Controller
      * @param  TagStoreRequest  $request
      * @param  CreateTag  $action
      * @return TagResource
+     * @authenticated
      */
     public function store(TagStoreRequest $request, CreateTag $action): TagResource
     {
@@ -81,6 +82,7 @@ class TagController extends Controller
      * @param  Tag  $tag
      * @param  UpdateTag  $action
      * @return TagResource
+     * @authenticated
      */
     public function update(TagUpdateRequest $request, Tag $tag, UpdateTag $action): TagResource
     {
@@ -96,6 +98,7 @@ class TagController extends Controller
      * @param  TagDeleteRequest  $request
      * @param  Tag  $tag
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(TagDeleteRequest $request, Tag $tag): JsonResponse
     {

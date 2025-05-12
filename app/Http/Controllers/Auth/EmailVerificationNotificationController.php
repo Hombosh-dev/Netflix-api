@@ -6,18 +6,19 @@ use App\Actions\Auth\ResendEmailVerification;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\Auth\EmailVerificationNotificationRequest;
 
 class EmailVerificationNotificationController extends Controller
 {
     /**
      * Send a new email verification notification.
      *
-     * @param Request $request
+     * @param EmailVerificationNotificationRequest $request
      * @param ResendEmailVerification $action
      * @return JsonResponse|RedirectResponse
+     * @authenticated
      */
-    public function store(Request $request, ResendEmailVerification $action): JsonResponse|RedirectResponse
+    public function store(EmailVerificationNotificationRequest $request, ResendEmailVerification $action): JsonResponse|RedirectResponse
     {
         return $request->user()->hasVerifiedEmail()
             ? redirect()->intended('/')
@@ -27,11 +28,11 @@ class EmailVerificationNotificationController extends Controller
     /**
      * Send verification email to the user.
      *
-     * @param Request $request
+     * @param EmailVerificationNotificationRequest $request
      * @param ResendEmailVerification $action
      * @return JsonResponse
      */
-    private function sendVerificationEmail(Request $request, ResendEmailVerification $action): JsonResponse
+    private function sendVerificationEmail(EmailVerificationNotificationRequest $request, ResendEmailVerification $action): JsonResponse
     {
         $action->handle($request->user());
 

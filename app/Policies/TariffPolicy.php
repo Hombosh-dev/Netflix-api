@@ -10,10 +10,18 @@ class TariffPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user, $ability): ?bool
+    {
+        if ($user->isAdmin()) {
+            return true; // Адміни можуть усе
+        }
+        return null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
         return true; // Anyone can view tariffs
     }
@@ -21,7 +29,7 @@ class TariffPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Tariff $tariff): bool
+    public function view(?User $user, Tariff $tariff): bool
     {
         return true; // Anyone can view a tariff
     }
@@ -31,7 +39,7 @@ class TariffPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin';
+        return false;
     }
 
     /**
@@ -39,7 +47,7 @@ class TariffPolicy
      */
     public function update(User $user, Tariff $tariff): bool
     {
-        return $user->role === 'admin';
+        return false;
     }
 
     /**
@@ -47,6 +55,6 @@ class TariffPolicy
      */
     public function delete(User $user, Tariff $tariff): bool
     {
-        return $user->role === 'admin';
+        return false;
     }
 }

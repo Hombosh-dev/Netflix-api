@@ -18,6 +18,7 @@ use App\Http\Requests\Comments\CommentStoreRequest;
 use App\Http\Requests\Comments\CommentUpdateRequest;
 use App\Http\Resources\CommentLikeResource;
 use App\Http\Resources\CommentResource;
+use App\Http\Resources\UserCommentResource;
 use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -35,11 +36,6 @@ class CommentController extends Controller
      */
     public function index(CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $dto = CommentIndexDTO::fromRequest($request);
         $comments = $action->handle($dto);
 
@@ -55,11 +51,6 @@ class CommentController extends Controller
      */
     public function show(Comment $comment, GetCommentDetails $action): CommentResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $comment = $action->handle($comment);
 
         return new CommentResource($comment);
@@ -75,11 +66,6 @@ class CommentController extends Controller
      */
     public function replies(Comment $comment, CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $request->merge(['parent_id' => $comment->id]);
         $dto = CommentIndexDTO::fromRequest($request);
         $replies = $action->handle($dto);
@@ -124,6 +110,9 @@ class CommentController extends Controller
      * @param  CommentIndexRequest  $request
      * @param  GetComments  $action
      * @return AnonymousResourceCollection
+     *
+     * @urlParam commentable_type required The type of the commentable. Example: movie, episode, selection
+     * @urlParam commentable_id required The ID of the commentable. Example: 01HN5PXMEH6SDMF0KAVSW1DYTY
      */
     public function roots(string $commentableType, string $commentableId, CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
@@ -157,16 +146,11 @@ class CommentController extends Controller
      */
     public function forUser(User $user, CommentIndexRequest $request, GetComments $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $request->merge(['user_id' => $user->id]);
         $dto = CommentIndexDTO::fromRequest($request);
         $comments = $action->handle($dto);
 
-        return CommentResource::collection($comments);
+        return UserCommentResource::collection($comments);
     }
 
     /**
@@ -175,14 +159,10 @@ class CommentController extends Controller
      * @param  CommentStoreRequest  $request
      * @param  CreateComment  $action
      * @return CommentResource
+     * @authenticated
      */
     public function store(CommentStoreRequest $request, CreateComment $action): CommentResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $dto = CommentStoreDTO::fromRequest($request);
         $comment = $action->handle($dto);
 
@@ -196,14 +176,10 @@ class CommentController extends Controller
      * @param  Comment  $comment
      * @param  UpdateComment  $action
      * @return CommentResource
+     * @authenticated
      */
     public function update(CommentUpdateRequest $request, Comment $comment, UpdateComment $action): CommentResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         // Перевіряємо, чи користувач має право оновлювати цей коментар
         if (auth()->id() !== $comment->user_id && !auth()->user()->isAdmin()) {
             abort(403, 'You do not have permission to update this comment');
@@ -221,14 +197,10 @@ class CommentController extends Controller
      * @param  CommentDeleteRequest  $request
      * @param  Comment  $comment
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(CommentDeleteRequest $request, Comment $comment): JsonResponse
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         // Перевіряємо, чи користувач має право видаляти цей коментар
         if (auth()->id() !== $comment->user_id && !auth()->user()->isAdmin()) {
             abort(403, 'You do not have permission to delete this comment');

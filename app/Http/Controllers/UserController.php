@@ -14,9 +14,13 @@ use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\RatingResource;
+use App\Http\Resources\UserCommentResource;
 use App\Http\Resources\UserListResource;
+use App\Http\Resources\UserRatingResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserSubscriptionResource;
+use App\Http\Resources\UserUserListResource;
+use App\Http\Resources\UserUserSubscriptionResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,6 +33,7 @@ class UserController extends Controller
      * @param  UserIndexRequest  $request
      * @param  GetUsers  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function index(UserIndexRequest $request, GetUsers $action): AnonymousResourceCollection
     {
@@ -56,6 +61,7 @@ class UserController extends Controller
      * @param  User  $user
      * @param  UpdateUser  $action
      * @return UserResource
+     * @authenticated
      */
     public function update(UserUpdateRequest $request, User $user, UpdateUser $action): UserResource
     {
@@ -72,6 +78,7 @@ class UserController extends Controller
      * @param  User  $user
      * @param  UpdateUser  $action
      * @return UserResource
+     * @authenticated
      */
     public function updatePartial(UserUpdateRequest $request, User $user, UpdateUser $action): UserResource
     {
@@ -87,6 +94,7 @@ class UserController extends Controller
      * @param  UserStoreRequest  $request
      * @param  CreateUser  $action
      * @return UserResource
+     * @authenticated
      */
     public function store(UserStoreRequest $request, CreateUser $action): UserResource
     {
@@ -102,6 +110,7 @@ class UserController extends Controller
      * @param  UserDeleteRequest  $request
      * @param  User  $user
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(UserDeleteRequest $request, User $user): JsonResponse
     {
@@ -140,6 +149,7 @@ class UserController extends Controller
      * @param  User  $user
      * @param  UpdateUser  $action
      * @return UserResource
+     * @authenticated
      */
     public function ban(UserBanRequest $request, User $user, UpdateUser $action): UserResource|JsonResponse
     {
@@ -171,6 +181,7 @@ class UserController extends Controller
      * @param  User  $user
      * @param  UpdateUser  $action
      * @return UserResource
+     * @authenticated
      */
     public function unban(UserBanRequest $request, string $id, UpdateUser $action): UserResource
     {
@@ -198,7 +209,7 @@ class UserController extends Controller
     {
         $userLists = $user->userLists()->paginate();
 
-        return UserListResource::collection($userLists);
+        return UserUserListResource::collection($userLists);
     }
 
     /**
@@ -211,7 +222,7 @@ class UserController extends Controller
     {
         $ratings = $user->ratings()->paginate();
 
-        return RatingResource::collection($ratings);
+        return UserRatingResource::collection($ratings);
     }
 
     /**
@@ -224,7 +235,7 @@ class UserController extends Controller
     {
         $comments = $user->comments()->paginate();
 
-        return CommentResource::collection($comments);
+        return UserCommentResource::collection($comments);
     }
 
     /**
@@ -232,11 +243,12 @@ class UserController extends Controller
      *
      * @param  User  $user
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function subscriptions(User $user): AnonymousResourceCollection
     {
         $subscriptions = $user->subscriptions()->paginate();
 
-        return UserSubscriptionResource::collection($subscriptions);
+        return UserUserSubscriptionResource::collection($subscriptions);
     }
 }

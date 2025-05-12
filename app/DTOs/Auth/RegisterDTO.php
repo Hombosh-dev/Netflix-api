@@ -12,11 +12,13 @@ class RegisterDTO extends BaseDTO
      * @param string $name
      * @param string $email
      * @param string $password
+     * @param string $password_confirmation
      */
     public function __construct(
         public readonly string $name,
         public readonly string $email,
         public readonly string $password,
+        public readonly string $password_confirmation,
     ) {
     }
 
@@ -31,6 +33,7 @@ class RegisterDTO extends BaseDTO
             'name',
             'email',
             'password',
+            'password_confirmation',
         ];
     }
 }

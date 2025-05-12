@@ -25,4 +25,29 @@ class StatsRequest extends FormRequest
             'days' => ['sometimes', 'integer', 'min:1', 'max:365'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'days' => [
+                'description' => 'Кількість днів для відображення статистики.',
+                'example' => 30,
+            ],
+        ];
+    }
 }

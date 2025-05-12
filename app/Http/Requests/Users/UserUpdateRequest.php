@@ -19,8 +19,13 @@ class UserUpdateRequest extends FormRequest
     {
         $user = $this->route('user');
 
+        // Для генерації документації - якщо користувач не знайдений, дозволяємо доступ
+        if (!$user) {
+            return true;
+        }
+
         // Use the policy to check if the user can update the user
-        return $this->user()->can('update', $user);
+        return $this->user() && $this->user()->can('update', $user);
     }
 
     /**
@@ -32,6 +37,9 @@ class UserUpdateRequest extends FormRequest
     {
         $user = $this->route('user');
 
+        // Для генерації документації - якщо користувач не знайдений, використовуємо порожній ID
+        $userId = $user ? $user->id : null;
+
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => [
@@ -39,7 +47,7 @@ class UserUpdateRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($user->id)
+                $userId ? Rule::unique('users')->ignore($userId) : Rule::unique('users')
             ],
             'password' => ['sometimes', 'string', Password::defaults(), 'confirmed'],
             'role' => [
@@ -61,6 +69,81 @@ class UserUpdateRequest extends FormRequest
                 'sometimes',
                 'boolean',
                 // Only admins can ban/unban users (handled by UserPolicy::before)
+            ],
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => "Ім'я користувача",
+                'example' => 'Іван Петренко',
+            ],
+            'email' => [
+                'description' => 'Електронна пошта користувача',
+                'example' => 'user@example.com',
+            ],
+            'password' => [
+                'description' => 'Новий пароль користувача',
+                'example' => 'password123',
+            ],
+            'password_confirmation' => [
+                'description' => 'Підтвердження нового пароля',
+                'example' => 'password123',
+            ],
+            'role' => [
+                'description' => 'Роль користувача (тільки для адміністраторів)',
+                'example' => 'user',
+            ],
+            'gender' => [
+                'description' => 'Стать користувача',
+                'example' => 'male',
+            ],
+            'avatar' => [
+                'description' => 'Аватар користувача (URL або файл)',
+                'example' => 'https://example.com/avatar.jpg',
+            ],
+            'backdrop' => [
+                'description' => 'Фонове зображення профілю користувача (URL або файл)',
+                'example' => 'https://example.com/backdrop.jpg',
+            ],
+            'description' => [
+                'description' => 'Опис профілю користувача',
+                'example' => 'Люблю дивитися фільми та серіали',
+            ],
+            'birthday' => [
+                'description' => 'Дата народження користувача',
+                'example' => '1990-01-01',
+            ],
+            'allow_adult' => [
+                'description' => 'Дозволити контент для дорослих',
+                'example' => true,
+            ],
+            'is_auto_next' => [
+                'description' => 'Автоматично переходити до наступного епізоду',
+                'example' => true,
+            ],
+            'is_auto_play' => [
+                'description' => 'Автоматично відтворювати трейлери',
+                'example' => true,
+            ],
+            'is_auto_skip_intro' => [
+                'description' => 'Автоматично пропускати вступ',
+                'example' => true,
+            ],
+            'is_private_favorites' => [
+                'description' => 'Зробити список улюблених приватним',
+                'example' => false,
+            ],
+            'is_banned' => [
+                'description' => 'Заблокувати користувача (тільки для адміністраторів)',
+                'example' => false,
             ],
         ];
     }

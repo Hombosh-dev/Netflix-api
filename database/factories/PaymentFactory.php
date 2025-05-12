@@ -18,7 +18,7 @@ class PaymentFactory extends Factory
     {
         $tariff = Tariff::query()->inRandomOrder()->first() ?? Tariff::factory()->create();
         $status = fake()->randomElement(PaymentStatus::cases());
-        
+
         $liqpayData = [
             'payment_id' => Str::random(20),
             'status' => $status->value,
@@ -44,7 +44,7 @@ class PaymentFactory extends Factory
             'payment_method' => 'LiqPay',
             'transaction_id' => Str::uuid(),
             'status' => $status,
-            'liqpay_data' => json_encode($liqpayData),
+            'liqpay_data' => $liqpayData,
         ];
     }
 
@@ -55,10 +55,9 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PaymentStatus::SUCCESS,
-            'liqpay_data' => json_encode(array_merge(
-                json_decode($attributes['liqpay_data'] ?? '{}', true),
+            'liqpay_data' => array_merge($attributes['liqpay_data'] ?? [],
                 ['status' => PaymentStatus::SUCCESS->value]
-            )),
+            ),
         ]);
     }
 
@@ -69,10 +68,10 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PaymentStatus::PENDING,
-            'liqpay_data' => json_encode(array_merge(
-                json_decode($attributes['liqpay_data'] ?? '{}', true),
+            'liqpay_data' => array_merge(
+                $attributes['liqpay_data'] ?? [],
                 ['status' => PaymentStatus::PENDING->value]
-            )),
+            ),
         ]);
     }
 
@@ -83,10 +82,10 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PaymentStatus::FAILED,
-            'liqpay_data' => json_encode(array_merge(
-                json_decode($attributes['liqpay_data'] ?? '{}', true),
+            'liqpay_data' => array_merge(
+                $attributes['liqpay_data'] ?? '{}',
                 ['status' => PaymentStatus::FAILED->value]
-            )),
+            ),
         ]);
     }
 
@@ -97,10 +96,10 @@ class PaymentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PaymentStatus::REFUNDED,
-            'liqpay_data' => json_encode(array_merge(
-                json_decode($attributes['liqpay_data'] ?? '{}', true),
+            'liqpay_data' => array_merge(
+                $attributes['liqpay_data'] ?? '{}',
                 ['status' => PaymentStatus::REFUNDED->value]
-            )),
+            ),
         ]);
     }
 }

@@ -55,7 +55,7 @@ class SearchMovies
 
         if ($dto->personId) {
             $query->whereHas('persons', function ($q) use ($dto) {
-                $q->where('persons.id', $dto->personId);
+                $q->where('people.id', $dto->personId);
             });
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\UserListType;
 use App\Models\User;
 use App\Models\UserList;
 use Illuminate\Auth\Access\Response;
@@ -18,28 +19,43 @@ class UserListPolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return true;
+        return true; // Усі можуть бачити списки
     }
 
-    public function view(User $user, UserList $userList): bool
+    public function view(?User $user, UserList $userList): bool
     {
+        // Якщо це не список улюблених, то дозволяємо всім
+        if ($userList->type !== UserListType::FAVORITE) {
+            return true;
+        }
+
+        // Якщо це список улюблених, перевіряємо налаштування приватності
+        $listOwner = $userList->user;
+        if ($listOwner->is_private_favorites) {
+            // Якщо список приватний, то дозволяємо перегляд тільки власнику або адміну
+            return $user && ($user->id === $listOwner->id || $user->isAdmin());
+        }
+
+        // Якщо список не приватний, то дозволяємо всім
         return true;
     }
 
     public function create(User $user): bool
     {
-        return false;
+        return true; // Авторизовані користувачі можуть створювати списки
     }
 
     public function update(User $user, UserList $userList): bool
     {
-        return false;
+        // Тільки власник списку може його оновлювати
+        return $user->id === $userList->user_id;
     }
 
     public function delete(User $user, UserList $userList): bool
     {
-        return false;
+        // Тільки власник списку може його видаляти
+        return $user->id === $userList->user_id;
     }
 }

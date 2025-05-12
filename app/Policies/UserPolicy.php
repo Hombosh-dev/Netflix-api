@@ -17,14 +17,20 @@ class UserPolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    /**
+     * Determine whether the user can view any models.
+     */
+    public function viewAny(?User $user): bool
     {
-        return true;
+        return true; // Дозволяємо всім переглядати список користувачів
     }
 
-    public function view(User $user, User $model): bool
+    /**
+     * Determine whether the user can view any models.
+     */
+    public function view(?User $user, User $model): bool
     {
-        return $user->id === $model->id;
+        return true; // Дозволяємо всім переглядати профілі користувачів
     }
 
     public function create(User $user): bool

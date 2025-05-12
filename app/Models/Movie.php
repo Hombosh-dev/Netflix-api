@@ -125,7 +125,7 @@ class Movie extends Model implements Listable, Commentable, Selectionable
      */
     public function persons(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class)
+        return $this->belongsToMany(Person::class, 'movie_person', 'movie_id', 'person_id')
             ->withPivot('character_name', 'voice_person_id');
     }
 
@@ -261,7 +261,7 @@ class Movie extends Model implements Listable, Commentable, Selectionable
     protected function averageRating(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->ratings()->avg('number') ?? 0
+            get: fn() => round($this->ratings()->avg('number') ?? 0, 1)
         );
     }
 
@@ -335,16 +335,5 @@ class Movie extends Model implements Listable, Commentable, Selectionable
         return Attribute::make(
             get: fn() => $this->countries->first()
         );
-    }
-
-    /**
-     * Generate a slug from a name
-     *
-     * @param string $name
-     * @return string
-     */
-    public static function generateSlug(string $name): string
-    {
-        return \Illuminate\Support\Str::slug($name) . '-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(6));
     }
 }

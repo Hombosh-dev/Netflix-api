@@ -10,6 +10,7 @@ use App\DTOs\Movies\MovieStoreDTO;
 use App\DTOs\Movies\MovieUpdateDTO;
 use App\Http\Requests\Movies\MovieDeleteRequest;
 use App\Http\Requests\Movies\MovieIndexRequest;
+use App\Http\Requests\Movies\MovieShowRequest;
 use App\Http\Requests\Movies\MovieStoreRequest;
 use App\Http\Requests\Movies\MovieUpdateRequest;
 use App\Http\Resources\CommentResource;
@@ -20,6 +21,7 @@ use App\Http\Resources\PersonResource;
 use App\Http\Resources\RatingResource;
 use App\Http\Resources\TagResource;
 use App\Models\Movie;
+use App\Models\Rating;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -122,6 +124,7 @@ class MovieController extends Controller
      * @param  MovieStoreRequest  $request
      * @param  CreateMovie  $action
      * @return MovieDetailResource
+     * @authenticated
      */
     public function store(MovieStoreRequest $request, CreateMovie $action): MovieDetailResource
     {
@@ -138,6 +141,7 @@ class MovieController extends Controller
      * @param  Movie  $movie
      * @param  UpdateMovie  $action
      * @return MovieDetailResource
+     * @authenticated
      */
     public function update(MovieUpdateRequest $request, Movie $movie, UpdateMovie $action): MovieDetailResource
     {
@@ -154,6 +158,7 @@ class MovieController extends Controller
      * @param  Movie  $movie
      * @param  UpdateMovie  $action
      * @return MovieDetailResource
+     * @authenticated
      */
     public function updatePartial(MovieUpdateRequest $request, Movie $movie, UpdateMovie $action): MovieDetailResource
     {
@@ -169,6 +174,7 @@ class MovieController extends Controller
      * @param  MovieDeleteRequest  $request
      * @param  Movie  $movie
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(MovieDeleteRequest $request, Movie $movie): JsonResponse
     {

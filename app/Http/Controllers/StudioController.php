@@ -84,6 +84,7 @@ class StudioController extends Controller
      * @param  StudioStoreRequest  $request
      * @param  CreateStudio  $action
      * @return StudioResource
+     * @authenticated
      */
     public function store(StudioStoreRequest $request, CreateStudio $action): StudioResource
     {
@@ -100,6 +101,7 @@ class StudioController extends Controller
      * @param  Studio  $studio
      * @param  UpdateStudio  $action
      * @return StudioResource
+     * @authenticated
      */
     public function update(StudioUpdateRequest $request, Studio $studio, UpdateStudio $action): StudioResource
     {
@@ -115,6 +117,7 @@ class StudioController extends Controller
      * @param  StudioDeleteRequest  $request
      * @param  Studio  $studio
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(StudioDeleteRequest $request, Studio $studio): JsonResponse
     {

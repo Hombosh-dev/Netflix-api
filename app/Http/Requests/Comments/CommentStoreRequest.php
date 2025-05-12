@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Episode;
 use App\Models\Movie;
 use App\Models\Selection;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,7 +24,7 @@ class CommentStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -54,15 +55,47 @@ class CommentStoreRequest extends FormRequest
                         return;
                     }
 
-                    $table = str_replace('\\', '', $commentableType);
-                    $table = substr($table, strrpos($table, '\\') + 1);
-                    $table = strtolower($table) . 's';
+                    // Extract the class name from the full namespace
+                    $parts = explode('\\', $commentableType);
+                    $className = end($parts);
+                    $table = strtolower($className) . 's';
 
                     $exists = \DB::table($table)->where('id', $value)->exists();
                     if (!$exists) {
                         $fail("The selected {$attribute} is invalid.");
                     }
                 }
+            ],
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'body' => [
+                'description' => 'Текст коментаря.',
+                'example' => 'Дуже цікавий фільм! Особливо сподобалась гра головного актора.',
+            ],
+            'is_spoiler' => [
+                'description' => 'Чи містить коментар спойлери.',
+                'example' => true,
+            ],
+            'parent_id' => [
+                'description' => 'ID батьківського коментаря, якщо це відповідь.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'commentable_type' => [
+                'description' => 'Тип об\'єкта, до якого додається коментар.',
+                'example' => 'App\\Models\\Movie',
+            ],
+            'commentable_id' => [
+                'description' => 'ID об\'єкта, до якого додається коментар.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
             ],
         ];
     }

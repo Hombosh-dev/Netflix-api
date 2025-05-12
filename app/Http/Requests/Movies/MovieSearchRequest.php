@@ -38,4 +38,73 @@ class MovieSearchRequest extends FormRequest
             'person_id' => ['sometimes', 'string', 'exists:people,id'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'q' => [
+                'description' => 'Пошуковий запит для фільтрації фільмів.',
+                'example' => 'Інтерстеллар',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів.',
+                'example' => 'created_at',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'desc',
+            ],
+            'kind' => [
+                'description' => 'Тип контенту (MOVIE - фільм, TV_SERIES - серіал, тощо).',
+                'example' => 'MOVIE',
+            ],
+            'status' => [
+                'description' => 'Статус контенту (RELEASED - випущено, IN_PRODUCTION - у виробництві, тощо).',
+                'example' => 'RELEASED',
+            ],
+            'min_score' => [
+                'description' => 'Мінімальний рейтинг IMDb для фільтрації.',
+                'example' => 7.5,
+            ],
+            'max_score' => [
+                'description' => 'Максимальний рейтинг IMDb для фільтрації.',
+                'example' => 10,
+            ],
+            'studio_id' => [
+                'description' => 'ID студії для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'tag_id' => [
+                'description' => 'ID тегу для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'person_id' => [
+                'description' => 'ID персони для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
+    }
 }

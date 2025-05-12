@@ -51,4 +51,51 @@ class TagStoreRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => 'Назва тегу.',
+                'example' => 'Фантастика',
+            ],
+            'description' => [
+                'description' => 'Опис тегу.',
+                'example' => 'Жанр кіно, що використовує фантастичні елементи...',
+            ],
+            'is_genre' => [
+                'description' => 'Чи є тег жанром.',
+                'example' => true,
+            ],
+            'image' => [
+                'description' => 'Зображення тегу (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/images/fantasy.jpg',
+            ],
+            'aliases' => [
+                'description' => 'Масив альтернативних назв тегу.',
+                'example' => ['Фентезі', 'Fantasy'],
+            ],
+            'slug' => [
+                'description' => 'Унікальний ідентифікатор тегу для URL.',
+                'example' => 'fantasy',
+            ],
+            'meta_title' => [
+                'description' => 'SEO заголовок.',
+                'example' => 'Фантастика - фільми та серіали',
+            ],
+            'meta_description' => [
+                'description' => 'SEO опис.',
+                'example' => 'Дивіться найкращі фільми та серіали в жанрі фантастики.',
+            ],
+            'meta_image' => [
+                'description' => 'SEO зображення (файл або URL).',
+                'example' => 'https://example.com/images/fantasy-meta.jpg',
+            ],
+        ];
+    }
 }

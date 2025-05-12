@@ -81,4 +81,79 @@ class EpisodeUpdateRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'movie_id' => [
+                'description' => 'ID фільму, до якого належить епізод.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'number' => [
+                'description' => 'Номер епізоду.',
+                'example' => 1,
+            ],
+            'name' => [
+                'description' => 'Назва епізоду.',
+                'example' => 'Пілотний епізод',
+            ],
+            'description' => [
+                'description' => 'Опис епізоду.',
+                'example' => 'У цьому епізоді головний герой зустрічає свого найлютішого ворога...',
+            ],
+            'duration' => [
+                'description' => 'Тривалість епізоду в хвилинах.',
+                'example' => 45,
+            ],
+            'air_date' => [
+                'description' => 'Дата виходу епізоду.',
+                'example' => '2023-01-15',
+            ],
+            'is_filler' => [
+                'description' => 'Чи є епізод філером (не важливим для сюжету).',
+                'example' => false,
+            ],
+            'pictures' => [
+                'description' => 'Масив зображень епізоду.',
+                'example' => [
+                    'https://example.com/images/episode1.jpg',
+                    'https://example.com/images/episode2.jpg',
+                ],
+            ],
+            'video_players' => [
+                'description' => 'Масив відеоплеєрів для епізоду.',
+                'example' => [
+                    [
+                        'name' => 'YOUTUBE',
+                        'url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                        'file_url' => null,
+                        'dubbing' => 'Українська',
+                        'quality' => 'HD',
+                        'locale_code' => 'uk',
+                    ],
+                ],
+            ],
+            'slug' => [
+                'description' => 'Унікальний ідентифікатор епізоду для URL.',
+                'example' => 'pilot-episode',
+            ],
+            'meta_title' => [
+                'description' => 'SEO заголовок.',
+                'example' => 'Пілотний епізод - Назва серіалу',
+            ],
+            'meta_description' => [
+                'description' => 'SEO опис.',
+                'example' => 'Дивіться пілотний епізод серіалу онлайн безкоштовно в HD якості.',
+            ],
+            'meta_image' => [
+                'description' => 'SEO зображення.',
+                'example' => 'https://example.com/images/episode-meta.jpg',
+            ],
+        ];
+    }
 }

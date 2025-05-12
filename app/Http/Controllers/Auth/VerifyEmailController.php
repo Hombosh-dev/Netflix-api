@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Actions\Auth\VerifyEmail;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Requests\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
 
 class VerifyEmailController extends Controller
@@ -15,6 +15,7 @@ class VerifyEmailController extends Controller
      * @param EmailVerificationRequest $request
      * @param VerifyEmail $action
      * @return RedirectResponse
+     * @authenticated
      */
     public function __invoke(EmailVerificationRequest $request, VerifyEmail $action): RedirectResponse
     {

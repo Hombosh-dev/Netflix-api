@@ -508,11 +508,11 @@ namespace App\Models{
 /**
  * 
  *
+ * @property string $id
  * @property string $slug
  * @property string|null $meta_title
  * @property string|null $meta_description
  * @property string|null $meta_image
- * @property string $id
  * @property string $name
  * @property string $description
  * @property string|null $image
@@ -781,6 +781,7 @@ namespace App\Models{
  * @property \App\Enums\UserListType $type
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $listable
  * @property-read \App\Models\User $user
+ * @method static \App\Models\Builders\UserListQueryBuilder<static>|UserList excludeTypes(array $types)
  * @method static \Database\Factories\UserListFactory factory($count = null, $state = [])
  * @method static \App\Models\Builders\UserListQueryBuilder<static>|UserList favorites()
  * @method static \App\Models\Builders\UserListQueryBuilder<static>|UserList forListable(string $listableType, string $listableId)

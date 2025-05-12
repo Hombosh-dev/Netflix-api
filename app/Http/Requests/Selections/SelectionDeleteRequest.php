@@ -13,7 +13,7 @@ class SelectionDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $selection = $this->route('selection');
-        
+
         return $this->user()->can('delete', $selection);
     }
 
@@ -25,5 +25,30 @@ class SelectionDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'selection' => [
+                'description' => 'Slug підбірки, яку потрібно видалити.',
+                'example' => 'best-movies-2023-abc123',
+            ],
+        ];
     }
 }

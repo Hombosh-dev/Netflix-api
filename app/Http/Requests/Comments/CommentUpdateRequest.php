@@ -30,4 +30,23 @@ class CommentUpdateRequest extends FormRequest
             'is_spoiler' => 'sometimes|boolean',
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'body' => [
+                'description' => 'Новий текст коментаря.',
+                'example' => 'Оновлений коментар: фільм дійсно чудовий, рекомендую всім!',
+            ],
+            'is_spoiler' => [
+                'description' => 'Чи містить коментар спойлери.',
+                'example' => false,
+            ],
+        ];
+    }
 }

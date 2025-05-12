@@ -13,7 +13,7 @@ class EpisodeDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $episode = $this->route('episode');
-        
+
         return $this->user()->can('delete', $episode);
     }
 
@@ -25,5 +25,30 @@ class EpisodeDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'episode' => [
+                'description' => 'Slug епізоду, який потрібно видалити.',
+                'example' => 'pilot-episode-abc123',
+            ],
+        ];
     }
 }

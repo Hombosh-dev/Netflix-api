@@ -13,7 +13,7 @@ class PersonDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $person = $this->route('person');
-        
+
         return $this->user()->can('delete', $person);
     }
 
@@ -25,5 +25,30 @@ class PersonDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'person' => [
+                'description' => 'Slug персони, яку потрібно видалити.',
+                'example' => 'tom-hanks-abc123',
+            ],
+        ];
     }
 }

@@ -55,4 +55,62 @@ class StudioUpdateRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => 'Назва студії.',
+                'example' => 'Warner Bros. Pictures',
+            ],
+            'description' => [
+                'description' => 'Опис студії.',
+                'example' => 'Американська кіностудія, одна з найбільших у світі...',
+            ],
+            'image' => [
+                'description' => 'Логотип студії (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/images/warner-bros.jpg',
+            ],
+            'aliases' => [
+                'description' => 'Масив альтернативних назв студії.',
+                'example' => ['WB', 'Warner Brothers'],
+            ],
+            'slug' => [
+                'description' => 'Унікальний ідентифікатор студії для URL.',
+                'example' => 'warner-bros-pictures',
+            ],
+            'meta_title' => [
+                'description' => 'SEO заголовок.',
+                'example' => 'Warner Bros. Pictures - фільми та історія',
+            ],
+            'meta_description' => [
+                'description' => 'SEO опис.',
+                'example' => 'Дізнайтеся більше про Warner Bros. Pictures, її фільми та історію.',
+            ],
+            'meta_image' => [
+                'description' => 'SEO зображення (файл або URL).',
+                'example' => 'https://example.com/images/warner-bros-meta.jpg',
+            ],
+        ];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'studio' => [
+                'description' => 'Slug студії, яку потрібно оновити.',
+                'example' => 'warner-bros-pictures-abc123',
+            ],
+        ];
+    }
 }

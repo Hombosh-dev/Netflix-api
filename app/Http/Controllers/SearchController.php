@@ -7,18 +7,19 @@ use App\Actions\Search\PerformSearch;
 use App\DTOs\Search\AutocompleteDTO;
 use App\DTOs\Search\SearchDTO;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\Search\SearchRequest;
+use App\Http\Requests\Search\AutocompleteRequest;
 
 class SearchController extends Controller
 {
     /**
      * Search across all content types
      *
-     * @param Request $request
+     * @param SearchRequest $request
      * @param PerformSearch $action
      * @return JsonResponse
      */
-    public function search(Request $request, PerformSearch $action): JsonResponse
+    public function search(SearchRequest $request, PerformSearch $action): JsonResponse
     {
         $dto = SearchDTO::fromRequest($request);
         $results = $action->handle($dto);
@@ -29,11 +30,11 @@ class SearchController extends Controller
     /**
      * Autocomplete search for quick suggestions
      *
-     * @param Request $request
+     * @param AutocompleteRequest $request
      * @param PerformAutocomplete $action
      * @return JsonResponse
      */
-    public function autocomplete(Request $request, PerformAutocomplete $action): JsonResponse
+    public function autocomplete(AutocompleteRequest $request, PerformAutocomplete $action): JsonResponse
     {
         $dto = AutocompleteDTO::fromRequest($request);
         $results = $action->handle($dto);

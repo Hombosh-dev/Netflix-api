@@ -25,4 +25,19 @@ class EnumRequest extends FormRequest
             'locale' => ['sometimes', 'string', 'in:en,uk'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'locale' => [
+                'description' => 'Мова для локалізації енумерацій (en - англійська, uk - українська).',
+                'example' => 'uk',
+            ],
+        ];
+    }
 }

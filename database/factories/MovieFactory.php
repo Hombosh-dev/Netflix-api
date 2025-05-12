@@ -27,24 +27,24 @@ class MovieFactory extends Factory
         $studio = Studio::query()->inRandomOrder()->first() ?? Studio::factory()->create();
 
         return [
-            'api_sources' => json_encode($this->generateApiSources()), // Complex JSON for API sources
+            'api_sources' => $this->generateApiSources(), // Complex JSON for API sources
             'name' => $name,
             'slug' => Movie::generateSlug($name),
             'description' => fake()->paragraph(),
             'image_name' => fake()->imageUrl(640, 480, 'movies', true, 'Movie Poster'), // Like on Netflix
-            'aliases' => json_encode(fake()->words(3)), // Array of strings in JSON
+            'aliases' => fake()->words(3), // Array of strings in JSON
             'kind' => fake()->randomElement(Kind::cases())->value, // Enum Kind
             'status' => fake()->randomElement(Status::cases())->value, // Enum Status
             'studio_id' => $studio->id,
             'poster' => fake()->imageUrl(300, 450, 'movies', true, 'Poster'), // Vertical poster
             'duration' => fake()->numberBetween(60, 180), // Duration in minutes
-            'countries' => json_encode($this->generateCountries()), // JSON array of countries
+            'countries' => $this->generateCountries(), // JSON array of countries
             'episodes_count' => fake()->boolean() ? fake()->numberBetween(1, 50) : null, // For TV series
             'first_air_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'last_air_date' => fake()->boolean() ? fake()->dateTimeBetween('-5 years', 'now')->format('Y-m-d') : null,
             'imdb_score' => fake()->randomFloat(2, 1, 10), // Rating from 1 to 10
-            'attachments' => json_encode($this->generateAttachments()), // Complex JSON for attachments
-            'related' => json_encode($this->generateRelated()), // Complex JSON for related movies
+            'attachments' => $this->generateAttachments(), // Complex JSON for attachments
+            'related' => $this->generateRelated(), // Complex JSON for related movies
             'similars' => $this->generateSimilars(), // JSON array of similar movies (without self-references)
             'is_published' => fake()->boolean(80), // 80% chance to be published
             'meta_title' => fake()->sentence(5),
@@ -117,7 +117,7 @@ class MovieFactory extends Factory
     /**
      * Generates JSON for similars (without self-references).
      */
-    private function generateSimilars(): string
+    private function generateSimilars(): array
     {
         $similars = [];
         $count = fake()->numberBetween(0, 4);
@@ -125,7 +125,7 @@ class MovieFactory extends Factory
             $similars[] = Str::ulid(); // Unique ULID
         }
 
-        return json_encode($similars);
+        return $similars;
     }
 
     /**

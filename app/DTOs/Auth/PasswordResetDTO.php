@@ -11,11 +11,13 @@ class PasswordResetDTO extends BaseDTO
      *
      * @param string $email
      * @param string $password
+     * @param string $password_confirmation
      * @param string $token
      */
     public function __construct(
         public readonly string $email,
         public readonly string $password,
+        public readonly string $password_confirmation,
         public readonly string $token,
     ) {
     }
@@ -30,6 +32,7 @@ class PasswordResetDTO extends BaseDTO
         return [
             'email',
             'password',
+            'password_confirmation',
             'token',
         ];
     }

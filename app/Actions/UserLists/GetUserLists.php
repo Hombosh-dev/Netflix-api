@@ -31,6 +31,10 @@ class GetUserLists
             $query->whereIn('type', collect($dto->types)->map->value->toArray());
         }
 
+        if ($dto->excludeTypes) {
+            $query->excludeTypes($dto->excludeTypes);
+        }
+
         if ($dto->listableType) {
             $query->forListableType($dto->listableType);
         }

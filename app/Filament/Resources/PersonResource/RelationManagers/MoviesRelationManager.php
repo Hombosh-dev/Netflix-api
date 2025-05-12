@@ -31,7 +31,7 @@ class MoviesRelationManager extends RelationManager
                 TextInput::make('character_name')
                     ->label(__('Ім\'я персонажа'))
                     ->required(),
-                    
+
                 Select::make('voice_person_id')
                     ->label(__('Актор озвучення'))
                     ->relationship('persons', 'name', fn (Builder $query) => $query->select(['id', 'name']))
@@ -48,26 +48,26 @@ class MoviesRelationManager extends RelationManager
                 ImageColumn::make('image_name')
                     ->label(__('Постер'))
                     ->circular(),
-                    
+
                 TextColumn::make('name')
                     ->label(__('Назва'))
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('kind')
                     ->label(__('Тип'))
                     ->badge()
                     ->sortable(),
-                    
+
                 TextColumn::make('status')
                     ->label(__('Статус'))
                     ->badge()
                     ->sortable(),
-                    
+
                 TextColumn::make('character_name')
                     ->label(__('Персонаж'))
                     ->searchable(),
-                    
+
                 TextColumn::make('voicePerson.name')
                     ->label(__('Актор озвучення'))
                     ->searchable(),
@@ -78,7 +78,7 @@ class MoviesRelationManager extends RelationManager
                     ->options(Kind::class)
                     ->multiple()
                     ->indicator(__('Тип')),
-                    
+
                 SelectFilter::make('status')
                     ->label(__('Статус'))
                     ->options(Status::class)

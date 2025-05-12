@@ -28,6 +28,7 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
      */
     public function kinds(EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -48,6 +49,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam kind required The kind of the movie. Example: movie, tv_series, animated_movie, animated_series
      */
     public function kind(string $kind, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -87,6 +90,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam status required The status of the movie. Example: draft, published, deleted
      */
     public function status(string $status, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -126,6 +131,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam quality required The quality of the video. Example: sd, hd, full_hd, uhd
      */
     public function videoQuality(string $quality, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -165,6 +172,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam type required The type of the person. Example: actor, director, writer
      */
     public function personType(string $type, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -204,6 +213,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam type required The type of the user list. Example: favorite, watching
      */
     public function userListType(string $type, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -243,6 +254,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam gender required The gender. Example: male, female, other
      */
     public function gender(string $gender, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -282,6 +295,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam type required The type of the comment report. Example: insult, flood_offtop_meaningless, ad_spam, spoiler, provocation_conflict, inappropriate_language, forbidden_unnecessary_content, meaningless_empty_topic, duplicate_topic
      */
     public function commentReportType(string $type, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -321,6 +336,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam type required The type of the movie relate. Example: season, source, sequel, side_story, summary, other, adaptation, alternative, prequel
      */
     public function movieRelateType(string $type, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -360,6 +377,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam status required The status of the payment. Example: pending, success, failed, refunded
      */
     public function paymentStatus(string $status, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -399,6 +418,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam source required The name of the API source. Example: tmdb, shiki, imdb, anilist
      */
     public function apiSourceName(string $source, EnumRequest $request, FormatEnum $action): JsonResponse
     {
@@ -438,6 +459,8 @@ class EnumController extends Controller
      * @param EnumRequest $request
      * @param FormatEnum $action
      * @return JsonResponse
+     *
+     * @urlParam type required The type of the attachment. Example: trailer, teaser, behind_the_scenes, interview, clip, deleted_scene, blooper, featurette, picture
      */
     public function attachmentType(string $type, EnumRequest $request, FormatEnum $action): JsonResponse
     {

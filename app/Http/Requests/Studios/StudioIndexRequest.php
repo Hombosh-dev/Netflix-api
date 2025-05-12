@@ -28,7 +28,7 @@ class StudioIndexRequest extends FormRequest
             'sort' => ['sometimes', 'string', 'in:name,created_at,movies_count'],
             'direction' => ['sometimes', 'string', 'in:asc,desc'],
             'has_movies' => ['sometimes', 'boolean'],
-            
+
             // Multiple values support
             'movie_ids' => ['sometimes', 'array'],
             'movie_ids.*' => ['sometimes', 'string', 'exists:movies,id'],
@@ -59,5 +59,44 @@ class StudioIndexRequest extends FormRequest
                 $field => explode(',', $this->input($field))
             ]);
         }
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'q' => [
+                'description' => 'Пошуковий запит для фільтрації студій за назвою.',
+                'example' => 'Warner Bros',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів (name - за назвою, created_at - за датою створення, movies_count - за кількістю фільмів).',
+                'example' => 'name',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'asc',
+            ],
+            'has_movies' => [
+                'description' => 'Фільтр для відображення тільки студій, які мають фільми.',
+                'example' => true,
+            ],
+            'movie_ids' => [
+                'description' => 'Фільтр за ID фільмів, які належать студії. Можна передати як масив, так і через кому.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+        ];
     }
 }

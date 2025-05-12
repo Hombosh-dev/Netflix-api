@@ -13,7 +13,7 @@ class RatingUpdateRequest extends FormRequest
     public function authorize(): bool
     {
         $rating = $this->route('rating');
-        
+
         return $this->user()->can('update', $rating);
     }
 
@@ -27,6 +27,25 @@ class RatingUpdateRequest extends FormRequest
         return [
             'number' => ['sometimes', 'integer', 'min:1', 'max:10'],
             'review' => ['sometimes', 'nullable', 'string', 'max:2000'],
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'number' => [
+                'description' => 'Числовий рейтинг від 1 до 10.',
+                'example' => 9,
+            ],
+            'review' => [
+                'description' => 'Текстовий відгук про фільм (необов’язково).',
+                'example' => 'Після повторного перегляду я змінив свою думку про цей фільм. Він ще кращий, ніж я думав спочатку.',
+            ],
         ];
     }
 }

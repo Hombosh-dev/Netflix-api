@@ -86,7 +86,7 @@ return [
         'base_url' => null,
 
         // [Laravel Sanctum] Fetch a CSRF token before each request, and add it as an X-XSRF-TOKEN header.
-        'use_csrf' => false,
+        'use_csrf' => true,
 
         // The URL to fetch the CSRF token from (if `use_csrf` is true).
         'csrf_url' => '/sanctum/csrf-cookie',
@@ -99,13 +99,13 @@ return [
 
         // Set this to true if your API should be authenticated by default. If so, you must also set `enabled` (above) to true.
         // You can then use @unauthenticated or @authenticated on individual endpoints to change their status from the default.
-        'default' => true,
+        'default' => false,
 
         // Where is the auth value meant to be sent in a request?
         'in' => AuthIn::BEARER->value,
 
         // The name of the auth parameter (e.g. token, key, apiKey) or header (e.g. Authorization, Api-Key).
-        'name' => 'Authorization',
+        'name' => 'token',
 
         // The value of the parameter to be used by Scribe to authenticate response calls.
         // This will NOT be included in the generated documentation. If empty, Scribe will use a random value.
@@ -113,10 +113,22 @@ return [
 
         // Placeholder your users will see for the auth parameter in the example requests.
         // Set this to null if you want Scribe to use a random value as placeholder instead.
-        'placeholder' => 'Bearer {YOUR_TOKEN}',
+        'placeholder' => '{YOUR_AUTH_KEY}',
 
         // Any extra authentication-related info for your users. Markdown and HTML are supported.
-        'extra_info' => 'You can retrieve your token by using the login endpoint.',
+        'extra_info' => 'Ви можете отримати свій API токен через авторизацію',
+    ],
+
+    // CSRF token configuration for Scribe
+    'csrf' => [
+        // Whether to automatically generate a CSRF token for each request
+        'enabled' => true,
+
+        // The name of the field that holds the CSRF token
+        'field_name' => '_token',
+
+        // Where to get the token from
+        'from' => 'cookie',
     ],
 
     // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.

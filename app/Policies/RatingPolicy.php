@@ -18,14 +18,14 @@ class RatingPolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return true;
+        return true; // Усі можуть бачити список рейтингів
     }
 
-    public function view(User $user, Rating $ratings): bool
+    public function view(?User $user, Rating $ratings): bool
     {
-        return true;
+        return true; // Усі можуть бачити окремий рейтинг
     }
 
     public function create(User $user): bool

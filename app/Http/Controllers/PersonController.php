@@ -65,6 +65,7 @@ class PersonController extends Controller
      * @param  PersonStoreRequest  $request
      * @param  CreatePerson  $action
      * @return PersonResource
+     * @authenticated
      */
     public function store(PersonStoreRequest $request, CreatePerson $action): PersonResource
     {
@@ -81,6 +82,7 @@ class PersonController extends Controller
      * @param  Person  $person
      * @param  UpdatePerson  $action
      * @return PersonResource
+     * @authenticated
      */
     public function update(PersonUpdateRequest $request, Person $person, UpdatePerson $action): PersonResource
     {
@@ -96,6 +98,7 @@ class PersonController extends Controller
      * @param  PersonDeleteRequest  $request
      * @param  Person  $person
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(PersonDeleteRequest $request, Person $person): JsonResponse
     {

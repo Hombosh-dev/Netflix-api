@@ -40,10 +40,11 @@ class EpisodeController extends Controller
     /**
      * Get episodes aired after a specific date
      *
-     * @param  string  $date
      * @param  EpisodeAiredAfterRequest  $request
      * @param  GetEpisodes  $action
      * @return AnonymousResourceCollection
+     *
+     * @urlParam date string required The date in YYYY-MM-DD format. Example: 2024-01-01
      */
     public function airedAfter(string $date, EpisodeAiredAfterRequest $request, GetEpisodes $action): AnonymousResourceCollection
     {
@@ -90,6 +91,7 @@ class EpisodeController extends Controller
      * @param  EpisodeStoreRequest  $request
      * @param  CreateEpisode  $action
      * @return EpisodeDetailResource
+     * @authenticated
      */
     public function store(EpisodeStoreRequest $request, CreateEpisode $action): EpisodeDetailResource
     {
@@ -106,6 +108,7 @@ class EpisodeController extends Controller
      * @param  Episode  $episode
      * @param  UpdateEpisode  $action
      * @return EpisodeDetailResource
+     * @authenticated
      */
     public function update(EpisodeUpdateRequest $request, Episode $episode, UpdateEpisode $action): EpisodeDetailResource
     {
@@ -121,6 +124,7 @@ class EpisodeController extends Controller
      * @param  EpisodeDeleteRequest  $request
      * @param  Episode  $episode
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(EpisodeDeleteRequest $request, Episode $episode): JsonResponse
     {

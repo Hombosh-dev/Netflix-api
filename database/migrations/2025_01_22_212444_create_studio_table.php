@@ -9,12 +9,11 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('studios', function (Blueprint $table) {
+            $table->ulid("id")->primary();
             $table->string("slug", 128)->unique();
             $table->string("meta_title", 128)->nullable();
             $table->string("meta_description", 192)->nullable();
             $table->string("meta_image", 1024)->nullable();
-
-            $table->ulid("id")->primary();
             $table->string("name")->unique();
             $table->string("description", 512);
             $table->string("image", 1024)->nullable();

@@ -13,7 +13,7 @@ class CommentLikeDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $commentLike = $this->route('commentLike');
-        
+
         return $this->user()->can('delete', $commentLike);
     }
 
@@ -25,5 +25,30 @@ class CommentLikeDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'commentLike' => [
+                'description' => 'ID лайку коментаря, який потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
     }
 }

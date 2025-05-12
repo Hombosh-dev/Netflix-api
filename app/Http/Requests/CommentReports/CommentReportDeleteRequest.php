@@ -13,7 +13,7 @@ class CommentReportDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $commentReport = $this->route('commentReport');
-        
+
         return $this->user()->can('delete', $commentReport);
     }
 
@@ -25,5 +25,30 @@ class CommentReportDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'commentReport' => [
+                'description' => 'ID скарги на коментар, яку потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
     }
 }

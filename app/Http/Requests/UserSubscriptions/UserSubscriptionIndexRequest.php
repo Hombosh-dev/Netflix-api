@@ -38,4 +38,63 @@ class UserSubscriptionIndexRequest extends FormRequest
             'direction' => ['sometimes', 'string', Rule::in(['asc', 'desc'])],
         ];
     }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'user_id' => [
+                'description' => 'ID користувача для фільтрації підписок.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'tariff_id' => [
+                'description' => 'ID тарифу для фільтрації підписок.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'is_active' => [
+                'description' => 'Фільтрувати за статусом активності.',
+                'example' => true,
+            ],
+            'auto_renew' => [
+                'description' => 'Фільтрувати за автоматичним продовженням.',
+                'example' => true,
+            ],
+            'start_date_from' => [
+                'description' => 'Початкова дата для фільтрації за датою початку.',
+                'example' => '2023-01-01',
+            ],
+            'start_date_to' => [
+                'description' => 'Кінцева дата для фільтрації за датою початку.',
+                'example' => '2023-12-31',
+            ],
+            'end_date_from' => [
+                'description' => 'Початкова дата для фільтрації за датою закінчення.',
+                'example' => '2023-01-01',
+            ],
+            'end_date_to' => [
+                'description' => 'Кінцева дата для фільтрації за датою закінчення.',
+                'example' => '2023-12-31',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів.',
+                'example' => 'start_date',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc або desc).',
+                'example' => 'desc',
+            ],
+        ];
+    }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Actions\Auth\LoginUser;
-use App\Actions\Auth\LogoutUser;
+// use App\Actions\Auth\LogoutUser; // Не використовуємо для API
 use App\DTOs\Auth\LoginDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
@@ -53,17 +53,15 @@ class AuthenticatedSessionController extends Controller
      * Destroy an authenticated session.
      *
      * @param Request $request
-     * @param LogoutUser $action
      * @return JsonResponse
+     * @authenticated
      */
-    public function destroy(Request $request, LogoutUser $action): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        // Revoke the token that was used to authenticate the current request
+        // Видаляємо лише поточний токен, не використовуючи сесії
         if ($request->user()) {
             $request->user()->currentAccessToken()->delete();
         }
-
-        $action->handle();
 
         return response()->json(['message' => 'Logged out successfully']);
     }

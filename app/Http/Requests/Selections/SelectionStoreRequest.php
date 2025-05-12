@@ -65,4 +65,55 @@ class SelectionStoreRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => 'Назва підбірки.',
+                'example' => 'Найкращі фільми 2023 року',
+            ],
+            'description' => [
+                'description' => 'Опис підбірки.',
+                'example' => 'Збірка найкращих фільмів, які вийшли в 2023 році...',
+            ],
+            'user_id' => [
+                'description' => 'ID користувача, який створив підбірку (необов\'язково).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'is_published' => [
+                'description' => 'Чи опублікована підбірка.',
+                'example' => true,
+            ],
+            'movie_ids' => [
+                'description' => 'Масив ID фільмів в підбірці.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'person_ids' => [
+                'description' => 'Масив ID персон в підбірці.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'slug' => [
+                'description' => 'Унікальний ідентифікатор підбірки для URL.',
+                'example' => 'best-movies-2023',
+            ],
+            'meta_title' => [
+                'description' => 'SEO заголовок.',
+                'example' => 'Найкращі фільми 2023 року - Топ підбірка',
+            ],
+            'meta_description' => [
+                'description' => 'SEO опис.',
+                'example' => 'Дивіться найкращі фільми 2023 року в нашій топ-підбірці.',
+            ],
+            'meta_image' => [
+                'description' => 'SEO зображення (файл або URL).',
+                'example' => 'https://example.com/images/best-movies-2023.jpg',
+            ],
+        ];
+    }
 }

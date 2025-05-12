@@ -26,6 +26,7 @@ class CommentReportController extends Controller
      * @param  CommentReportIndexRequest  $request
      * @param  GetCommentReports  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function index(CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
@@ -40,6 +41,7 @@ class CommentReportController extends Controller
      *
      * @param  CommentReport  $commentReport
      * @return CommentReportResource
+     * @authenticated
      */
     public function show(CommentReport $commentReport): CommentReportResource
     {
@@ -52,14 +54,10 @@ class CommentReportController extends Controller
      * @param  CommentReportStoreRequest  $request
      * @param  CreateCommentReport  $action
      * @return CommentReportResource|JsonResponse
+     * @authenticated
      */
     public function store(CommentReportStoreRequest $request, CreateCommentReport $action): CommentReportResource|JsonResponse
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $dto = CommentReportStoreDTO::fromRequest($request);
 
         // Check if the user has already reported this comment with the same type
@@ -84,6 +82,7 @@ class CommentReportController extends Controller
      * @param  CommentReport  $commentReport
      * @param  UpdateCommentReport  $action
      * @return CommentReportResource
+     * @authenticated
      */
     public function update(CommentReportUpdateRequest $request, CommentReport $commentReport, UpdateCommentReport $action): CommentReportResource
     {
@@ -99,6 +98,7 @@ class CommentReportController extends Controller
      * @param  CommentReportDeleteRequest  $request
      * @param  CommentReport  $commentReport
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(CommentReportDeleteRequest $request, CommentReport $commentReport): JsonResponse
     {
@@ -114,14 +114,10 @@ class CommentReportController extends Controller
      * @param  CommentReportIndexRequest  $request
      * @param  GetCommentReports  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function forComment(Comment $comment, CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $request->merge(['comment_id' => $comment->id]);
         $dto = CommentReportIndexDTO::fromRequest($request);
         $commentReports = $action->handle($dto);
@@ -135,6 +131,7 @@ class CommentReportController extends Controller
      * @param  CommentReportIndexRequest  $request
      * @param  GetCommentReports  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function unviewed(CommentReportIndexRequest $request, GetCommentReports $action): AnonymousResourceCollection
     {

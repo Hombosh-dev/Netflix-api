@@ -35,4 +35,57 @@ class CommentReportIndexRequest extends FormRequest
             'direction' => ['sometimes', 'string', 'in:asc,desc'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'comment_id' => [
+                'description' => 'ID коментаря для фільтрації скарг.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'user_id' => [
+                'description' => 'ID користувача, який подав скарги.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'type' => [
+                'description' => 'Тип скарги для фільтрації.',
+                'example' => 'SPAM',
+            ],
+            'is_viewed' => [
+                'description' => 'Фільтрувати за статусом перегляду.',
+                'example' => false,
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів.',
+                'example' => 'created_at',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc або desc).',
+                'example' => 'desc',
+            ],
+        ];
+    }
 }

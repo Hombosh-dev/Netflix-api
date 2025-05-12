@@ -55,8 +55,7 @@ class Person extends Model implements Selectionable, Listable
 
     public function movies(): BelongsToMany
     {
-        //return $this->belongsToMany(Movie::class, 'movie_person')
-        return $this->belongsToMany(Movie::class)
+        return $this->belongsToMany(Movie::class, 'movie_person', 'person_id', 'movie_id')
             ->withPivot('character_name');
     }
 
@@ -121,4 +120,6 @@ class Person extends Model implements Selectionable, Listable
             get: fn() => $this->getFileUrl($this->meta_image)
         );
     }
+
+
 }

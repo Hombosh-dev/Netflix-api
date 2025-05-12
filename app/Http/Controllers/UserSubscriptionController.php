@@ -28,6 +28,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscriptionIndexRequest  $request
      * @param  GetUserSubscriptions  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function index(UserSubscriptionIndexRequest $request, GetUserSubscriptions $action): AnonymousResourceCollection
     {
@@ -42,6 +43,7 @@ class UserSubscriptionController extends Controller
      *
      * @param  UserSubscription  $userSubscription
      * @return UserSubscriptionResource
+     * @authenticated
      */
     public function show(UserSubscription $userSubscription): UserSubscriptionResource
     {
@@ -59,6 +61,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscriptionStoreRequest  $request
      * @param  CreateUserSubscription  $action
      * @return UserSubscriptionResource|JsonResponse
+     * @authenticated
      */
     public function store(UserSubscriptionStoreRequest $request, CreateUserSubscription $action): UserSubscriptionResource|JsonResponse
     {
@@ -98,6 +101,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscription  $userSubscription
      * @param  UpdateUserSubscription  $action
      * @return UserSubscriptionResource
+     * @authenticated
      */
     public function update(UserSubscriptionUpdateRequest $request, UserSubscription $userSubscription, UpdateUserSubscription $action): UserSubscriptionResource
     {
@@ -113,6 +117,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscriptionDeleteRequest  $request
      * @param  UserSubscription  $userSubscription
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(UserSubscriptionDeleteRequest $request, UserSubscription $userSubscription): JsonResponse
     {
@@ -130,6 +135,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscriptionIndexRequest  $request
      * @param  GetUserSubscriptions  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function forUser(User $user, UserSubscriptionIndexRequest $request, GetUserSubscriptions $action): AnonymousResourceCollection
     {
@@ -151,6 +157,7 @@ class UserSubscriptionController extends Controller
      * @param  UserSubscriptionIndexRequest  $request
      * @param  GetUserSubscriptions  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function active(UserSubscriptionIndexRequest $request, GetUserSubscriptions $action): AnonymousResourceCollection
     {

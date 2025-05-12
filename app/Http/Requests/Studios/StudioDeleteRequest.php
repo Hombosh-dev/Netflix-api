@@ -13,7 +13,7 @@ class StudioDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $studio = $this->route('studio');
-        
+
         return $this->user()->can('delete', $studio);
     }
 
@@ -25,5 +25,30 @@ class StudioDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'studio' => [
+                'description' => 'Slug студії, яку потрібно видалити.',
+                'example' => 'paramount-pictures-abc123',
+            ],
+        ];
     }
 }

@@ -72,4 +72,65 @@ class PersonIndexRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'q' => [
+                'description' => 'Пошуковий запит для фільтрації персон за іменем.',
+                'example' => '',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів (name - за іменем, created_at - за датою створення, birth_date - за датою народження, movies_count - за кількістю фільмів).',
+                'example' => 'name',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'asc',
+            ],
+            'types' => [
+                'description' => 'Фільтр за типами персон (actor - актор, director - режисер, тощо). Можна передати як масив, так і через кому.',
+                'example' => ['actor', 'director'],
+            ],
+            'genders' => [
+                'description' => 'Фільтр за статтю (male - чоловіча, female - жіноча, other - інша). Можна передати як масив, так і через кому.',
+                'example' => ['male', 'female'],
+            ],
+            'movie_ids' => [
+                'description' => 'Фільтр за ID фільмів, в яких брала участь персона. Можна передати як масив, так і через кому.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'min_age' => [
+                'description' => 'Мінімальний вік персони.',
+                'example' => 16,
+            ],
+            'max_age' => [
+                'description' => 'Максимальний вік персони.',
+                'example' => 60,
+            ],
+        ];
+    }
 }

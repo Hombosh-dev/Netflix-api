@@ -13,7 +13,7 @@ class TariffDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $tariff = $this->route('tariff');
-        
+
         return $this->user()->can('delete', $tariff);
     }
 
@@ -25,5 +25,30 @@ class TariffDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'tariff' => [
+                'description' => 'Slug тарифу, який потрібно видалити.',
+                'example' => 'premium-abc123',
+            ],
+        ];
     }
 }

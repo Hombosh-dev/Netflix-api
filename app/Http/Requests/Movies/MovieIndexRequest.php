@@ -80,4 +80,110 @@ class MovieIndexRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'q' => [
+                'description' => 'Пошуковий запит для фільтрації фільмів.',
+                'example' => '',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів (name, created_at, imdb_score, first_air_date, duration, episodes_count).',
+                'example' => 'created_at',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'desc',
+            ],
+            // Множинні значення
+            'kinds' => [
+                'description' => 'Типи контенту через кому (MOVIE - фільм, TV_SERIES - серіал, ANIMATED_SERIES - анімаційний серіал, тощо).',
+                'example' => 'MOVIE,TV_SERIES',
+            ],
+            'statuses' => [
+                'description' => 'Статуси контенту через кому (RELEASED - випущено, IN_PRODUCTION - у виробництві, тощо).',
+                'example' => 'RELEASED,IN_PRODUCTION',
+            ],
+            'studio_ids' => [
+                'description' => 'ID студій через кому для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY,01HN5PXMEH6SDMF0KAVSW1DYTZ',
+            ],
+            'tag_ids' => [
+                'description' => 'ID тегів через кому для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY,01HN5PXMEH6SDMF0KAVSW1DYTZ',
+            ],
+            'person_ids' => [
+                'description' => 'ID персон через кому для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY,01HN5PXMEH6SDMF0KAVSW1DYTZ',
+            ],
+            'countries' => [
+                'description' => 'Коди країн через кому для фільтрації фільмів (ISO 3166-1 alpha-2).',
+                'example' => 'US,UA,GB',
+            ],
+            // Діапазони значень
+            'min_score' => [
+                'description' => 'Мінімальний рейтинг IMDb для фільтрації.',
+                'example' => 1,
+            ],
+            'max_score' => [
+                'description' => 'Максимальний рейтинг IMDb для фільтрації.',
+                'example' => 10,
+            ],
+            'min_year' => [
+                'description' => 'Мінімальний рік випуску для фільтрації.',
+                'example' => 2000,
+            ],
+            'max_year' => [
+                'description' => 'Максимальний рік випуску для фільтрації.',
+                'example' => 2023,
+            ],
+            'min_duration' => [
+                'description' => 'Мінімальна тривалість у хвилинах для фільтрації.',
+                'example' => 10,
+            ],
+            'max_duration' => [
+                'description' => 'Максимальна тривалість у хвилинах для фільтрації.',
+                'example' => 180,
+            ],
+            'min_episodes_count' => [
+                'description' => 'Мінімальна кількість епізодів для фільтрації (для серіалів).',
+                'example' => 1,
+            ],
+            'max_episodes_count' => [
+                'description' => 'Максимальна кількість епізодів для фільтрації (для серіалів).',
+                'example' => 24,
+            ],
+            // Додаткові параметри
+            'is_published' => [
+                'description' => 'Фільтрувати за статусом публікації.',
+                'example' => true,
+            ],
+        ];
+    }
 }

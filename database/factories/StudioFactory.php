@@ -53,7 +53,7 @@ class StudioFactory extends Factory
             'meta_title' => Studio::makeMetaTitle($company),
             'meta_description' => fake()->sentence(10),
             'meta_image' => fake()->optional(0.8)->imageUrl(1200, 630, 'studio'), // 80% chance to have meta image
-            'aliases' => json_encode(fake()->boolean(60) ? fake()->words(rand(1, 3)) : []),
+            'aliases' => fake()->boolean(60) ? fake()->words(rand(1, 3)) : [],
         ];
     }
 

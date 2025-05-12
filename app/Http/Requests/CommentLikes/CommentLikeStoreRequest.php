@@ -27,4 +27,23 @@ class CommentLikeStoreRequest extends FormRequest
             'is_liked' => ['sometimes', 'boolean'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'comment_id' => [
+                'description' => 'ID коментаря, якому ставиться лайк/дизлайк.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'is_liked' => [
+                'description' => 'Тип реакції (true - лайк, false - дизлайк).',
+                'example' => true,
+            ],
+        ];
+    }
 }

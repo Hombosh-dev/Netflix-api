@@ -33,8 +33,8 @@ class UserListStoreRequest extends FormRequest
         return [
             'type' => ['required', new Enum(UserListType::class)],
             'listable_type' => [
-                'required', 
-                'string', 
+                'required',
+                'string',
                 Rule::in([
                     Movie::class,
                     Episode::class,
@@ -44,23 +44,47 @@ class UserListStoreRequest extends FormRequest
                 ])
             ],
             'listable_id' => [
-                'required', 
-                'string', 
+                'required',
+                'string',
                 function ($attribute, $value, $fail) {
                     $listableType = $this->input('listable_type');
                     if (!$listableType) {
                         return;
                     }
-                    
-                    $table = str_replace('\\', '', $listableType);
-                    $table = substr($table, strrpos($table, '\\') + 1);
-                    $table = strtolower($table) . 's';
-                    
+
+                    // Extract the class name from the full namespace
+                    $parts = explode('\\', $listableType);
+                    $className = end($parts);
+                    $table = strtolower($className) . 's';
+
                     $exists = \DB::table($table)->where('id', $value)->exists();
                     if (!$exists) {
                         $fail("The selected {$attribute} is invalid.");
                     }
                 }
+            ],
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'type' => [
+                'description' => 'Тип списку користувача (FAVORITES, WATCH_LATER, тощо).',
+                'example' => 'FAVORITES',
+            ],
+            'listable_type' => [
+                'description' => 'Тип об\'єкта, який додається до списку.',
+                'example' => 'App\\Models\\Movie',
+            ],
+            'listable_id' => [
+                'description' => 'ID об\'єкта, який додається до списку.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
             ],
         ];
     }

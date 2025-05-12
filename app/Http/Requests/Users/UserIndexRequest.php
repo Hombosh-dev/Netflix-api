@@ -76,4 +76,77 @@ class UserIndexRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'q' => [
+                'description' => 'Пошуковий запит для фільтрації користувачів.',
+                'example' => 'john',
+            ],
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів.',
+                'example' => 'created_at',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc або desc).',
+                'example' => 'desc',
+            ],
+            'roles' => [
+                'description' => 'Фільтрація за ролями користувачів (через кому).',
+                'example' => 'ADMIN,MODERATOR',
+            ],
+            'genders' => [
+                'description' => 'Фільтрація за статтю користувачів (через кому).',
+                'example' => 'MALE,FEMALE',
+            ],
+            'is_banned' => [
+                'description' => 'Фільтрація за статусом блокування.',
+                'example' => true,
+            ],
+            'is_verified' => [
+                'description' => 'Фільтрація за статусом верифікації електронної пошти.',
+                'example' => true,
+            ],
+            'last_seen_after' => [
+                'description' => 'Фільтрація за датою останнього візиту (після вказаної дати).',
+                'example' => '2023-01-01',
+            ],
+            'last_seen_before' => [
+                'description' => 'Фільтрація за датою останнього візиту (до вказаної дати).',
+                'example' => '2023-12-31',
+            ],
+            'created_after' => [
+                'description' => 'Фільтрація за датою створення (після вказаної дати).',
+                'example' => '2023-01-01',
+            ],
+            'created_before' => [
+                'description' => 'Фільтрація за датою створення (до вказаної дати).',
+                'example' => '2023-12-31',
+            ],
+        ];
+    }
 }

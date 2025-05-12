@@ -44,17 +44,15 @@ class GetPersons
 
         // Apply age filters if provided
         if ($dto->minAge !== null || $dto->maxAge !== null) {
-            $query->whereHas('birthday', function ($q) use ($dto) {
-                if ($dto->minAge !== null) {
-                    $maxDate = now()->subYears($dto->minAge);
-                    $q->where('birthday', '<=', $maxDate);
-                }
-                
-                if ($dto->maxAge !== null) {
-                    $minDate = now()->subYears($dto->maxAge + 1)->addDay();
-                    $q->where('birthday', '>=', $minDate);
-                }
-            });
+            if ($dto->minAge !== null) {
+                $maxDate = now()->subYears($dto->minAge);
+                $query->where('birthday', '<=', $maxDate);
+            }
+
+            if ($dto->maxAge !== null) {
+                $minDate = now()->subYears($dto->maxAge + 1)->addDay();
+                $query->where('birthday', '>=', $minDate);
+            }
         }
 
         // Apply sorting

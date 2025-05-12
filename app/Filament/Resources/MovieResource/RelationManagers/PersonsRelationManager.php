@@ -30,7 +30,7 @@ class PersonsRelationManager extends RelationManager
                 TextInput::make('character_name')
                     ->label(__('Ім\'я персонажа'))
                     ->required(),
-                    
+
                 Select::make('voice_person_id')
                     ->label(__('Актор озвучення'))
                     ->options(Person::all()->pluck('name', 'id'))
@@ -47,16 +47,16 @@ class PersonsRelationManager extends RelationManager
                 ImageColumn::make('image_name')
                     ->label(__('Фото'))
                     ->circular(),
-                    
+
                 TextColumn::make('name')
                     ->label(__('Ім\'я'))
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('character_name')
                     ->label(__('Персонаж'))
                     ->searchable(),
-                    
+
                 TextColumn::make('voicePerson.name')
                     ->label(__('Актор озвучення'))
                     ->searchable(),

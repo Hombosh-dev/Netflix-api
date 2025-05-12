@@ -13,7 +13,7 @@ class CommentLikeUpdateRequest extends FormRequest
     public function authorize(): bool
     {
         $commentLike = $this->route('commentLike');
-        
+
         return $this->user()->can('update', $commentLike);
     }
 
@@ -26,6 +26,21 @@ class CommentLikeUpdateRequest extends FormRequest
     {
         return [
             'is_liked' => ['sometimes', 'boolean'],
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'is_liked' => [
+                'description' => 'Новий тип реакції (true - лайк, false - дизлайк).',
+                'example' => false,
+            ],
         ];
     }
 }

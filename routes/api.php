@@ -38,6 +38,9 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group.
 |
+| Note: CSRF verification is disabled for all API routes. This is configured
+| in the bootstrap/app.php file and in the VerifyCsrfToken middleware.
+|
 */
 
 // Public routes
@@ -99,9 +102,39 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/selections/{selection}/movies', [SelectionController::class, 'movies']);
     Route::get('/selections/{selection}/persons', [SelectionController::class, 'persons']);
 
-    // Comments
+    // Users - public routes
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::get('/users/{user}/user-lists', [UserController::class, 'userLists']);
+    Route::get('/users/{user}/ratings', [UserController::class, 'ratings']);
+    Route::get('/users/{user}/comments', [UserController::class, 'comments']);
+
+    // User Lists - public routes
+    Route::get('/user-lists', [UserListController::class, 'index']);
+    Route::get('/user-lists/{userList}', [UserListController::class, 'show']);
+    Route::get('/user-lists/type/{type}', [UserListController::class, 'byType']);
+    Route::get('/users/{user}/user-lists', [UserListController::class, 'forUser']);
+
+    // Ratings - public routes
+    Route::get('/ratings', [RatingController::class, 'index']);
+    Route::get('/ratings/{rating}', [RatingController::class, 'show']);
+    Route::get('/ratings/user/{user}', [RatingController::class, 'forUser']);
+    Route::get('/ratings/movie/{movie}', [RatingController::class, 'forMovie']);
+
+    // Comment likes - public routes
+    Route::get('/comment-likes', [CommentLikeController::class, 'index']);
+    Route::get('/comment-likes/{commentLike}', [CommentLikeController::class, 'show']);
+    Route::get('/comment-likes/comment/{comment}', [CommentLikeController::class, 'forComment']);
+
+    // Tariffs - public routes
+    Route::get('/tariffs', [TariffController::class, 'index']);
+    Route::get('/tariffs/{tariff}', [TariffController::class, 'show']);
+
+    // Comments - public routes
     Route::get('/comments/recent', [CommentController::class, 'recent']);
     Route::get('/comments/roots/{commentable_type}/{commentable_id}', [CommentController::class, 'roots']);
+    Route::get('/comments', [CommentController::class, 'index']);
+    Route::get('/comments/{comment}', [CommentController::class, 'show']);
+    Route::get('/comments/{comment}/replies', [CommentController::class, 'replies']);
 
     // Enum routes with SEO
     Route::prefix('enums')->group(function () {
@@ -168,47 +201,29 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/recommendations/because-you-watched/{movie}', [RecommendationController::class, 'becauseYouWatched']);
     Route::get('/recommendations/continue-watching', [RecommendationController::class, 'continueWatching']);
 
-    // Users
-    Route::get('/users/{user}', [UserController::class, 'show']);
+    // Users - protected routes
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::patch('/users/{user}', [UserController::class, 'updatePartial']);
-    Route::get('/users/{user}/user-lists', [UserController::class, 'userLists']);
-    Route::get('/users/{user}/ratings', [UserController::class, 'ratings']);
-    Route::get('/users/{user}/comments', [UserController::class, 'comments']);
     Route::get('/users/{user}/subscriptions', [UserController::class, 'subscriptions']);
 
-    // User lists (favorites, watch later, etc.)
-    Route::get('/user-lists', [UserListController::class, 'index']);
+    // User lists - protected routes
     Route::post('/user-lists', [UserListController::class, 'store']);
-    Route::get('/user-lists/{userList}', [UserListController::class, 'show']);
     Route::delete('/user-lists/{userList}', [UserListController::class, 'destroy']);
-    Route::get('/user-lists/user/{user}', [UserListController::class, 'forUser']);
-    Route::get('/user-lists/type/{type}', [UserListController::class, 'byType']);
 
-    // Ratings
-    Route::get('/ratings', [RatingController::class, 'index']);
+    // Ratings - protected routes
     Route::post('/ratings', [RatingController::class, 'store']);
-    Route::get('/ratings/{rating}', [RatingController::class, 'show']);
     Route::put('/ratings/{rating}', [RatingController::class, 'update']);
     Route::delete('/ratings/{rating}', [RatingController::class, 'destroy']);
-    Route::get('/ratings/user/{user}', [RatingController::class, 'forUser']);
-    Route::get('/ratings/movie/{movie}', [RatingController::class, 'forMovie']);
 
     // Comments
-    Route::get('/comments', [CommentController::class, 'index']);
     Route::post('/comments', [CommentController::class, 'store']);
-    Route::get('/comments/{comment}', [CommentController::class, 'show']);
     Route::put('/comments/{comment}', [CommentController::class, 'update']);
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
     Route::get('/comments/user/{user}', [CommentController::class, 'forUser']);
-    Route::get('/comments/{comment}/replies', [CommentController::class, 'replies']);
 
-    // Comment likes
-    Route::get('/comment-likes', [CommentLikeController::class, 'index']);
+    // Comment likes - protected routes
     Route::post('/comment-likes', [CommentLikeController::class, 'store']);
-    Route::get('/comment-likes/comment/{comment}', [CommentLikeController::class, 'forComment']);
     Route::get('/comment-likes/user/{user}', [CommentLikeController::class, 'forUser']);
-    Route::get('/comment-likes/{commentLike}', [CommentLikeController::class, 'show']);
     Route::put('/comment-likes/{commentLike}', [CommentLikeController::class, 'update']);
     Route::delete('/comment-likes/{commentLike}', [CommentLikeController::class, 'destroy']);
 
@@ -217,9 +232,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
     Route::get('/comment-reports/comment/{comment}', [CommentReportController::class, 'forComment']);
 
     // Subscriptions and payments
-    Route::get('/tariffs', [TariffController::class, 'index']);
-    Route::get('/tariffs/{tariff}', [TariffController::class, 'show']);
-
     Route::get('/user-subscriptions', [UserSubscriptionController::class, 'index']);
     Route::post('/user-subscriptions', [UserSubscriptionController::class, 'store']);
     Route::get('/user-subscriptions/active', [UserSubscriptionController::class, 'active']);
@@ -241,7 +253,7 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']]
     Route::patch('/users/{user}/ban', [UserController::class, 'ban']);
 
     // Використовуємо спеціальний параметр для розблокування користувача
-    Route::patch('/users/{id}/unban', [UserController::class, 'unban'])->where('id', '[0-9a-zA-Z]+');
+    Route::patch('/users/{id}/unban', [UserController::class, 'unban'])->whereUlid('id');
 
     // Content management
     Route::post('/movies', [MovieController::class, 'store']);

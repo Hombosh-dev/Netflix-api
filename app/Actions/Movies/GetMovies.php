@@ -95,7 +95,7 @@ class GetMovies
         // Filter by persons (multiple)
         $query->when($dto->personIds, function ($q) use ($dto) {
             $q->whereHas('persons', function ($subQuery) use ($dto) {
-                $subQuery->whereIn('persons.id', $dto->personIds);
+                $subQuery->whereIn('people.id', $dto->personIds);
             });
         });
 

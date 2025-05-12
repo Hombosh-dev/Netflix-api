@@ -79,6 +79,7 @@ class SelectionController extends Controller
      * @param  SelectionStoreRequest  $request
      * @param  CreateSelection  $action
      * @return SelectionResource
+     * @authenticated
      */
     public function store(SelectionStoreRequest $request, CreateSelection $action): SelectionResource
     {
@@ -95,6 +96,7 @@ class SelectionController extends Controller
      * @param  Selection  $selection
      * @param  UpdateSelection  $action
      * @return SelectionResource
+     * @authenticated
      */
     public function update(SelectionUpdateRequest $request, Selection $selection, UpdateSelection $action): SelectionResource
     {
@@ -110,6 +112,7 @@ class SelectionController extends Controller
      * @param  SelectionDeleteRequest  $request
      * @param  Selection  $selection
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(SelectionDeleteRequest $request, Selection $selection): JsonResponse
     {

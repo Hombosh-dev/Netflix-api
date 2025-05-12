@@ -25,6 +25,7 @@ class StatsController extends Controller
      * @param  GetSubscriptionStats  $getSubscriptionStats
      * @param  GetPaymentStats  $getPaymentStats
      * @return StatsResource
+     * @authenticated
      */
     public function index(
         StatsRequest $request,
@@ -51,6 +52,7 @@ class StatsController extends Controller
      * @param  StatsRequest  $request
      * @param  GetUserStats  $action
      * @return UserStatsResource
+     * @authenticated
      */
     public function users(StatsRequest $request, GetUserStats $action): UserStatsResource
     {
@@ -66,6 +68,7 @@ class StatsController extends Controller
      * @param  StatsRequest  $request
      * @param  GetContentStats  $action
      * @return ContentStatsResource
+     * @authenticated
      */
     public function content(StatsRequest $request, GetContentStats $action): ContentStatsResource
     {
@@ -81,6 +84,7 @@ class StatsController extends Controller
      * @param  StatsRequest  $request
      * @param  GetSubscriptionStats  $action
      * @return SubscriptionStatsResource
+     * @authenticated
      */
     public function subscriptions(StatsRequest $request, GetSubscriptionStats $action): SubscriptionStatsResource
     {
@@ -96,6 +100,7 @@ class StatsController extends Controller
      * @param  StatsRequest  $request
      * @param  GetPaymentStats  $action
      * @return PaymentStatsResource
+     * @authenticated
      */
     public function payments(StatsRequest $request, GetPaymentStats $action): PaymentStatsResource
     {

@@ -20,12 +20,19 @@ class CommentPolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return true; // Усі можуть бачити коментарі
+        // Якщо запит містить параметри фільтрації за об'єктом, дозволяємо публічний доступ
+        $request = request();
+        if ($request->has('commentable_type') && $request->has('commentable_id')) {
+            return true;
+        }
+
+        // Інакше тільки адміни та модератори можуть бачити всі коментарі
+        return $user && ($user->isAdmin() || $user->isModerator());
     }
 
-    public function view(User $user, Comment $comment): bool
+    public function view(?User $user, Comment $comment): bool
     {
         return true; // Усі можуть бачити окремий коментар
     }

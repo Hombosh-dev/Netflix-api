@@ -74,6 +74,7 @@ class AuthController extends Controller
      *
      * @param Request $request
      * @return JsonResponse
+     * @authenticated
      */
     public function logout(Request $request): JsonResponse
     {
@@ -87,6 +88,7 @@ class AuthController extends Controller
      *
      * @param Request $request
      * @return UserResource
+     * @authenticated
      */
     public function user(Request $request): UserResource
     {

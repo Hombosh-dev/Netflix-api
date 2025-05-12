@@ -42,6 +42,7 @@ class Studio extends Model
     {
         return [
             'aliases' => AsCollection::class,
+            'api_sources' => AsCollection::class,
         ];
     }
 
@@ -72,26 +73,6 @@ class Studio extends Model
         return Attribute::make(
             get: fn() => $this->getFileUrl($this->meta_image)
         );
-    }
-
-    /**
-     * Generate a unique slug for a studio name.
-     *
-     * @param string $name
-     * @return string
-     */
-    public static function generateSlug(string $name): string
-    {
-        $slug = Str::slug($name);
-        $originalSlug = $slug;
-        $count = 1;
-
-        // Check if the slug already exists
-        while (self::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count++;
-        }
-
-        return $slug;
     }
 
     /**

@@ -99,4 +99,27 @@ class LoginRequest extends FormRequest
     {
         return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'email' => [
+                'description' => 'Електронна пошта користувача.',
+                'example' => 'user@example.com',
+            ],
+            'password' => [
+                'description' => 'Пароль користувача.',
+                'example' => 'password123',
+            ],
+            'remember' => [
+                'description' => 'Чи запам\'ятати користувача (необов\'язково).',
+                'example' => true,
+            ],
+        ];
+    }
 }

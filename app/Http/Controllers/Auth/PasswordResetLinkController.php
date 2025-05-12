@@ -6,7 +6,7 @@ use App\Actions\Auth\SendPasswordResetLink;
 use App\DTOs\Auth\PasswordResetLinkDTO;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\Auth\PasswordResetLinkRequest;
 use Illuminate\Validation\ValidationException;
 
 class PasswordResetLinkController extends Controller
@@ -14,16 +14,13 @@ class PasswordResetLinkController extends Controller
     /**
      * Handle an incoming password reset link request.
      *
-     * @param Request $request
+     * @param PasswordResetLinkRequest $request
      * @param SendPasswordResetLink $action
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function store(Request $request, SendPasswordResetLink $action): JsonResponse
+    public function store(PasswordResetLinkRequest $request, SendPasswordResetLink $action): JsonResponse
     {
-        $request->validate([
-            'email' => ['required', 'email'],
-        ]);
 
         $dto = PasswordResetLinkDTO::fromRequest($request);
         $status = $action->handle($dto);

@@ -3,7 +3,7 @@
 namespace App\Actions\Auth;
 
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Requests\Auth\EmailVerificationRequest;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class VerifyEmail

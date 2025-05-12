@@ -44,4 +44,19 @@ class UserBanRequest extends FormRequest
             'reason' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'reason' => [
+                'description' => 'Причина блокування користувача (необов’язково).',
+                'example' => 'Порушення правил користування сервісом.',
+            ],
+        ];
+    }
 }

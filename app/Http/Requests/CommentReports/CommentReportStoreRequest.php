@@ -30,4 +30,27 @@ class CommentReportStoreRequest extends FormRequest
             'body' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'comment_id' => [
+                'description' => 'ID коментаря, на який подається скарга.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'type' => [
+                'description' => 'Тип скарги (SPAM, HARASSMENT, HATE_SPEECH, тощо).',
+                'example' => 'SPAM',
+            ],
+            'body' => [
+                'description' => 'Додатковий текст скарги (необов’язково).',
+                'example' => 'Цей коментар містить рекламу та не стосується фільму.',
+            ],
+        ];
+    }
 }

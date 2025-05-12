@@ -46,4 +46,79 @@ class UserStoreRequest extends FormRequest
             'is_banned' => ['sometimes', 'boolean'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => 'Ім\'\u044f користувача.',
+                'example' => 'John Doe',
+            ],
+            'email' => [
+                'description' => 'Електронна пошта користувача (має бути унікальною).',
+                'example' => 'john.doe@example.com',
+            ],
+            'password' => [
+                'description' => 'Пароль користувача.',
+                'example' => 'StrongPassword123!',
+            ],
+            'password_confirmation' => [
+                'description' => 'Підтвердження пароля.',
+                'example' => 'StrongPassword123!',
+            ],
+            'role' => [
+                'description' => 'Роль користувача.',
+                'example' => 'USER',
+            ],
+            'gender' => [
+                'description' => 'Стать користувача (необов\'язково).',
+                'example' => 'MALE',
+            ],
+            'avatar' => [
+                'description' => 'Аватар користувача (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/avatar.jpg',
+            ],
+            'backdrop' => [
+                'description' => 'Фонове зображення користувача (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/backdrop.jpg',
+            ],
+            'description' => [
+                'description' => 'Опис профілю користувача (необов\'язково).',
+                'example' => 'Люблю дивитись фільми та серіали у вільний час.',
+            ],
+            'birthday' => [
+                'description' => 'Дата народження користувача (необов\'язково).',
+                'example' => '1990-01-01',
+            ],
+            'allow_adult' => [
+                'description' => 'Чи дозволений контент для дорослих.',
+                'example' => true,
+            ],
+            'is_auto_next' => [
+                'description' => 'Чи автоматично переходити до наступного епізоду.',
+                'example' => true,
+            ],
+            'is_auto_play' => [
+                'description' => 'Чи автоматично відтворювати відео.',
+                'example' => true,
+            ],
+            'is_auto_skip_intro' => [
+                'description' => 'Чи автоматично пропускати інтро.',
+                'example' => true,
+            ],
+            'is_private_favorites' => [
+                'description' => 'Чи є список улюблених приватним.',
+                'example' => false,
+            ],
+            'is_banned' => [
+                'description' => 'Чи заблокований користувач.',
+                'example' => false,
+            ],
+        ];
+    }
 }

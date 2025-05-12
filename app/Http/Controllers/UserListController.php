@@ -39,13 +39,24 @@ class UserListController extends Controller
      * @param  UserListStoreRequest  $request
      * @param  CreateUserList  $action
      * @return UserListResource
+     * @authenticated
      */
     public function store(UserListStoreRequest $request, CreateUserList $action): UserListResource
     {
         $dto = UserListStoreDTO::fromRequest($request);
-        $userList = $action->handle($dto);
 
-        return new UserListResource($userList->load(['user', 'listable']));
+        // Check if user list already exists before creating
+        $existingList = UserList::forUser($dto->userId)
+            ->forListable($dto->listableType, $dto->listableId)
+            ->ofType($dto->type)
+            ->first();
+
+        $userList = $action->handle($dto);
+        $statusCode = $existingList ? 200 : 201; // 200 for update, 201 for create
+
+        return (new UserListResource($userList->load(['user', 'listable'])))
+            ->response()
+            ->setStatusCode($statusCode);
     }
 
     /**
@@ -65,6 +76,7 @@ class UserListController extends Controller
      * @param  UserListDeleteRequest  $request
      * @param  UserList  $userList
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(UserListDeleteRequest $request, UserList $userList): JsonResponse
     {
@@ -84,6 +96,16 @@ class UserListController extends Controller
     public function forUser(User $user, UserListIndexRequest $request, GetUserLists $action): AnonymousResourceCollection
     {
         $request->merge(['user_id' => $user->id]);
+
+        // Якщо користувач має приватні улюблені і це не власник і не адмін
+        if ($user->is_private_favorites && auth()->check() && auth()->id() !== $user->id && !auth()->user()->isAdmin()) {
+            // Виключаємо улюблені зі списку
+            $request->merge(['exclude_types' => [UserListType::FAVORITE->value]]);
+        } elseif ($user->is_private_favorites && !auth()->check()) {
+            // Якщо користувач не авторизований, також виключаємо улюблені
+            $request->merge(['exclude_types' => [UserListType::FAVORITE->value]]);
+        }
+
         $dto = UserListIndexDTO::fromRequest($request);
         $userLists = $action->handle($dto);
 
@@ -97,6 +119,8 @@ class UserListController extends Controller
      * @param  UserListIndexRequest  $request
      * @param  GetUserLists  $action
      * @return AnonymousResourceCollection
+     *
+     * @urlParam type required The type of user list. Example: favorite, watching
      */
     public function byType(string $type, UserListIndexRequest $request, GetUserLists $action): AnonymousResourceCollection
     {

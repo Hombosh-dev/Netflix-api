@@ -28,11 +28,6 @@ class TariffController extends Controller
      */
     public function index(TariffIndexRequest $request, GetTariffs $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $dto = TariffIndexDTO::fromRequest($request);
         $tariffs = $action->handle($dto);
 
@@ -47,10 +42,6 @@ class TariffController extends Controller
      */
     public function show(Tariff $tariff): TariffResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
 
         return new TariffResource($tariff->loadCount('userSubscriptions'));
     }
@@ -61,6 +52,7 @@ class TariffController extends Controller
      * @param  TariffStoreRequest  $request
      * @param  CreateTariff  $action
      * @return TariffResource
+     * @authenticated
      */
     public function store(TariffStoreRequest $request, CreateTariff $action): TariffResource
     {
@@ -77,6 +69,7 @@ class TariffController extends Controller
      * @param  Tariff  $tariff
      * @param  UpdateTariff  $action
      * @return TariffResource
+     * @authenticated
      */
     public function update(TariffUpdateRequest $request, Tariff $tariff, UpdateTariff $action): TariffResource
     {
@@ -92,6 +85,7 @@ class TariffController extends Controller
      * @param  TariffDeleteRequest  $request
      * @param  Tariff  $tariff
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(TariffDeleteRequest $request, Tariff $tariff): JsonResponse
     {

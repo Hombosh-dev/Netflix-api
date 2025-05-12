@@ -32,8 +32,8 @@ class EpisodeFactory extends Factory
             'number' => $number,
             'air_date' => fake()->dateTimeBetween('-5 years', '+1 year'),
             'is_filler' => fake()->boolean(20), // 20% chance to be a filler episode
-            'pictures' => json_encode($this->generatePictureUrls(rand(1, 3))),
-            'video_players' => json_encode($this->generateVideoPlayers()),
+            'pictures' => $this->generatePictureUrls(rand(1, 3)),
+            'video_players' => $this->generateVideoPlayers(),
             'meta_title' => "E{$number}: {$name} | {$movie->name}",
             'meta_description' => fake()->text(150),
             'meta_image' => fake()->imageUrl(1200, 630, 'episode', true, 'Episode Image'),

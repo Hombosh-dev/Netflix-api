@@ -127,4 +127,147 @@ class MovieUpdateRequest extends FormRequest
             ]);
         }
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [
+            'name' => [
+                'description' => 'Назва фільму або серіалу.',
+                'example' => 'Інтерстеллар',
+            ],
+            'description' => [
+                'description' => 'Опис фільму або серіалу.',
+                'example' => 'Фільм про подорож групи дослідників у космосі...',
+            ],
+            'kind' => [
+                'description' => 'Тип контенту (MOVIE - фільм, TV_SERIES - серіал, тощо).',
+                'example' => 'MOVIE',
+            ],
+            'status' => [
+                'description' => 'Статус контенту (RELEASED - випущено, IN_PRODUCTION - у виробництві, тощо).',
+                'example' => 'RELEASED',
+            ],
+            'studio_id' => [
+                'description' => 'ID студії, яка створила фільм (необов\'язково).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'poster' => [
+                'description' => 'Постер фільму (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/poster.jpg',
+            ],
+            'backdrop' => [
+                'description' => 'Фонове зображення фільму (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/backdrop.jpg',
+            ],
+            'image_name' => [
+                'description' => 'Зображення з назвою фільму (файл або URL, необов\'язково).',
+                'example' => 'https://example.com/title.jpg',
+            ],
+            'countries' => [
+                'description' => 'Масив кодів країн виробництва (формат ISO 3166-1 alpha-2).',
+                'example' => ['US', 'GB'],
+            ],
+            'aliases' => [
+                'description' => 'Масив альтернативних назв фільму.',
+                'example' => ['Зоряні війни', 'Star Wars'],
+            ],
+            'first_air_date' => [
+                'description' => 'Дата першого виходу в ефір.',
+                'example' => '2014-11-07',
+            ],
+            'last_air_date' => [
+                'description' => 'Дата останнього виходу в ефір (для серіалів).',
+                'example' => '2014-11-07',
+            ],
+            'duration' => [
+                'description' => 'Тривалість фільму в хвилинах.',
+                'example' => 169,
+            ],
+            'imdb_score' => [
+                'description' => 'Рейтинг IMDb від 0 до 10.',
+                'example' => 8.6,
+            ],
+            'is_published' => [
+                'description' => 'Чи опублікований фільм на сайті.',
+                'example' => true,
+            ],
+            'attachments' => [
+                'description' => 'Масив відеоплеєрів та трейлерів.',
+                'example' => [
+                    [
+                        'type' => 'TRAILER',
+                        'url' => 'https://www.youtube.com/watch?v=zSWdZVtXT7E',
+                        'title' => 'Офіційний трейлер',
+                        'duration' => 145,
+                    ],
+                ],
+            ],
+            'related' => [
+                'description' => 'Масив пов\'язаних фільмів з вказанням типу зв\'язку.',
+                'example' => [
+                    [
+                        'movie_id' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+                        'type' => 'SEQUEL',
+                    ],
+                ],
+            ],
+            'similars' => [
+                'description' => 'Масив ID подібних фільмів.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'api_sources' => [
+                'description' => 'Масив джерел даних з API.',
+                'example' => [
+                    [
+                        'source' => 'TMDB',
+                        'id' => '157336',
+                    ],
+                ],
+            ],
+            'tag_ids' => [
+                'description' => 'Масив ID тегів.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'person_ids' => [
+                'description' => 'Масив ID персон, пов\'язаних з фільмом.',
+                'example' => ['01HN5PXMEH6SDMF0KAVSW1DYTY', '01HN5PXMEH6SDMF0KAVSW1DYTZ'],
+            ],
+            'slug' => [
+                'description' => 'Унікальний ідентифікатор для URL.',
+                'example' => 'interstellar',
+            ],
+            'meta_title' => [
+                'description' => 'SEO заголовок.',
+                'example' => 'Інтерстеллар (2014) - Дивитись онлайн',
+            ],
+            'meta_description' => [
+                'description' => 'SEO опис.',
+                'example' => 'Дивіться Інтерстеллар (2014) онлайн безкоштовно в HD якості.',
+            ],
+            'meta_image' => [
+                'description' => 'SEO зображення (файл або URL).',
+                'example' => 'https://example.com/meta-image.jpg',
+            ],
+        ];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'movie' => [
+                'description' => 'Slug фільму, який потрібно оновити.',
+                'example' => 'interstellar-abc123',
+            ],
+        ];
+    }
 }

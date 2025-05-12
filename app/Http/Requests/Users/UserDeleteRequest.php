@@ -27,4 +27,29 @@ class UserDeleteRequest extends FormRequest
     {
         return [];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'user' => [
+                'description' => 'ID користувача, якого потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
+    }
 }

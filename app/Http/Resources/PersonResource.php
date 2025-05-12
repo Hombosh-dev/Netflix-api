@@ -23,9 +23,9 @@ class PersonResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'image' => $this->image,
-            'birth_date' => isset($this->birth_date) ? $this->birth_date->format('Y-m-d') : null,
-            'death_date' => isset($this->death_date) ? $this->death_date->format('Y-m-d') : null,
-            'biography' => $this->biography ?? null,
+            'birth_date' => isset($this->birthday) ? $this->birthday->format('Y-m-d') : null,
+            'death_date' => null, // Поле death_date відсутнє в моделі
+            'biography' => $this->description ?? null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -13,7 +13,7 @@ class RatingDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $rating = $this->route('rating');
-        
+
         return $this->user()->can('delete', $rating);
     }
 
@@ -24,6 +24,32 @@ class RatingDeleteRequest extends FormRequest
      */
     public function rules(): array
     {
+        return [
+        ];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters(): array
+    {
         return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters(): array
+    {
+        return [
+            'rating' => [
+                'description' => 'ID рейтингу, який потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
     }
 }

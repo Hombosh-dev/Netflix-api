@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Movie;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Movie
+ */
 class MovieResource extends JsonResource
 {
     /**
@@ -20,12 +24,21 @@ class MovieResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            // 'backdrop' => $this->backdrop, // Removed as it doesn't exist in the model
+            'image_name' => $this->image_name,
             'poster' => $this->poster,
             'kind' => $this->kind->value,
             'status' => $this->status->value,
-            'year' => $this->releaseYear,
+            'release_year' => $this->release_year,
             'imdb_score' => $this->imdb_score,
+            'aliases' => $this->aliases ?? [],
+            'countries' => $this->countries ?? [],
+            'episodes_count' => $this->when($this->kind->value === 'tv_series' || $this->kind->value === 'animated_series',
+                function () {
+                    return $this->episodes_count;
+                }
+            ),
+            'average_rating' => $this->averageRating,
+            'main_genre' => $this->mainGenre,
             'studio' => $this->whenLoaded('studio', function () {
                 return [
                     'id' => $this->studio->id,

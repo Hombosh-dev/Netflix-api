@@ -11,24 +11,24 @@ class UserListIndexDTO extends BaseDTO
     /**
      * Create a new UserListIndexDTO instance.
      *
-     * @param string|null $query Search query
      * @param int $page Current page number
      * @param int $perPage Number of items per page
      * @param string|null $sort Field to sort by
      * @param string $direction Sort direction (asc or desc)
      * @param string|null $userId Filter by user ID
      * @param array|null $types Filter by list types
+     * @param array|null $excludeTypes Exclude these list types
      * @param string|null $listableType Filter by listable type
      * @param string|null $listableId Filter by listable ID
      */
     public function __construct(
-        public readonly ?string $query = null,
         public readonly int $page = 1,
         public readonly int $perPage = 15,
         public readonly ?string $sort = 'created_at',
         public readonly string $direction = 'desc',
         public readonly ?string $userId = null,
         public readonly ?array $types = null,
+        public readonly ?array $excludeTypes = null,
         public readonly ?string $listableType = null,
         public readonly ?string $listableId = null,
     ) {
@@ -42,13 +42,13 @@ class UserListIndexDTO extends BaseDTO
     public static function fields(): array
     {
         return [
-            'q' => 'query',
             'page',
             'per_page' => 'perPage',
             'sort',
             'direction',
             'user_id' => 'userId',
             'types',
+            'exclude_types' => 'excludeTypes',
             'listable_type' => 'listableType',
             'listable_id' => 'listableId',
         ];
@@ -72,14 +72,24 @@ class UserListIndexDTO extends BaseDTO
             $types = collect($typesInput)->map(fn($t) => UserListType::from($t))->toArray();
         }
 
+        // Process exclude_types array
+        $excludeTypes = null;
+        if ($request->has('exclude_types')) {
+            $excludeTypesInput = $request->input('exclude_types');
+            if (is_string($excludeTypesInput)) {
+                $excludeTypesInput = explode(',', $excludeTypesInput);
+            }
+            $excludeTypes = collect($excludeTypesInput)->map(fn($t) => UserListType::from($t)->value)->toArray();
+        }
+
         return new static(
-            query: $request->input('q'),
             page: (int) $request->input('page', 1),
             perPage: (int) $request->input('per_page', 15),
             sort: $request->input('sort', 'created_at'),
             direction: $request->input('direction', 'desc'),
             userId: $request->input('user_id'),
             types: $types,
+            excludeTypes: $excludeTypes,
             listableType: $request->input('listable_type'),
             listableId: $request->input('listable_id'),
         );

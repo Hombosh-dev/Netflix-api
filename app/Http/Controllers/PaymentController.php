@@ -10,6 +10,7 @@ use App\DTOs\Payments\PaymentStoreDTO;
 use App\DTOs\Payments\PaymentUpdateDTO;
 use App\Http\Requests\Payments\PaymentDeleteRequest;
 use App\Http\Requests\Payments\PaymentIndexRequest;
+use App\Http\Requests\Payments\PaymentShowRequest;
 use App\Http\Requests\Payments\PaymentStoreRequest;
 use App\Http\Requests\Payments\PaymentUpdateRequest;
 use App\Http\Resources\PaymentResource;
@@ -29,6 +30,7 @@ class PaymentController extends Controller
      * @param  PaymentIndexRequest  $request
      * @param  GetPayments  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function index(PaymentIndexRequest $request, GetPayments $action): AnonymousResourceCollection
     {
@@ -41,10 +43,12 @@ class PaymentController extends Controller
     /**
      * Get detailed information about a specific payment
      *
+     * @param  PaymentShowRequest  $request
      * @param  Payment  $payment
      * @return PaymentResource
+     * @authenticated
      */
-    public function show(Payment $payment): PaymentResource
+    public function show(PaymentShowRequest $request, Payment $payment): PaymentResource
     {
         // Перевіряємо, чи має користувач доступ до платежу
         if (auth()->id() !== $payment->user_id && !auth()->user()->isAdmin()) {
@@ -60,6 +64,7 @@ class PaymentController extends Controller
      * @param  PaymentStoreRequest  $request
      * @param  CreatePayment  $action
      * @return PaymentResource|JsonResponse
+     * @authenticated
      */
     public function store(PaymentStoreRequest $request, CreatePayment $action): PaymentResource|JsonResponse
     {
@@ -104,6 +109,7 @@ class PaymentController extends Controller
      * @param  Payment  $payment
      * @param  UpdatePayment  $action
      * @return PaymentResource
+     * @authenticated
      */
     public function update(PaymentUpdateRequest $request, Payment $payment, UpdatePayment $action): PaymentResource
     {
@@ -119,6 +125,7 @@ class PaymentController extends Controller
      * @param  PaymentDeleteRequest  $request
      * @param  Payment  $payment
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(PaymentDeleteRequest $request, Payment $payment): JsonResponse
     {
@@ -134,6 +141,7 @@ class PaymentController extends Controller
      * @param  PaymentIndexRequest  $request
      * @param  GetPayments  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function forUser(User $user, PaymentIndexRequest $request, GetPayments $action): AnonymousResourceCollection
     {

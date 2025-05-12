@@ -13,7 +13,7 @@ class UserListDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $userList = $this->route('userList');
-        
+
         return $this->user()->can('delete', $userList);
     }
 
@@ -25,5 +25,30 @@ class UserListDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'userList' => [
+                'description' => 'ID списку користувача, який потрібно видалити (ULID).',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Requests\CommentLikes\CommentLikeIndexRequest;
 use App\Http\Requests\CommentLikes\CommentLikeStoreRequest;
 use App\Http\Requests\CommentLikes\CommentLikeUpdateRequest;
 use App\Http\Resources\CommentLikeResource;
+use App\Http\Resources\UserCommentLikeResource;
 use App\Models\Comment;
 use App\Models\CommentLike;
 use App\Models\User;
@@ -29,10 +30,7 @@ class CommentLikeController extends Controller
      */
     public function index(CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
+
 
         $dto = CommentLikeIndexDTO::fromRequest($request);
         $commentLikes = $action->handle($dto);
@@ -48,10 +46,7 @@ class CommentLikeController extends Controller
      */
     public function show(CommentLike $commentLike): CommentLikeResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
+
 
         return new CommentLikeResource($commentLike->load(['user', 'comment']));
     }
@@ -62,13 +57,11 @@ class CommentLikeController extends Controller
      * @param  CommentLikeStoreRequest  $request
      * @param  CreateCommentLike  $action
      * @return CommentLikeResource|JsonResponse
+     * @authenticated
      */
     public function store(CommentLikeStoreRequest $request, CreateCommentLike $action): CommentLikeResource|JsonResponse
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
+
 
         $dto = CommentLikeStoreDTO::fromRequest($request);
 
@@ -100,13 +93,11 @@ class CommentLikeController extends Controller
      * @param  CommentLikeUpdateRequest  $request
      * @param  CommentLike  $commentLike
      * @return CommentLikeResource
+     * @authenticated
      */
     public function update(CommentLikeUpdateRequest $request, CommentLike $commentLike): CommentLikeResource
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
+
 
         // Перевіряємо, чи користувач має право оновлювати цей лайк
         if (auth()->id() !== $commentLike->user_id && !auth()->user()->isAdmin()) {
@@ -131,13 +122,11 @@ class CommentLikeController extends Controller
      * @param  CommentLikeDeleteRequest  $request
      * @param  CommentLike  $commentLike
      * @return JsonResponse
+     * @authenticated
      */
     public function destroy(CommentLikeDeleteRequest $request, CommentLike $commentLike): JsonResponse
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
+
 
         // Перевіряємо, чи користувач має право видаляти цей лайк
         if (auth()->id() !== $commentLike->user_id && !auth()->user()->isAdmin()) {
@@ -159,11 +148,6 @@ class CommentLikeController extends Controller
      */
     public function forComment(Comment $comment, CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         $request->merge(['comment_id' => $comment->id]);
         $dto = CommentLikeIndexDTO::fromRequest($request);
         $commentLikes = $action->handle($dto);
@@ -178,14 +162,10 @@ class CommentLikeController extends Controller
      * @param  CommentLikeIndexRequest  $request
      * @param  GetCommentLikes  $action
      * @return AnonymousResourceCollection
+     * @authenticated
      */
     public function forUser(User $user, CommentLikeIndexRequest $request, GetCommentLikes $action): AnonymousResourceCollection
     {
-        // Перевіряємо, чи користувач авторизований
-        if (!auth()->check()) {
-            abort(401, 'Unauthenticated');
-        }
-
         // Перевіряємо, чи користувач має право переглядати лайки іншого користувача
         if (auth()->id() !== $user->id && !auth()->user()->isAdmin()) {
             abort(403, 'You do not have permission to view likes for this user');
@@ -195,6 +175,6 @@ class CommentLikeController extends Controller
         $dto = CommentLikeIndexDTO::fromRequest($request);
         $commentLikes = $action->handle($dto);
 
-        return CommentLikeResource::collection($commentLikes);
+        return UserCommentLikeResource::collection($commentLikes);
     }
 }

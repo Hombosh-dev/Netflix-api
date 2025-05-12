@@ -31,4 +31,43 @@ class MovieFilterRequest extends FormRequest
             'person_id' => ['sometimes', 'string', 'exists:people,id'],
         ];
     }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів.',
+                'example' => 'created_at',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'desc',
+            ],
+            'studio_id' => [
+                'description' => 'ID студії для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'tag_id' => [
+                'description' => 'ID тегу для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+            'person_id' => [
+                'description' => 'ID персони для фільтрації фільмів.',
+                'example' => '01HN5PXMEH6SDMF0KAVSW1DYTY',
+            ],
+        ];
+    }
 }

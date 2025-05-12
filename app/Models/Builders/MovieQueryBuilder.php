@@ -18,7 +18,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->withAvg('ratings', 'number');
     }
-    
+
     /**
      * Get popular movies based on user lists count.
      *
@@ -29,7 +29,7 @@ class MovieQueryBuilder extends Builder
         return $this->withCount('userLists')
             ->orderByDesc('user_lists_count');
     }
-    
+
     /**
      * Get trending movies based on recent ratings and comments.
      *
@@ -39,7 +39,7 @@ class MovieQueryBuilder extends Builder
     public function trending(int $days = 7): self
     {
         $date = Carbon::now()->subDays($days);
-        
+
         return $this->withCount(['ratings' => function ($query) use ($date) {
                 $query->where('created_at', '>=', $date);
             }])
@@ -48,7 +48,7 @@ class MovieQueryBuilder extends Builder
             }])
             ->orderByRaw('(ratings_count * 2 + comments_count) DESC');
     }
-    
+
     /**
      * Filter by movie kind.
      *
@@ -59,7 +59,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->where('kind', $kind->value);
     }
-    
+
     /**
      * Filter by movie status.
      *
@@ -70,7 +70,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->where('status', $status->value);
     }
-    
+
     /**
      * Filter by minimum IMDb score.
      *
@@ -81,7 +81,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->where('imdb_score', '>=', $score);
     }
-    
+
     /**
      * Filter by release year.
      *
@@ -92,7 +92,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->whereYear('first_air_date', $year);
     }
-    
+
     /**
      * Get recently added movies.
      *
@@ -103,7 +103,7 @@ class MovieQueryBuilder extends Builder
     {
         return $this->orderByDesc('created_at')->limit($limit);
     }
-    
+
     /**
      * Get movies with specific tags.
      *
@@ -116,7 +116,7 @@ class MovieQueryBuilder extends Builder
             $query->whereIn('tags.id', $tagIds);
         });
     }
-    
+
     /**
      * Get movies with specific persons.
      *
@@ -126,10 +126,10 @@ class MovieQueryBuilder extends Builder
     public function withPersons(array $personIds): self
     {
         return $this->whereHas('persons', function ($query) use ($personIds) {
-            $query->whereIn('persons.id', $personIds);
+            $query->whereIn('people.id', $personIds);
         });
     }
-    
+
     /**
      * Get movies from specific countries.
      *

@@ -29,4 +29,45 @@ class StudioSearchRequest extends FormRequest
             'has_movies' => ['sometimes', 'boolean'],
         ];
     }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the query parameters for the request.
+     *
+     * @return array
+     */
+    public function queryParameters()
+    {
+        return [
+            'page' => [
+                'description' => 'Номер сторінки для пагінації.',
+                'example' => 1,
+            ],
+            'per_page' => [
+                'description' => 'Кількість елементів на сторінці.',
+                'example' => 15,
+            ],
+            'sort' => [
+                'description' => 'Поле для сортування результатів (name - за назвою, created_at - за датою створення, movies_count - за кількістю фільмів).',
+                'example' => 'name',
+            ],
+            'direction' => [
+                'description' => 'Напрямок сортування (asc - за зростанням, desc - за спаданням).',
+                'example' => 'asc',
+            ],
+            'has_movies' => [
+                'description' => 'Фільтр для відображення тільки студій, які мають фільми.',
+                'example' => true,
+            ],
+        ];
+    }
 }

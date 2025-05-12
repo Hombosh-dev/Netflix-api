@@ -18,12 +18,12 @@ class CommentLikePolicy
         return null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
         return true; // Усі можуть бачити лайки
     }
 
-    public function view(User $user, CommentLike $commentLike): bool
+    public function view(?User $user, CommentLike $commentLike): bool
     {
         return true; // Усі можуть бачити окремий лайк
     }

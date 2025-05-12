@@ -13,7 +13,7 @@ class MovieDeleteRequest extends FormRequest
     public function authorize(): bool
     {
         $movie = $this->route('movie');
-        
+
         return $this->user()->can('delete', $movie);
     }
 
@@ -25,5 +25,30 @@ class MovieDeleteRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * Get the body parameters for the request.
+     *
+     * @return array
+     */
+    public function bodyParameters()
+    {
+        return [];
+    }
+
+    /**
+     * Get the URL parameters for the request.
+     *
+     * @return array
+     */
+    public function urlParameters()
+    {
+        return [
+            'movie' => [
+                'description' => 'Slug фільму, який потрібно видалити.',
+                'example' => 'interstellar-abc123',
+            ],
+        ];
     }
 }

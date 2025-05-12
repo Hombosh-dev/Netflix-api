@@ -17,7 +17,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->where('type', $type->value);
     }
-    
+
     /**
      * Filter by user.
      *
@@ -39,7 +39,7 @@ class UserListQueryBuilder extends Builder
                 $query->where('type', $userListType->value);
             });
     }
-    
+
     /**
      * Filter by listable type.
      *
@@ -50,7 +50,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->where('listable_type', $listableType);
     }
-    
+
     /**
      * Filter by listable.
      *
@@ -63,7 +63,7 @@ class UserListQueryBuilder extends Builder
         return $this->where('listable_type', $listableType)
             ->where('listable_id', $listableId);
     }
-    
+
     /**
      * Get favorites.
      *
@@ -73,7 +73,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->ofType(UserListType::FAVORITE);
     }
-    
+
     /**
      * Get watching.
      *
@@ -83,7 +83,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->ofType(UserListType::WATCHING);
     }
-    
+
     /**
      * Get planned.
      *
@@ -93,7 +93,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->ofType(UserListType::PLANNED);
     }
-    
+
     /**
      * Get watched.
      *
@@ -103,7 +103,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->ofType(UserListType::WATCHED);
     }
-    
+
     /**
      * Get stopped.
      *
@@ -113,7 +113,7 @@ class UserListQueryBuilder extends Builder
     {
         return $this->ofType(UserListType::STOPPED);
     }
-    
+
     /**
      * Get rewatching.
      *
@@ -122,5 +122,16 @@ class UserListQueryBuilder extends Builder
     public function rewatching(): self
     {
         return $this->ofType(UserListType::REWATCHING);
+    }
+
+    /**
+     * Exclude specific list types.
+     *
+     * @param array<UserListType> $types Array of UserListType values
+     * @return self
+     */
+    public function excludeTypes(array $types): self
+    {
+        return $this->whereNotIn('type', $types);
     }
 }

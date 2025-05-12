@@ -20,6 +20,7 @@ class UserSubscriptionPolicy
 
     public function viewAny(User $user): bool
     {
+        // Тільки авторизовані користувачі можуть бачити підписки
         return true;
     }
 
