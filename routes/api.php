@@ -11,6 +11,7 @@ use App\Http\Controllers\CommentLikeController;
 use App\Http\Controllers\CommentReportController;
 use App\Http\Controllers\EnumController;
 use App\Http\Controllers\EpisodeController;
+use App\Http\Controllers\LiqPayController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PersonController;
@@ -47,19 +48,15 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1'], function () {
     // Authentication routes
     Route::post('/register', [RegisteredUserController::class, 'store'])
-        ->middleware('guest')
         ->name('register');
 
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('guest')
         ->name('login');
 
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('guest')
         ->name('password.email');
 
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
-        ->middleware('guest')
         ->name('password.store');
 
     // Public content routes
@@ -171,6 +168,9 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('/attachment-types', [EnumController::class, 'attachmentTypes']);
         Route::get('/attachment-types/{type}', [EnumController::class, 'attachmentType']);
     });
+
+    // LiqPay callback route (must be public)
+    Route::post('/liqpay/callback', [LiqPayController::class, 'callback'])->name('liqpay.callback');
 });
 
 
@@ -242,6 +242,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['auth:sanctum']], function () {
     Route::post('/payments', [PaymentController::class, 'store']);
     Route::get('/payments/{payment}', [PaymentController::class, 'show']);
     Route::get('/payments/user/{user}', [PaymentController::class, 'forUser']);
+
+    // LiqPay payment routes
+    Route::post('/liqpay/create-payment', [LiqPayController::class, 'createPayment']);
+    Route::get('/subscriptions/result', [LiqPayController::class, 'result'])->name('subscriptions.result');
 });
 
 // Admin routes

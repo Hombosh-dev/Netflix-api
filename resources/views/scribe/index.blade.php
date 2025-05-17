@@ -26,7 +26,7 @@
             </style>
 
     <script>
-        var tryItOutBaseUrl = "https://netflix-api.test";
+        var tryItOutBaseUrl = "http://127.0.0.1:8000";
         var useCsrf = Boolean(1);
         var csrfUrl = "/sanctum/csrf-cookie";
     </script>
@@ -302,6 +302,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-enums-attachment-types--type-">
                                 <a href="#endpoints-GETapi-v1-enums-attachment-types--type-">Get specific attachment type with SEO data</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-liqpay-callback">
+                                <a href="#endpoints-POSTapi-v1-liqpay-callback">Handle LiqPay callback</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-verify-email--id---hash-">
                                 <a href="#endpoints-GETapi-v1-verify-email--id---hash-">Mark the authenticated user's email address as verified.</a>
                             </li>
@@ -412,6 +415,12 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-payments-user--user_id-">
                                 <a href="#endpoints-GETapi-v1-payments-user--user_id-">Get payments for a specific user</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-liqpay-create-payment">
+                                <a href="#endpoints-POSTapi-v1-liqpay-create-payment">Create a LiqPay payment for a subscription</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-subscriptions-result">
+                                <a href="#endpoints-GETapi-v1-subscriptions-result">Handle successful payment result</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-admin-users">
                                 <a href="#endpoints-GETapi-v1-admin-users">Get paginated list of users with filtering, sorting and pagination</a>
@@ -532,7 +541,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: May 11, 2025</li>
+        <li>Last updated: May 17, 2025</li>
     </ul>
 </div>
 
@@ -542,7 +551,7 @@
         <h1 id="introduction">Introduction</h1>
 <p>API documentation for Netflix clone application</p>
 <aside>
-    <strong>Base URL</strong>: <code>https://netflix-api.test</code>
+    <strong>Base URL</strong>: <code>http://127.0.0.1:8000</code>
 </aside>
 <pre><code>This documentation aims to provide all the information you need to work with our API.
 
@@ -571,20 +580,21 @@ You can switch the language used with the tabs at the top right (or from the nav
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/register" \
+    "http://127.0.0.1:8000/api/v1/register" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"name\": \"John Doe\",
     \"email\": \"john.doe@example.com\",
-    \"password\": \"StrongPassword123!\"
+    \"password\": \"StrongPassword123!\",
+    \"password_confirmation\": \"StrongPassword123!\"
 }"
 </code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/register"
+    "http://127.0.0.1:8000/api/v1/register"
 );
 
 const headers = {
@@ -595,7 +605,8 @@ const headers = {
 let body = {
     "name": "John Doe",
     "email": "john.doe@example.com",
-    "password": "StrongPassword123!"
+    "password": "StrongPassword123!",
+    "password_confirmation": "StrongPassword123!"
 };
 
 fetch(url, {
@@ -711,6 +722,17 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Пароль користувача. Example: <code>StrongPassword123!</code></p>
         </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>password_confirmation</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="password_confirmation"                data-endpoint="POSTapi-v1-register"
+               value="StrongPassword123!"
+               data-component="body">
+    <br>
+<p>Підтвердження пароля. Example: <code>StrongPassword123!</code></p>
+        </div>
         </form>
 
                     <h2 id="endpoints-POSTapi-v1-login">Handle an incoming authentication request.</h2>
@@ -726,20 +748,20 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/login" \
+    "http://127.0.0.1:8000/api/v1/login" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
     \"email\": \"gbailey@example.net\",
     \"password\": \"|]|{+-\",
-    \"remember\": false
+    \"remember\": true
 }"
 </code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/login"
+    "http://127.0.0.1:8000/api/v1/login"
 );
 
 const headers = {
@@ -750,7 +772,7 @@ const headers = {
 let body = {
     "email": "gbailey@example.net",
     "password": "|]|{+-",
-    "remember": false
+    "remember": true
 };
 
 fetch(url, {
@@ -874,7 +896,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -891,7 +913,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/forgot-password" \
+    "http://127.0.0.1:8000/api/v1/forgot-password" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -902,7 +924,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/forgot-password"
+    "http://127.0.0.1:8000/api/v1/forgot-password"
 );
 
 const headers = {
@@ -1020,7 +1042,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/reset-password" \
+    "http://127.0.0.1:8000/api/v1/reset-password" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1033,7 +1055,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/reset-password"
+    "http://127.0.0.1:8000/api/v1/reset-password"
 );
 
 const headers = {
@@ -1175,7 +1197,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/search" \
+    --get "http://127.0.0.1:8000/api/v1/search" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1187,7 +1209,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/search"
+    "http://127.0.0.1:8000/api/v1/search"
 );
 
 const headers = {
@@ -1218,12 +1240,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;movies&quot;: [],
+    &quot;movies&quot;: [
+        {
+            &quot;id&quot;: &quot;01jven45qbpvb4ngtd7537a7tx&quot;,
+            &quot;name&quot;: &quot;Матриця 36&quot;,
+            &quot;slug&quot;: &quot;matricia-36&quot;,
+            &quot;image&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;year&quot;: &quot;2022&quot;
+        }
+    ],
     &quot;people&quot;: []
 }</code>
  </pre>
@@ -1335,7 +1365,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/search/autocomplete" \
+    --get "http://127.0.0.1:8000/api/v1/search/autocomplete" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -1346,7 +1376,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/search/autocomplete"
+    "http://127.0.0.1:8000/api/v1/search/autocomplete"
 );
 
 const headers = {
@@ -1376,8 +1406,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[]</code>
@@ -1479,14 +1508,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/popular/movies" \
+    --get "http://127.0.0.1:8000/api/v1/popular/movies" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/popular/movies"
+    "http://127.0.0.1:8000/api/v1/popular/movies"
 );
 
 const headers = {
@@ -1511,262 +1540,347 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzbcg2sbaqsqb7mpsgsf&quot;,
-            &quot;name&quot;: &quot;Accusamus vero beatae veniam.&quot;,
-            &quot;slug&quot;: &quot;accusamus-vero-beatae-veniam-ypuvcq&quot;,
-            &quot;description&quot;: &quot;Aliquam id ut in. Laborum rerum doloremque eos suscipit tenetur. Aliquid fuga placeat quasi alias saepe perferendis omnis. Omnis ipsa doloribus officia ipsa modi enim id.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/003300?text=movies+Movie+Poster+quos&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0022ee?text=movies+Poster+nihil&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;anons&quot;,
-            &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 9,
-            &quot;aliases&quot;: [
-                &quot;aut&quot;,
-                &quot;qui&quot;,
-                &quot;id&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;,
-                &quot;US&quot;
-            ],
-            &quot;average_rating&quot;: 5.8,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzaghapb996wyrpdq1pj&quot;,
-            &quot;name&quot;: &quot;Omnis provident mollitia.&quot;,
-            &quot;slug&quot;: &quot;omnis-provident-mollitia-znx52p&quot;,
-            &quot;description&quot;: &quot;In rerum tenetur sunt id ducimus. At fuga nostrum ipsa maxime consequuntur natus repudiandae. Quam corporis qui itaque unde adipisci ipsam nam aperiam.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0055ee?text=movies+Movie+Poster+rem&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/004488?text=movies+Poster+omnis&quot;,
-            &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 8.27,
-            &quot;aliases&quot;: [
-                &quot;expedita&quot;,
-                &quot;at&quot;,
-                &quot;expedita&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;
-            ],
-            &quot;average_rating&quot;: 2.3,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzbb5dcz0zmj6y7mqg94&quot;,
-            &quot;name&quot;: &quot;Voluptatibus est facilis.&quot;,
-            &quot;slug&quot;: &quot;voluptatibus-est-facilis-t4uybl&quot;,
-            &quot;description&quot;: &quot;Facilis dolor repellendus exercitationem eos consequuntur. Placeat quia ut aspernatur sit porro aut. Aperiam occaecati quo qui cumque ipsum. Eius impedit ut a illum qui.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/000044?text=movies+Movie+Poster+dignissimos&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ccee?text=movies+Poster+qui&quot;,
-            &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 8.09,
-            &quot;aliases&quot;: [
-                &quot;sit&quot;,
-                &quot;accusamus&quot;,
-                &quot;qui&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;DE&quot;,
-                &quot;GB&quot;
-            ],
-            &quot;average_rating&quot;: 10,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzbe90kx3jrtn85fem5c&quot;,
-            &quot;name&quot;: &quot;Quam alias ducimus doloribus rem.&quot;,
-            &quot;slug&quot;: &quot;quam-alias-ducimus-doloribus-rem-xejfmc&quot;,
-            &quot;description&quot;: &quot;Dolorem rerum eius ipsa alias et et sunt. Quis et id vel ut occaecati sit praesentium. Aut voluptatem recusandae est at impedit voluptate repellat. Nostrum omnis facere sapiente illo.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0055dd?text=movies+Movie+Poster+quisquam&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/002222?text=movies+Poster+amet&quot;,
+            &quot;id&quot;: &quot;01jven45r6x78eg4hdsayy3m7w&quot;,
+            &quot;name&quot;: &quot;Аладдін 47&quot;,
+            &quot;slug&quot;: &quot;aladdin-47&quot;,
+            &quot;description&quot;: &quot;Мультфільм Аладдін 47 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокий сенс. Optio culpa in labore corporis. Deleniti explicabo cupiditate repudiandae vel aut enim. Omnis nesciunt rerum et reprehenderit et vero. Ab quasi iusto aut doloremque harum distinctio. Veritatis qui error dolorem quo.\n\nEaque iusto itaque voluptas. Sit ad expedita beatae facere aut aut amet et. Eaque quod quidem quo quod praesentium at delectus iste.\n\nNecessitatibus mollitia beatae excepturi et esse fugit cumque. Quia dolore harum aut ea. Fugiat eum molestiae rerum quis beatae.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
             &quot;kind&quot;: &quot;animated_movie&quot;,
             &quot;status&quot;: &quot;canceled&quot;,
             &quot;release_year&quot;: &quot;2021&quot;,
-            &quot;imdb_score&quot;: 7.56,
+            &quot;imdb_score&quot;: 9.6,
             &quot;aliases&quot;: [
-                &quot;tempore&quot;,
-                &quot;assumenda&quot;,
-                &quot;voluptatum&quot;
+                &quot;Omnis dicta vitae.&quot;,
+                &quot;Аладдін 47: in nostrum sunt&quot;
             ],
             &quot;countries&quot;: [
-                &quot;US&quot;,
-                &quot;KR&quot;
+                &quot;Бразилія&quot;
             ],
-            &quot;average_rating&quot;: 6.8,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzadvtgkp9eam795n6x8&quot;,
-            &quot;name&quot;: &quot;Enim mollitia quae aut.&quot;,
-            &quot;slug&quot;: &quot;enim-mollitia-quae-aut-llukhu&quot;,
-            &quot;description&quot;: &quot;Enim nisi rem inventore consequatur. Iure ab accusantium aut. Consectetur aliquam nobis voluptatem veritatis est.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/000099?text=movies+Movie+Poster+magni&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0055ff?text=movies+Poster+ea&quot;,
+            &quot;id&quot;: &quot;01jven45r3f5safr7ta56xs18z&quot;,
+            &quot;name&quot;: &quot;Термінатор 46&quot;,
+            &quot;slug&quot;: &quot;terminator-46&quot;,
+            &quot;description&quot;: &quot;Термінатор 46 - це драматична історія про людські стосунки, кохання та зраду. Hic ullam doloremque ipsa nobis voluptatem officiis. Voluptas aut dolorem eius explicabo.\n\nQuos occaecati modi et ipsum possimus unde. Voluptates molestiae perferendis ea nihil voluptas aut officiis et. Cupiditate impedit amet asperiores exercitationem dolorum consectetur vero.\n\nQuis voluptatem amet et iste possimus ratione quibusdam est. Et voluptatem in assumenda quasi recusandae odit enim. Aliquid repellat voluptatibus velit illo qui. Non est expedita aut.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 9.5,
+            &quot;aliases&quot;: [
+                &quot;Fuga itaque voluptatibus ut.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Індія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Трилер&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nhvn839z0s4nj69gde&quot;,
+            &quot;name&quot;: &quot;Душа 11&quot;,
+            &quot;slug&quot;: &quot;dusa-11&quot;,
+            &quot;description&quot;: &quot;Душа 11 - це історія про дружбу, відвагу та самопізнання, розказана через анімацію. Tenetur quia quia non reiciendis quia ut modi. Nam odit modi sint voluptatum soluta quia amet. Hic aliquid consequuntur dignissimos ducimus consequuntur qui.\n\nReprehenderit itaque magnam voluptate quae reprehenderit officia. Voluptate placeat sit magni praesentium et. Rem quia est et est provident atque.\n\nVoluptatum sit assumenda ut veniam harum aut consequuntur. Laboriosam omnis adipisci praesentium et. Sit blanditiis dolores sint corrupti illo.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
+            &quot;aliases&quot;: [
+                &quot;Voluptatem quaerat nesciunt.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Україна&quot;,
+                &quot;США&quot;,
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45ntjcqjpqgygd9czp66&quot;,
+            &quot;name&quot;: &quot;Престиж 15&quot;,
+            &quot;slug&quot;: &quot;prestiz-15&quot;,
+            &quot;description&quot;: &quot;Престиж 15 - це історія про звичайну людину, яка опиняється в надзвичайних обставинах. Magnam molestiae esse dolorum aspernatur. Perferendis fugit incidunt inventore harum voluptas. Sequi magnam aut qui omnis maxime. Officia enim eius optio veniam quis.\n\nTenetur nisi dolor inventore ratione. Fuga repellendus iure nesciunt voluptas quia in. Et laudantium eum vero tenetur minima sed ut rerum. Aspernatur consequatur debitis placeat culpa rerum cumque quidem.\n\nRepellat veritatis et exercitationem error aut. Ut debitis aut accusantium magni dignissimos est. Iusto soluta voluptas qui et. Qui animi deserunt minima ea id similique.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 9.2,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Німеччина&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45q1jev1wbs2q817dsgw&quot;,
+            &quot;name&quot;: &quot;Мулан 32&quot;,
+            &quot;slug&quot;: &quot;mulan-32&quot;,
+            &quot;description&quot;: &quot;У мультфільмі Мулан 32 глядачі побачать неймовірні пригоди головних героїв у фантастичному світі. Et eum omnis sint necessitatibus nostrum excepturi explicabo. Inventore omnis enim in aliquid quae. Libero inventore dicta dolorem qui consectetur doloremque. Quasi ex laborum provident culpa et.\n\nHarum ut assumenda veniam nulla amet sit sint. Iste maiores libero excepturi vel. Necessitatibus fugit perspiciatis non cupiditate.\n\nMolestiae cupiditate voluptatibus occaecati voluptate eos praesentium. At deleniti voluptatem numquam veritatis. Enim odio dolores iste fuga. Consectetur sunt vero veniam corporis.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2019&quot;,
+            &quot;imdb_score&quot;: 9.1,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Мексика&quot;,
+                &quot;Індія&quot;,
+                &quot;Іспанія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45n6m91h8hb91ap5zhyb&quot;,
+            &quot;name&quot;: &quot;Історія іграшок 6&quot;,
+            &quot;slug&quot;: &quot;istoriia-igrasok-6&quot;,
+            &quot;description&quot;: &quot;У мультфільмі Історія іграшок 6 глядачі побачать неймовірні пригоди головних героїв у фантастичному світі. Sint doloribus quibusdam dolorum velit a. Minima beatae asperiores et officiis quia veniam. Odio sapiente quisquam recusandae rerum voluptatum veritatis dolor.\n\nDicta repudiandae quia voluptate. Vero omnis fugiat vel. Libero enim corrupti sunt velit excepturi sit.\n\nId voluptatibus assumenda a ipsam et aut. Tempora eius hic omnis assumenda veniam molestias. Cupiditate excepturi soluta mollitia vel rem distinctio modi magni.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 9,
+            &quot;aliases&quot;: [
+                &quot;Provident quo illo tempore.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Японія&quot;,
+                &quot;Україна&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Трилер&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qbpvb4ngtd7537a7tx&quot;,
+            &quot;name&quot;: &quot;Матриця 36&quot;,
+            &quot;slug&quot;: &quot;matricia-36&quot;,
+            &quot;description&quot;: &quot;Матриця 36 - це історія про звичайну людину, яка опиняється в надзвичайних обставинах. Et eos at ab recusandae dignissimos. At suscipit eos provident eligendi molestiae aut quis. Ab neque quo atque officia placeat commodi voluptatibus sapiente. Nostrum necessitatibus et optio corrupti. Suscipit voluptatem nemo ut cupiditate pariatur magnam quas.\n\nNesciunt dicta aut voluptatibus et. Enim quae voluptatem impedit officiis quod. Et eveniet dolore a quisquam sapiente mollitia maiores. Expedita temporibus voluptas consequatur.\n\nIllum et velit reiciendis consequuntur rerum cupiditate sapiente exercitationem. Et ducimus iusto impedit incidunt voluptate ex quibusdam. Cum similique nisi quis sit est. Exercitationem qui ducimus ut aperiam saepe. Officia earum quia dolorem odio reiciendis odio.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9,
+            &quot;aliases&quot;: [
+                &quot;Quaerat et optio.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Велика Британія&quot;,
+                &quot;Австралія&quot;,
+                &quot;Україна&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qxwg76cce6f5ca3aww&quot;,
+            &quot;name&quot;: &quot;Початок 43&quot;,
+            &quot;slug&quot;: &quot;pocatok-43&quot;,
+            &quot;description&quot;: &quot;Фільм Початок 43 розповідає захоплюючу історію, яка не залишить байдужим жодного глядача. Repellendus qui pariatur dolore modi fugit. Eaque facilis harum ea omnis libero quis exercitationem. Accusantium quaerat fugit occaecati cumque. Omnis fuga qui velit id.\n\nSunt rerum aspernatur perferendis esse consectetur quia voluptatem. In pariatur quia est nostrum voluptas.\n\nExpedita rerum aliquid sunt et. Deserunt placeat vel eligendi dolore ut. Fugit beatae saepe necessitatibus nulla et.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2021&quot;,
+            &quot;imdb_score&quot;: 8.7,
+            &quot;aliases&quot;: [
+                &quot;Et libero consectetur et nostrum.&quot;,
+                &quot;Початок 43: vel ut ut&quot;
+            ],
+            &quot;countries&quot;: {
+                &quot;0&quot;: &quot;Індія&quot;,
+                &quot;2&quot;: &quot;Канада&quot;
+            },
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45n39340g61ns17tx1j1&quot;,
+            &quot;name&quot;: &quot;Список Шиндлера 5&quot;,
+            &quot;slug&quot;: &quot;spisok-sindlera-5&quot;,
+            &quot;description&quot;: &quot;Список Шиндлера 5 - це історія про звичайну людину, яка опиняється в надзвичайних обставинах. Quibusdam velit minus est dolores error repellat omnis ea. Aut enim totam veniam commodi voluptatem consequatur. Voluptas et eaque expedita quidem sunt consectetur doloremque. Est accusantium voluptatum reprehenderit non qui aut repudiandae.\n\nAsperiores neque sint dignissimos illo minima soluta reprehenderit impedit. Quasi voluptas hic cupiditate accusamus culpa. Incidunt perspiciatis quis sunt quia alias. Velit cumque officiis omnis.\n\nVeritatis nobis doloribus est voluptatem enim. Velit nostrum consequatur odit consequatur assumenda. Rerum sed qui modi omnis. Nam ut et sit dolor voluptate. Non maxime numquam sint cum eos quo rem.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/1.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 8.1,
+            &quot;aliases&quot;: [
+                &quot;Accusantium expedita dignissimos.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Німеччина&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Романтика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nf2vwgdp207twyr0bm&quot;,
+            &quot;name&quot;: &quot;Аладдін 10&quot;,
+            &quot;slug&quot;: &quot;aladdin-10&quot;,
+            &quot;description&quot;: &quot;Аладдін 10 - це анімаційна пригода з яскравими персонажами та важливими життєвими уроками. Alias et repellendus aut minus unde. Qui commodi omnis sint recusandae. Nisi amet repudiandae nulla facere qui et consequatur enim. Magni dolore dolorum laborum dolores.\n\nId sit expedita ipsam nam dolorum. Ut aliquam et amet excepturi. Consequuntur esse sapiente inventore est numquam vel. Et hic in voluptas ratione sit velit.\n\nSuscipit dolores enim voluptatem similique quos. Dolor natus similique perferendis.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;animated_movie&quot;,
             &quot;status&quot;: &quot;released&quot;,
             &quot;release_year&quot;: &quot;2018&quot;,
-            &quot;imdb_score&quot;: 6.9,
+            &quot;imdb_score&quot;: 7.6,
             &quot;aliases&quot;: [
-                &quot;facere&quot;,
-                &quot;et&quot;,
-                &quot;aut&quot;
+                &quot;Nobis nihil tenetur.&quot;,
+                &quot;Аладдін 10: sit odio nam&quot;
             ],
             &quot;countries&quot;: [
-                &quot;GB&quot;,
-                &quot;UA&quot;
+                &quot;Китай&quot;,
+                &quot;Південна Корея&quot;
             ],
-            &quot;average_rating&quot;: 3.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Фантастика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-            &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-            &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;id&quot;: &quot;01jven45n8qd8a1jacqezdnn62&quot;,
+            &quot;name&quot;: &quot;Мулан 7&quot;,
+            &quot;slug&quot;: &quot;mulan-7&quot;,
+            &quot;description&quot;: &quot;Мулан 7 - це анімаційна пригода з яскравими персонажами та важливими життєвими уроками. Molestiae ut voluptatem ex. Maxime delectus et quia debitis optio deserunt. Natus a hic nobis vel dolorum sed blanditiis.\n\nAliquam molestiae hic aut quis eos eos. Cumque fugit distinctio cupiditate impedit quidem. Et distinctio id nihil assumenda quisquam.\n\nEnim natus neque repellendus cupiditate. Neque provident corrupti eaque mollitia. Quis sed excepturi fuga veniam est sequi suscipit ut. Tempore nihil ut dolores.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2021&quot;,
+            &quot;imdb_score&quot;: 7.1,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Канада&quot;,
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Біографія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nknr4n82mhd6cngavk&quot;,
+            &quot;name&quot;: &quot;Як приборкати дракона 12&quot;,
+            &quot;slug&quot;: &quot;iak-priborkati-drakona-12&quot;,
+            &quot;description&quot;: &quot;Мультфільм Як приборкати дракона 12 розповідає захоплюючу історію, яка сподобається глядачам будь-якого віку. Dolor accusantium facilis praesentium incidunt vero expedita eum. Et aut eos veritatis eligendi facere. Sed nostrum rem aliquid eveniet laudantium doloremque deleniti.\n\nCommodi dolorem voluptas modi quia et. Fuga et facilis aspernatur. Vel iusto molestiae sapiente non.\n\nAperiam expedita consequuntur recusandae laudantium. Est in voluptas saepe tempora est explicabo. Quae sunt minus et quae. Porro vel sequi rerum voluptates.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 7.1,
+            &quot;aliases&quot;: [
+                &quot;Як приборкати дракона 12: soluta quis exercitationem&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qe1f5zx75fn26y1txr&quot;,
+            &quot;name&quot;: &quot;Король Лев 37&quot;,
+            &quot;slug&quot;: &quot;korol-lev-37&quot;,
+            &quot;description&quot;: &quot;Король Лев 37 - це анімаційна пригода з яскравими персонажами та важливими життєвими уроками. Reiciendis quo incidunt ducimus eum. Animi est aut nobis aperiam enim atque. Aut nobis molestiae quis eum perferendis nobis.\n\nAtque ut dolorem excepturi sint quasi omnis. Qui debitis velit laudantium. Est sapiente dolorum ullam repellat nihil. Iste maiores occaecati magni non maxime debitis.\n\nQuidem cupiditate voluptas expedita magni. Ipsam ipsa alias est. Ratione id vel vitae excepturi quia culpa. Voluptatem voluptas enim enim voluptatum in rerum quo.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
             &quot;status&quot;: &quot;anons&quot;,
             &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 4.64,
+            &quot;imdb_score&quot;: 6.1,
             &quot;aliases&quot;: [
-                &quot;laborum&quot;,
-                &quot;aut&quot;,
-                &quot;libero&quot;
+                &quot;Король Лев 37: dolorem dicta beatae&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;
+                &quot;Велика Британія&quot;
             ],
-            &quot;average_rating&quot;: 5.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzae4rh5y6zxx8m92qt3&quot;,
-            &quot;name&quot;: &quot;Qui eveniet autem aliquid.&quot;,
-            &quot;slug&quot;: &quot;qui-eveniet-autem-aliquid-jnzxks&quot;,
-            &quot;description&quot;: &quot;Repellat rerum non rerum ipsum a veritatis. Placeat corrupti eum expedita vero. Sunt ipsum incidunt dignissimos laudantium sapiente non. Quo sunt deleniti quam qui aliquid.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0011cc?text=movies+Movie+Poster+voluptatibus&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0055aa?text=movies+Poster+dolorum&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;released&quot;,
-            &quot;release_year&quot;: &quot;2017&quot;,
-            &quot;imdb_score&quot;: 4.19,
-            &quot;aliases&quot;: [
-                &quot;ipsum&quot;,
-                &quot;exercitationem&quot;,
-                &quot;in&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;JP&quot;
-            ],
-            &quot;average_rating&quot;: 4.3,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzb0d5yv57nsw6sse9az&quot;,
-            &quot;name&quot;: &quot;Pariatur non ea voluptates.&quot;,
-            &quot;slug&quot;: &quot;pariatur-non-ea-voluptates-fhbr2q&quot;,
-            &quot;description&quot;: &quot;Et corrupti et tenetur nam minus quo est. Voluptas et quisquam nihil velit dolores alias repudiandae. Assumenda laboriosam nostrum tempore quos aut accusamus officia consectetur.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/008899?text=movies+Movie+Poster+at&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ddaa?text=movies+Poster+quam&quot;,
+            &quot;id&quot;: &quot;01jven45pwgsr2wack24jswzgh&quot;,
+            &quot;name&quot;: &quot;Суперсімейка 30&quot;,
+            &quot;slug&quot;: &quot;supersimeika-30&quot;,
+            &quot;description&quot;: &quot;У мультфільмі Суперсімейка 30 глядачі побачать неймовірні пригоди головних героїв у фантастичному світі. Eligendi eveniet qui accusamus voluptatem. Non totam illo aliquid dolore sed. Iste repellendus quas repudiandae. Exercitationem distinctio eaque sapiente quis praesentium autem ipsum. Et accusantium sit magni sed et reiciendis unde.\n\nUnde consectetur molestias est in sed ut. Quo nisi ut unde est atque. Asperiores perspiciatis aut neque. Sed eum odit temporibus omnis rerum nam magnam.\n\nIusto quibusdam ipsam quos pariatur facilis doloribus debitis. Sit facere ut molestias error et eos. Sed delectus sapiente enim qui ipsum. Sit vitae soluta qui. Voluptas quia libero aut dolor repellendus sequi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/1.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
             &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;released&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 3.47,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 5.5,
             &quot;aliases&quot;: [
-                &quot;voluptatem&quot;,
-                &quot;eligendi&quot;,
-                &quot;ab&quot;
+                &quot;Et ducimus amet reprehenderit sint.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;GB&quot;,
-                &quot;KR&quot;
+                &quot;Іспанія&quot;
             ],
-            &quot;average_rating&quot;: 7.3,
-            &quot;main_genre&quot;: &quot;Music&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzay6rvtkg6akrwycmx4&quot;,
-            &quot;name&quot;: &quot;Alias adipisci.&quot;,
-            &quot;slug&quot;: &quot;alias-adipisci-oiekis&quot;,
-            &quot;description&quot;: &quot;Eaque facilis quaerat cumque delectus. Veritatis eveniet provident reiciendis et est earum repellat. Dolorem impedit sed dolore ut.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00dd00?text=movies+Movie+Poster+consequuntur&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/003344?text=movies+Poster+deleniti&quot;,
+            &quot;id&quot;: &quot;01jven45p5b942xxj78cenxnar&quot;,
+            &quot;name&quot;: &quot;У пошуках Немо 20&quot;,
+            &quot;slug&quot;: &quot;u-posukax-nemo-20&quot;,
+            &quot;description&quot;: &quot;Мультфільм У пошуках Немо 20 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокий сенс. Aut velit officia non adipisci. Earum accusantium repellendus ipsa tempore et.\n\nQuisquam quae ut omnis sunt aliquam atque accusamus et. Nihil iste eaque enim est voluptatem. Aut molestiae voluptatem quis placeat voluptatem at suscipit. Quam ut sequi deleniti sit distinctio autem debitis.\n\nConsequatur exercitationem dolorem recusandae doloribus. Consectetur sit fugit molestiae quibusdam. Id iste laudantium fuga repellat. Fugiat aut explicabo non magni.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
             &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 3.19,
-            &quot;aliases&quot;: [
-                &quot;quo&quot;,
-                &quot;qui&quot;,
-                &quot;eaque&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;JP&quot;,
-                &quot;FR&quot;,
-                &quot;DE&quot;
-            ],
-            &quot;average_rating&quot;: 7.5,
-            &quot;main_genre&quot;: &quot;Science Fiction&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzbd26sabenkmc18b6nm&quot;,
-            &quot;name&quot;: &quot;Labore qui sed adipisci.&quot;,
-            &quot;slug&quot;: &quot;labore-qui-sed-adipisci-bbocy3&quot;,
-            &quot;description&quot;: &quot;Recusandae numquam ut recusandae quam. Dolorem omnis quam quo delectus asperiores dolor et. Quasi voluptate ut sunt recusandae autem similique distinctio. Magni quas et eaque non.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0000cc?text=movies+Movie+Poster+sunt&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ff00?text=movies+Poster+tempora&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
             &quot;release_year&quot;: &quot;2024&quot;,
-            &quot;imdb_score&quot;: 2.38,
+            &quot;imdb_score&quot;: 5.1,
             &quot;aliases&quot;: [
-                &quot;dignissimos&quot;,
-                &quot;explicabo&quot;,
-                &quot;ab&quot;
+                &quot;Aut dicta nisi.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;KR&quot;,
-                &quot;DE&quot;
+                &quot;Німеччина&quot;
             ],
-            &quot;average_rating&quot;: 6.3,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ]
 }</code>
@@ -1856,14 +1970,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/popular/series" \
+    --get "http://127.0.0.1:8000/api/v1/popular/series" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/popular/series"
+    "http://127.0.0.1:8000/api/v1/popular/series"
 );
 
 const headers = {
@@ -1888,449 +2002,504 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;name&quot;: &quot;Commodi exercitationem sed.&quot;,
-            &quot;slug&quot;: &quot;commodi-exercitationem-sed-mq0ndl&quot;,
-            &quot;description&quot;: &quot;Ut sed consequatur fugiat natus occaecati. Ex eaque repudiandae repellat sit sint laboriosam maxime. Ullam quasi magnam dolorum nobis doloremque sit. Quam provident ad quo quis exercitationem quis modi.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/009944?text=movies+Movie+Poster+culpa&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ccdd?text=movies+Poster+adipisci&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 9.41,
-            &quot;aliases&quot;: [
-                &quot;animi&quot;,
-                &quot;aut&quot;,
-                &quot;distinctio&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzb8xkhqg40xp9gt01p2&quot;,
-            &quot;name&quot;: &quot;Animi blanditiis fuga.&quot;,
-            &quot;slug&quot;: &quot;animi-blanditiis-fuga-nwkpeq&quot;,
-            &quot;description&quot;: &quot;Et unde laudantium et et. Voluptates voluptatem nisi eveniet qui et omnis. Atque quis consequatur aperiam cumque voluptatem et.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/001100?text=movies+Movie+Poster+eligendi&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ff33?text=movies+Poster+consectetur&quot;,
+            &quot;id&quot;: &quot;01jven45rdmtwrzyhwefeq9x8b&quot;,
+            &quot;name&quot;: &quot;Смертельна нотатка 50&quot;,
+            &quot;slug&quot;: &quot;smertelna-notatka-50&quot;,
+            &quot;description&quot;: &quot;Смертельна нотатка 50 - це історія про дружбу, відвагу та самопізнання, розказана через японську анімацію. Aut veniam ut repellendus alias. Ipsum qui quibusdam pariatur magnam sed error. Occaecati facilis accusamus quo qui nostrum veritatis corporis.\n\nAdipisci culpa in voluptas eos est eum. Vel enim consequuntur aliquam vitae magnam sit. Eum magni aut in beatae debitis. Est quas ut qui.\n\nExpedita cum iusto rem. Ut consequatur hic unde praesentium dignissimos aliquam. Qui tempora iste delectus sequi quidem. Eaque iste quia ex.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;released&quot;,
-            &quot;release_year&quot;: &quot;2021&quot;,
-            &quot;imdb_score&quot;: 9.13,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.9,
             &quot;aliases&quot;: [
-                &quot;quae&quot;,
-                &quot;odit&quot;,
-                &quot;aut&quot;
+                &quot;Placeat et et earum.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;
+                &quot;Іспанія&quot;,
+                &quot;Китай&quot;
             ],
-            &quot;episodes_count&quot;: 5,
-            &quot;average_rating&quot;: 5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 8,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Фантастика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;name&quot;: &quot;Excepturi ad ut iste.&quot;,
-            &quot;slug&quot;: &quot;excepturi-ad-ut-iste-4ffa7m&quot;,
-            &quot;description&quot;: &quot;Et molestias at aut repudiandae. Et autem neque modi et aut beatae rem vero. Qui aut occaecati rem doloribus. Aspernatur et corrupti ut explicabo quia enim repudiandae.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00ee22?text=movies+Movie+Poster+voluptas&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb44?text=movies+Poster+maiores&quot;,
+            &quot;id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;name&quot;: &quot;Вікінги 18&quot;,
+            &quot;slug&quot;: &quot;vikingi-18&quot;,
+            &quot;description&quot;: &quot;Серіал Вікінги 18 розкриває глибокі філософські питання через захоплюючий сюжет та яскравих персонажів. Aut omnis optio laudantium vitae. Nulla quae incidunt ut et laboriosam aspernatur. Sint voluptatem sit facilis saepe quia accusamus similique. Blanditiis sed dolore temporibus.\n\nRerum et officia sit nobis aperiam est veniam harum. Laboriosam quam est quas ut quae saepe ipsa. Fugit reiciendis dicta voluptas cumque quibusdam. Doloremque quaerat expedita ipsum sunt facilis.\n\nEnim qui quo dolores quaerat sit labore. Autem quam minus sapiente culpa totam illum culpa. Voluptas illo dolores et cupiditate eius maxime. Consectetur sapiente totam sequi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
             &quot;kind&quot;: &quot;tv_series&quot;,
             &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2015&quot;,
-            &quot;imdb_score&quot;: 9.06,
+            &quot;release_year&quot;: &quot;2025&quot;,
+            &quot;imdb_score&quot;: 9.5,
             &quot;aliases&quot;: [
-                &quot;cumque&quot;,
-                &quot;nemo&quot;,
-                &quot;nostrum&quot;
+                &quot;Aut id cupiditate delectus velit.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;KR&quot;,
-                &quot;UA&quot;,
-                &quot;GB&quot;
+                &quot;США&quot;,
+                &quot;Бразилія&quot;,
+                &quot;Велика Британія&quot;
             ],
-            &quot;episodes_count&quot;: 3,
-            &quot;average_rating&quot;: 2.3,
-            &quot;main_genre&quot;: &quot;Documentary&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzap5bzc16f8enx5mvw3&quot;,
-            &quot;name&quot;: &quot;Modi modi quo perspiciatis.&quot;,
-            &quot;slug&quot;: &quot;modi-modi-quo-perspiciatis-wuuins&quot;,
-            &quot;description&quot;: &quot;Totam laboriosam soluta maiores. Voluptas ipsam autem laboriosam eum unde nam animi reiciendis. Repudiandae eos aut odio ipsum. Temporibus labore deserunt vel repudiandae corporis molestiae praesentium delectus.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00aaff?text=movies+Movie+Poster+exercitationem&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/000088?text=movies+Poster+consequatur&quot;,
+            &quot;id&quot;: &quot;01jven45qqt6k24g7hgmkgqxy8&quot;,
+            &quot;name&quot;: &quot;Ван Піс 41&quot;,
+            &quot;slug&quot;: &quot;van-pis-41&quot;,
+            &quot;description&quot;: &quot;Аніме Ван Піс 41 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокі філософські питання. Adipisci numquam nemo alias et sint. Nulla architecto voluptatem quas vero suscipit et quia. Maiores aliquid sint blanditiis est delectus similique consequatur aliquam.\n\nUt sit laudantium dignissimos veritatis et sed. Ab vero illum nihil nulla. Quam quia omnis illum corporis perspiciatis. Et enim doloremque possimus nam inventore sapiente dicta.\n\nAutem exercitationem et dolorum modi in architecto. Tenetur dolores maxime ex ipsum voluptatem labore.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;ongoing&quot;,
-            &quot;release_year&quot;: &quot;2018&quot;,
-            &quot;imdb_score&quot;: 8.51,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.5,
             &quot;aliases&quot;: [
-                &quot;dolor&quot;,
-                &quot;est&quot;,
-                &quot;quos&quot;
+                &quot;Culpa dolorem quasi inventore.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;DE&quot;
+                &quot;Іспанія&quot;,
+                &quot;Україна&quot;,
+                &quot;Мексика&quot;
             ],
-            &quot;episodes_count&quot;: 41,
-            &quot;average_rating&quot;: 4.4,
-            &quot;main_genre&quot;: &quot;Martial Arts&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 7,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Комедія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzb9rcepv6zw6d78qbcb&quot;,
-            &quot;name&quot;: &quot;Atque beatae quas.&quot;,
-            &quot;slug&quot;: &quot;atque-beatae-quas-4nvqlp&quot;,
-            &quot;description&quot;: &quot;Perspiciatis consequuntur maxime aut sit et voluptatibus nihil. Aspernatur explicabo itaque quam sunt. Sint ab cumque atque et quia. Id dolorum natus praesentium omnis magni quod eaque.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00ccee?text=movies+Movie+Poster+esse&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/007799?text=movies+Poster+quaerat&quot;,
+            &quot;id&quot;: &quot;01jven45ny6drt9y05txdvahm1&quot;,
+            &quot;name&quot;: &quot;Ванпанчмен 17&quot;,
+            &quot;slug&quot;: &quot;vanpancmen-17&quot;,
+            &quot;description&quot;: &quot;Ванпанчмен 17 - це анімаційний серіал з яскравими персонажами та глибоким сюжетом. Placeat voluptatem ipsam exercitationem expedita placeat. Ipsa ut temporibus quia aperiam. Et ab minima explicabo est fugiat nostrum. Distinctio aspernatur quidem sunt voluptatem sunt.\n\nAut eos voluptas aperiam unde libero. Quis quas suscipit qui magnam. Ad eum nostrum voluptas nesciunt.\n\nEt sed facere velit nisi assumenda. Magni nihil iste excepturi consectetur quo qui voluptas. Qui dolor neque cupiditate voluptatibus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;ongoing&quot;,
-            &quot;release_year&quot;: &quot;2017&quot;,
-            &quot;imdb_score&quot;: 8.11,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2019&quot;,
+            &quot;imdb_score&quot;: 9.5,
             &quot;aliases&quot;: [
-                &quot;amet&quot;,
-                &quot;nobis&quot;,
-                &quot;quasi&quot;
+                &quot;Nihil maiores unde ullam.&quot;,
+                &quot;Ванпанчмен 17: provident dolore consectetur&quot;
             ],
             &quot;countries&quot;: [
-                &quot;JP&quot;,
-                &quot;UA&quot;
+                &quot;Південна Корея&quot;,
+                &quot;Японія&quot;
             ],
-            &quot;episodes_count&quot;: 2,
-            &quot;average_rating&quot;: 5.6,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 8,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzbats2y6dhrrmyq0g4p&quot;,
-            &quot;name&quot;: &quot;Id animi qui.&quot;,
-            &quot;slug&quot;: &quot;id-animi-qui-8kvkka&quot;,
-            &quot;description&quot;: &quot;Nam quibusdam iste eos asperiores. Maiores in et quia qui modi animi. Incidunt quia blanditiis at omnis.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00aa77?text=movies+Movie+Poster+deleniti&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/001133?text=movies+Poster+aut&quot;,
+            &quot;id&quot;: &quot;01jven45pt8abcsbx6vnmbpd7y&quot;,
+            &quot;name&quot;: &quot;Клинок, що знищує демонів 29&quot;,
+            &quot;slug&quot;: &quot;klinok-shho-znishhuje-demoniv-29&quot;,
+            &quot;description&quot;: &quot;Аніме Клинок, що знищує демонів 29 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокі філософські питання. Voluptates dolorem et ut. Numquam fugiat hic nam.\n\nAliquid iste nulla impedit. Fuga quia architecto magni reiciendis officiis voluptatem eveniet. Voluptatem impedit eius fuga dolorum aut nam eaque. Harum assumenda itaque ut animi cum sequi.\n\nExpedita et dolorem eveniet possimus et esse ex placeat. Impedit nemo ab neque itaque. Distinctio enim pariatur voluptas et reprehenderit tempore ut.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2024&quot;,
+            &quot;imdb_score&quot;: 9.5,
+            &quot;aliases&quot;: [
+                &quot;Molestias voluptatem nihil.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Канада&quot;,
+                &quot;Іспанія&quot;,
+                &quot;Японія&quot;
+            ],
+            &quot;episodes_count&quot;: 10,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45mjpy9kdnzt361mwv7m&quot;,
+            &quot;name&quot;: &quot;Офіс 1&quot;,
+            &quot;slug&quot;: &quot;ofis-1&quot;,
+            &quot;description&quot;: &quot;У серіалі Офіс 1 глядачі побачать неймовірні пригоди головних героїв у різних ситуаціях. Laboriosam esse laboriosam iure quo ullam ea ipsa. Rerum facilis illum nesciunt vel architecto. Ab cum illum exercitationem perspiciatis dolor voluptatum laudantium.\n\nDelectus quod nam earum doloribus et harum ut. Amet dolor quas laudantium autem. Voluptas aut deleniti iusto deserunt itaque reprehenderit. Voluptatum magnam vero assumenda et amet.\n\nCum quisquam ut quod quisquam et. Est modi enim libero qui quam. Rerum perspiciatis sed iusto vel aperiam voluptatibus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;tv_series&quot;,
             &quot;status&quot;: &quot;released&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 7.55,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
             &quot;aliases&quot;: [
-                &quot;velit&quot;,
-                &quot;nisi&quot;,
-                &quot;adipisci&quot;
+                &quot;Et aut.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;GB&quot;,
-                &quot;US&quot;
+                &quot;Канада&quot;,
+                &quot;Японія&quot;,
+                &quot;Франція&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 6.3,
-            &quot;main_genre&quot;: &quot;Based on Book&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 15,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Романтика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzb7199vkxwv817t0j9f&quot;,
-            &quot;name&quot;: &quot;Molestiae qui dolore.&quot;,
-            &quot;slug&quot;: &quot;molestiae-qui-dolore-osrlnf&quot;,
-            &quot;description&quot;: &quot;Non officia nihil natus. Eum rerum animi fuga est beatae. Ut possimus neque vel.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00eecc?text=movies+Movie+Poster+sapiente&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/006688?text=movies+Poster+expedita&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;id&quot;: &quot;01jven45qgx8js3fwbbjvpm1mn&quot;,
+            &quot;name&quot;: &quot;Друзі 38&quot;,
+            &quot;slug&quot;: &quot;druzi-38&quot;,
+            &quot;description&quot;: &quot;Друзі 38 - це драматичний серіал про складні людські стосунки та життєві випробування. Ad accusamus quos alias incidunt quos et quasi porro. Fuga ea similique quia quis ea. Ea voluptates est quis asperiores.\n\nLaboriosam autem quos qui in. Eveniet ut excepturi expedita id soluta. Et consequuntur laborum dolorum hic dolor.\n\nUt at et eum tempore. Voluptatum quia aut impedit officiis. Amet id numquam aperiam velit sit. Eaque provident assumenda provident earum qui.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
             &quot;status&quot;: &quot;anons&quot;,
             &quot;release_year&quot;: &quot;2020&quot;,
-            &quot;imdb_score&quot;: 7.02,
+            &quot;imdb_score&quot;: 9,
             &quot;aliases&quot;: [
-                &quot;officiis&quot;,
-                &quot;officiis&quot;,
-                &quot;delectus&quot;
+                &quot;Aliquam consequatur ratione molestiae.&quot;,
+                &quot;Друзі 38: ut explicabo rerum&quot;
             ],
             &quot;countries&quot;: [
-                &quot;FR&quot;,
-                &quot;UA&quot;,
-                &quot;JP&quot;
+                &quot;Німеччина&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 8,
-            &quot;main_genre&quot;: &quot;Documentary&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 5,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Комедія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzb3hmppzaw7errx536f&quot;,
-            &quot;name&quot;: &quot;Rem asperiores doloremque.&quot;,
-            &quot;slug&quot;: &quot;rem-asperiores-doloremque-wzoabc&quot;,
-            &quot;description&quot;: &quot;Aspernatur quisquam vel aut quos. Eaque quidem aut qui esse laudantium sequi. Atque sed vel recusandae dignissimos vero. Voluptatum sit laudantium quasi molestiae nihil voluptas.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00aa99?text=movies+Movie+Poster+qui&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00aa88?text=movies+Poster+consectetur&quot;,
+            &quot;id&quot;: &quot;01jven45nr73mfw2x202p6cypv&quot;,
+            &quot;name&quot;: &quot;Гра престолів 14&quot;,
+            &quot;slug&quot;: &quot;gra-prestoliv-14&quot;,
+            &quot;description&quot;: &quot;Гра престолів 14 - це історія про звичайних людей, які опиняються в надзвичайних обставинах. Autem rerum ut laborum. Repellat rerum molestias consequuntur delectus dolor dolorem. Rerum dolores ut rerum aperiam ducimus autem. Aliquid dolor repudiandae minus officia neque modi quae.\n\nIpsum autem suscipit voluptatem modi id. Incidunt omnis quibusdam nam quia totam. Dignissimos ducimus earum et atque recusandae quod. Sunt et neque aperiam suscipit. Fugiat sit ullam atque.\n\nVoluptate dolores natus eius laboriosam dolore. Nesciunt iste quidem debitis assumenda aut. Distinctio molestiae et non est. Qui excepturi minus voluptatem fugiat labore quis. Quos sit error magnam qui.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
             &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2015&quot;,
-            &quot;imdb_score&quot;: 6.67,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 8.8,
             &quot;aliases&quot;: [
-                &quot;error&quot;,
-                &quot;harum&quot;,
-                &quot;dolorem&quot;
+                &quot;Culpa cumque cupiditate tenetur.&quot;,
+                &quot;Гра престолів 14: pariatur officia aperiam&quot;
             ],
             &quot;countries&quot;: [
-                &quot;JP&quot;
+                &quot;США&quot;,
+                &quot;Велика Британія&quot;,
+                &quot;Китай&quot;
             ],
-            &quot;episodes_count&quot;: 50,
-            &quot;average_rating&quot;: 4.8,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 9,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzb5cfq6gv1sg8dz8kf5&quot;,
-            &quot;name&quot;: &quot;Placeat quam assumenda animi.&quot;,
-            &quot;slug&quot;: &quot;placeat-quam-assumenda-animi-nb0qo8&quot;,
-            &quot;description&quot;: &quot;Rem consequuntur minima animi corrupti. Voluptates magnam non excepturi. Quia in laudantium et consequuntur inventore harum. Facilis quasi eligendi eos officiis.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/006611?text=movies+Movie+Poster+tenetur&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/000088?text=movies+Poster+qui&quot;,
+            &quot;id&quot;: &quot;01jven45qt997qg4km6hqszver&quot;,
+            &quot;name&quot;: &quot;Привид у броні 42&quot;,
+            &quot;slug&quot;: &quot;privid-u-broni-42&quot;,
+            &quot;description&quot;: &quot;Аніме Привид у броні 42 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокі філософські питання. Doloribus quaerat et sunt rerum. Molestias eum dolorem sunt porro odit. Quidem laboriosam sequi a.\n\nId nostrum ut repellendus nam impedit explicabo dignissimos. Aut distinctio officiis laboriosam voluptas. Nesciunt inventore dolorem dolorum. Molestiae cumque maiores blanditiis quia magnam rerum.\n\nEt rerum velit voluptatum. Magnam hic voluptates enim delectus. Aut et doloremque doloribus illo. Aliquid vel saepe quia est. Debitis aut nulla odit excepturi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/1.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
             &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2018&quot;,
-            &quot;imdb_score&quot;: 5.91,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 8.5,
             &quot;aliases&quot;: [
-                &quot;ipsum&quot;,
-                &quot;ex&quot;,
-                &quot;sunt&quot;
+                &quot;Aut autem cupiditate illo.&quot;,
+                &quot;Привид у броні 42: commodi voluptates iure&quot;
             ],
             &quot;countries&quot;: [
-                &quot;JP&quot;,
-                &quot;GB&quot;
+                &quot;Велика Британія&quot;,
+                &quot;Італія&quot;,
+                &quot;Мексика&quot;
             ],
-            &quot;episodes_count&quot;: 16,
-            &quot;average_rating&quot;: 5.5,
-            &quot;main_genre&quot;: &quot;Action&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 8,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Комедія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzabjy961y5xgr1dyemr&quot;,
-            &quot;name&quot;: &quot;Voluptatem inventore officiis.&quot;,
-            &quot;slug&quot;: &quot;voluptatem-inventore-officiis-hpru4d&quot;,
-            &quot;description&quot;: &quot;Ea dolorum est sapiente qui et velit iste. Est vel ipsa ea quaerat quisquam sit accusantium. Nemo numquam ad est vitae. Sed fugiat impedit unde et. In delectus quis fugiat libero.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0022ff?text=movies+Movie+Poster+maiores&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ddcc?text=movies+Poster+eos&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 5.47,
-            &quot;aliases&quot;: [
-                &quot;iste&quot;,
-                &quot;ducimus&quot;,
-                &quot;voluptatem&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;US&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 4.5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzarrzfzm4mfrjmkvt76&quot;,
-            &quot;name&quot;: &quot;Nostrum sed quia dignissimos.&quot;,
-            &quot;slug&quot;: &quot;nostrum-sed-quia-dignissimos-0hnfzs&quot;,
-            &quot;description&quot;: &quot;Tempora molestias enim quisquam at. Et a est aut qui consequatur. Asperiores a qui earum quos sapiente incidunt numquam eaque.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0022aa?text=movies+Movie+Poster+est&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/008800?text=movies+Poster+perferendis&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 4.19,
-            &quot;aliases&quot;: [
-                &quot;quibusdam&quot;,
-                &quot;ex&quot;,
-                &quot;nihil&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;,
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 3.5,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzah5e99w7wf3qk5vx2m&quot;,
-            &quot;name&quot;: &quot;Voluptatem deleniti laudantium commodi.&quot;,
-            &quot;slug&quot;: &quot;voluptatem-deleniti-laudantium-commodi-gc15c2&quot;,
-            &quot;description&quot;: &quot;Est architecto praesentium omnis alias. Fugiat dolores voluptatem nisi iure corrupti. Voluptatibus est repellat quaerat deserunt natus. Saepe autem dolorum placeat incidunt culpa.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/003311?text=movies+Movie+Poster+sit&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0000bb?text=movies+Poster+aliquam&quot;,
+            &quot;id&quot;: &quot;01jven45pz5zdy318kaj21n1va&quot;,
+            &quot;name&quot;: &quot;Привид у броні 31&quot;,
+            &quot;slug&quot;: &quot;privid-u-broni-31&quot;,
+            &quot;description&quot;: &quot;Привид у броні 31 - це анімаційний серіал з яскравими персонажами та глибоким сюжетом. Enim aliquam consequatur autem et est. Cupiditate fugiat voluptatem sit sequi alias. Iste quidem aut officia cum velit dolore vel. Deleniti error sit autem vel fugit. Suscipit error est quia itaque.\n\nSit eaque non laboriosam quam perspiciatis rerum error. Consequatur consequatur ad fuga.\n\nNecessitatibus consequuntur sunt quas unde. Porro tenetur molestias exercitationem quos error. Alias corporis aut veniam eaque velit nihil non.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
             &quot;status&quot;: &quot;ongoing&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 3.52,
-            &quot;aliases&quot;: [
-                &quot;quisquam&quot;,
-                &quot;distinctio&quot;,
-                &quot;et&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;JP&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 5.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzb4kh4cfxxrzmk5pkyy&quot;,
-            &quot;name&quot;: &quot;Quas libero similique voluptatem.&quot;,
-            &quot;slug&quot;: &quot;quas-libero-similique-voluptatem-zbv5gl&quot;,
-            &quot;description&quot;: &quot;Itaque placeat fugit quas sint quasi voluptas eos. Quo repellendus assumenda consectetur dolor tempore non. Consequuntur ipsam tenetur consequuntur blanditiis reprehenderit.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/002200?text=movies+Movie+Poster+distinctio&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ffcc?text=movies+Poster+magni&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;anons&quot;,
             &quot;release_year&quot;: &quot;2017&quot;,
-            &quot;imdb_score&quot;: 3.49,
+            &quot;imdb_score&quot;: 7.9,
             &quot;aliases&quot;: [
-                &quot;repudiandae&quot;,
-                &quot;labore&quot;,
-                &quot;non&quot;
+                &quot;Veritatis quia reprehenderit.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;DE&quot;
+                &quot;Велика Британія&quot;,
+                &quot;США&quot;,
+                &quot;Бразилія&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 4.3,
-            &quot;main_genre&quot;: &quot;Based on Book&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 5,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzaqgxm83mgzfrp2s739&quot;,
-            &quot;name&quot;: &quot;Blanditiis quam dicta.&quot;,
-            &quot;slug&quot;: &quot;blanditiis-quam-dicta-8rnu3h&quot;,
-            &quot;description&quot;: &quot;Corporis et provident consectetur in soluta nam et. Delectus eligendi suscipit et et quas illo ad. Ut magnam placeat sapiente dolor beatae sed. Est occaecati rerum adipisci eligendi est.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0055cc?text=movies+Movie+Poster+nostrum&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00aaff?text=movies+Poster+sed&quot;,
+            &quot;id&quot;: &quot;01jven45q62evfdfh57ydgce8v&quot;,
+            &quot;name&quot;: &quot;Дуже дивні справи 34&quot;,
+            &quot;slug&quot;: &quot;duze-divni-spravi-34&quot;,
+            &quot;description&quot;: &quot;Серіал Дуже дивні справи 34 розкриває глибокі філософські питання через захоплюючий сюжет та яскравих персонажів. Architecto tenetur nisi tempora similique delectus. Enim quam doloribus eum itaque et ab sed. Voluptatem enim necessitatibus et inventore suscipit expedita quisquam.\n\nCupiditate libero voluptatibus ut doloremque nesciunt. Voluptas modi et assumenda quaerat ipsam alias. Natus consequuntur dolore laboriosam error totam doloribus repudiandae. Laboriosam vitae fugit enim ab numquam ipsa vero itaque.\n\nTempora vel laudantium eius cupiditate qui rerum. Rerum porro eius minus voluptatibus accusantium sit corporis. Explicabo itaque cum molestiae alias voluptatem nesciunt odit.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/1.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 7.6,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Південна Корея&quot;,
+                &quot;Канада&quot;
+            ],
+            &quot;episodes_count&quot;: 5,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45q3hyqxyrzfw50p1qzx&quot;,
+            &quot;name&quot;: &quot;Євангеліон 33&quot;,
+            &quot;slug&quot;: &quot;jevangelion-33&quot;,
+            &quot;description&quot;: &quot;Євангеліон 33 - це анімаційний серіал з яскравими персонажами та глибоким сюжетом. Sunt dolores facere possimus voluptatem quo. Suscipit aliquid voluptate id cupiditate at ut totam et. Explicabo ipsa maxime provident explicabo. Distinctio ut ullam hic saepe et.\n\nVoluptates libero corporis repellendus pariatur. Commodi tempora deserunt aliquid et molestias. Ducimus consequatur impedit eaque dolore.\n\nQuo quod laboriosam quo quidem a fuga dolores placeat. Quod quae sit commodi dolores a. Vel ipsum illo voluptatem adipisci consequatur ipsum et. Esse cumque rerum nobis.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 7.3,
+            &quot;aliases&quot;: [
+                &quot;Євангеліон 33: eum dolor nam&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Індія&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nc2mgj4q6kr6vwj495&quot;,
+            &quot;name&quot;: &quot;Код Гіас 9&quot;,
+            &quot;slug&quot;: &quot;kod-gias-9&quot;,
+            &quot;description&quot;: &quot;Аніме Код Гіас 9 розповідає захоплюючу історію, яка розгортається протягом кількох сезонів. Quia officia ut qui sed consequatur ea aspernatur. Eos amet maiores facilis neque molestiae. Soluta ut culpa non et voluptates. Sapiente rem repudiandae ut sint.\n\nTotam libero eius recusandae animi distinctio porro hic qui. Corrupti repudiandae voluptate suscipit recusandae sint quo. Et ad saepe blanditiis repudiandae nihil tempora reprehenderit. Praesentium vel at maiores eos.\n\nId fugiat officiis provident autem et est cumque. Odio in et qui minus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2015&quot;,
+            &quot;imdb_score&quot;: 6.9,
+            &quot;aliases&quot;: [
+                &quot;In eius accusantium velit.&quot;,
+                &quot;Код Гіас 9: aliquid nesciunt sapiente&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Південна Корея&quot;,
+                &quot;Велика Британія&quot;
+            ],
+            &quot;episodes_count&quot;: 7,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Комедія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qnq5hb18mqy9xn3qng&quot;,
+            &quot;name&quot;: &quot;Наруто 40&quot;,
+            &quot;slug&quot;: &quot;naruto-40&quot;,
+            &quot;description&quot;: &quot;Наруто 40 - це історія про дружбу, відвагу та самопізнання, розказана через японську анімацію. Minus ratione vero ut. Aut sapiente ut alias ab. Rerum non est accusamus alias. Id incidunt beatae dignissimos ea rem.\n\nOdit quam dolor provident facere. Ut enim architecto odio ipsa et. Nihil sit ea quia ea et veritatis nemo.\n\nQui similique commodi quibusdam velit rerum enim. Dolores enim fugit aspernatur. Quia consequatur omnis ratione mollitia dolorum sit qui explicabo.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2025&quot;,
+            &quot;imdb_score&quot;: 6.7,
+            &quot;aliases&quot;: [
+                &quot;Ea doloribus mollitia.&quot;,
+                &quot;Наруто 40: tenetur illum dolores&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Італія&quot;,
+                &quot;Канада&quot;
+            ],
+            &quot;episodes_count&quot;: 12,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qkt5s00tc35tfthdsg&quot;,
+            &quot;name&quot;: &quot;Ван Піс 39&quot;,
+            &quot;slug&quot;: &quot;van-pis-39&quot;,
+            &quot;description&quot;: &quot;Ван Піс 39 - це анімаційний серіал з яскравими персонажами та глибоким сюжетом. Quia qui esse consequatur provident et quia est. Neque eum quisquam corporis ut quos iusto. Velit mollitia itaque eos animi nihil. Fugit aut expedita quia quia.\n\nDistinctio nemo voluptatem in sunt culpa est odio. Illum quae enim dolor voluptas culpa sunt. Iure enim est aliquam molestias. Quo placeat modi ipsam aspernatur delectus perferendis corrupti.\n\nDelectus odio molestiae eum autem temporibus adipisci. Harum natus et sunt doloremque. Sit corporis ipsam corrupti voluptatem minima repudiandae. Officia esse et hic id et.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2018&quot;,
+            &quot;imdb_score&quot;: 6.7,
+            &quot;aliases&quot;: [
+                &quot;Voluptatem autem quia commodi.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Канада&quot;,
+                &quot;Індія&quot;
+            ],
+            &quot;episodes_count&quot;: 5,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45mwqrjv3w6dztptnk9q&quot;,
+            &quot;name&quot;: &quot;Хлопаки 2&quot;,
+            &quot;slug&quot;: &quot;xlopaki-2&quot;,
+            &quot;description&quot;: &quot;Хлопаки 2 - це історія про звичайних людей, які опиняються в надзвичайних обставинах. Neque recusandae aliquam blanditiis sit et dolor. Fuga sapiente dicta consectetur sit maxime libero. Similique voluptatem est in voluptatem laborum nobis.\n\nSint unde laboriosam sint rerum eos. Minus ut ut laboriosam tempora. Minima qui sit beatae corporis.\n\nAut sequi dolorum autem aut qui. Ea autem qui repellat non quam perferendis vel et. Esse facilis atque est velit quos.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2017&quot;,
+            &quot;imdb_score&quot;: 6.7,
+            &quot;aliases&quot;: [
+                &quot;Sed sed nostrum ut.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Мексика&quot;,
+                &quot;Канада&quot;,
+                &quot;Китай&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
+            &quot;name&quot;: &quot;Доктор Стоун 24&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24&quot;,
+            &quot;description&quot;: &quot;У аніме Доктор Стоун 24 глядачі побачать неймовірні пригоди головних героїв у фантастичному світі. Aspernatur sequi voluptates molestiae atque ad deleniti mollitia consequatur. Reprehenderit eligendi aut ex natus autem vitae et.\n\nNeque dicta incidunt cupiditate corrupti sed ea. Aut repudiandae atque totam dolor. Aspernatur error aut aut voluptas aspernatur eaque. Dignissimos illo illum ullam quia.\n\nLaudantium earum debitis qui nulla veritatis ut necessitatibus. Voluptatem in id laudantium odit. Animi aliquam ea totam quis sed porro.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
             &quot;status&quot;: &quot;released&quot;,
             &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 3.1,
+            &quot;imdb_score&quot;: 5.6,
             &quot;aliases&quot;: [
-                &quot;repellat&quot;,
-                &quot;necessitatibus&quot;,
-                &quot;consequatur&quot;
+                &quot;Consectetur quod esse voluptatem.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;DE&quot;,
-                &quot;UA&quot;
+                &quot;Німеччина&quot;
             ],
-            &quot;episodes_count&quot;: 5,
-            &quot;average_rating&quot;: 4.3,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 12,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Фантастика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzb6d4xg9f3ytmrfkt20&quot;,
-            &quot;name&quot;: &quot;Id nostrum et non.&quot;,
-            &quot;slug&quot;: &quot;id-nostrum-et-non-iwylox&quot;,
-            &quot;description&quot;: &quot;Enim sint sed id omnis aut magni exercitationem. Reiciendis possimus nesciunt quia tempora porro quisquam excepturi. Et porro dolorem ipsum ut. Omnis voluptas dolorum vero minus amet ipsum.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0033aa?text=movies+Movie+Poster+at&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/000011?text=movies+Poster+magnam&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2020&quot;,
-            &quot;imdb_score&quot;: 2.81,
-            &quot;aliases&quot;: [
-                &quot;porro&quot;,
-                &quot;praesentium&quot;,
-                &quot;ut&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;JP&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 6.7,
-            &quot;main_genre&quot;: &quot;Documentary&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzas24nvkvsq0ne1vzbh&quot;,
-            &quot;name&quot;: &quot;At quibusdam aperiam delectus.&quot;,
-            &quot;slug&quot;: &quot;at-quibusdam-aperiam-delectus-cdkhew&quot;,
-            &quot;description&quot;: &quot;Ad et autem nesciunt quam. Iure ut ratione voluptatibus. Mollitia maiores enim architecto nihil praesentium excepturi. Consequatur libero laborum in veniam quas exercitationem.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0033aa?text=movies+Movie+Poster+qui&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/008822?text=movies+Poster+et&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2022&quot;,
-            &quot;imdb_score&quot;: 1.77,
-            &quot;aliases&quot;: [
-                &quot;eos&quot;,
-                &quot;minima&quot;,
-                &quot;dolor&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;US&quot;,
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 8,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzatk96rsxxv3p76dxv0&quot;,
-            &quot;name&quot;: &quot;Fugiat voluptatem soluta aut praesentium.&quot;,
-            &quot;slug&quot;: &quot;fugiat-voluptatem-soluta-aut-praesentium-5qj4sc&quot;,
-            &quot;description&quot;: &quot;Vero tempora molestias nemo sed tenetur ad. Beatae quis unde consequatur libero quos. Quod aut non assumenda fuga commodi est officia perspiciatis.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/005500?text=movies+Movie+Poster+accusantium&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0033cc?text=movies+Poster+sit&quot;,
+            &quot;id&quot;: &quot;01jven45q9y2s3qckwkv71yqf3&quot;,
+            &quot;name&quot;: &quot;Ковбой Бібоп 35&quot;,
+            &quot;slug&quot;: &quot;kovboi-bibop-35&quot;,
+            &quot;description&quot;: &quot;Аніме Ковбой Бібоп 35 розповідає захоплюючу історію, яка розгортається протягом кількох сезонів. Adipisci adipisci voluptates nihil voluptate. Nam enim earum a earum earum. Animi voluptatum aliquam voluptatem veniam et. Earum nobis dolor voluptatem labore id molestiae et facilis.\n\nAtque ut autem alias. Magnam expedita officiis quia vero iusto. Rem doloremque quos qui in est qui.\n\nTotam est aut suscipit delectus quia. Nostrum blanditiis eveniet et cupiditate vel sequi. Dolores laborum at commodi nesciunt deleniti. Et labore adipisci hic rerum quibusdam qui nihil repudiandae.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/1.jpg&quot;,
             &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2020&quot;,
-            &quot;imdb_score&quot;: 1.45,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 5.5,
             &quot;aliases&quot;: [
-                &quot;iusto&quot;,
-                &quot;voluptatibus&quot;,
-                &quot;vel&quot;
+                &quot;Ratione sint ut unde.&quot;,
+                &quot;Ковбой Бібоп 35: qui suscipit illum&quot;
             ],
             &quot;countries&quot;: [
-                &quot;DE&quot;,
-                &quot;US&quot;
+                &quot;Україна&quot;,
+                &quot;Австралія&quot;,
+                &quot;Іспанія&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 7,
-            &quot;main_genre&quot;: &quot;Science Fiction&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;name&quot;: &quot;Офіс 3&quot;,
+            &quot;slug&quot;: &quot;ofis-3&quot;,
+            &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2015&quot;,
+            &quot;imdb_score&quot;: 5.5,
+            &quot;aliases&quot;: [
+                &quot;Quaerat velit numquam illo.&quot;,
+                &quot;Офіс 3: minima ut aut&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Україна&quot;,
+                &quot;Мексика&quot;,
+                &quot;Велика Британія&quot;
+            ],
+            &quot;episodes_count&quot;: 7,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Кримінал&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45pnpjabq8nt1vksbrrj&quot;,
+            &quot;name&quot;: &quot;Наруто 27&quot;,
+            &quot;slug&quot;: &quot;naruto-27&quot;,
+            &quot;description&quot;: &quot;Наруто 27 - це історія про дружбу, відвагу та самопізнання, розказана через японську анімацію. Possimus voluptate et facere dicta. Et placeat quaerat consequatur dolores recusandae aliquid. Fuga molestias aut earum et. In dolor et et assumenda.\n\nUt eos ducimus nulla ut inventore tenetur autem. Est rerum porro occaecati nemo qui et iusto veritatis. Aspernatur eos ut adipisci ut id similique mollitia aperiam. Ut sit eum minus voluptates quidem nesciunt dolore. Magni excepturi dignissimos debitis necessitatibus necessitatibus consequatur necessitatibus.\n\nRepudiandae minus animi exercitationem at. Modi doloribus ut sunt. Sed quasi beatae voluptatem.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2015&quot;,
+            &quot;imdb_score&quot;: 5.4,
+            &quot;aliases&quot;: [
+                &quot;Accusantium ipsam deleniti cum.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Південна Корея&quot;,
+                &quot;Велика Британія&quot;,
+                &quot;Україна&quot;
+            ],
+            &quot;episodes_count&quot;: 7,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         }
     ]
 }</code>
@@ -2420,14 +2589,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/popular/people" \
+    --get "http://127.0.0.1:8000/api/v1/popular/people" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/popular/people"
+    "http://127.0.0.1:8000/api/v1/popular/people"
 );
 
 const headers = {
@@ -2452,291 +2621,290 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynz3jx17vkjqey21q8a4w&quot;,
-            &quot;name&quot;: &quot;Панасюк Ірина Анатоліївна&quot;,
-            &quot;slug&quot;: &quot;panasiuk-irina-anatoliyivna-p9jbku&quot;,
-            &quot;biography&quot;: &quot;Veniam voluptatem quia eos autem aliquam nostrum ipsa dolor tempore sed et quis asperiores est quisquam.&quot;,
-            &quot;image&quot;: null,
-            &quot;type&quot;: &quot;actor&quot;,
-            &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;1956-10-01T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 27,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz4p82t1r92b47jm7x2y&quot;,
-            &quot;name&quot;: &quot;Мельниченко Тамара Анатоліївна&quot;,
-            &quot;slug&quot;: &quot;melnicenko-tamara-anatoliyivna-teirci&quot;,
-            &quot;biography&quot;: &quot;Molestiae voluptates omnis et provident ea ipsa et aut delectus iure cum numquam veniam est quia qui eum sint minus sed.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0099cc?text=people+quas&quot;,
-            &quot;type&quot;: &quot;actor&quot;,
-            &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: null,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 27,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz56gctgx8wq7mmc48c9&quot;,
-            &quot;name&quot;: &quot;Надія Миколаївна Романченко&quot;,
-            &quot;slug&quot;: &quot;nadiia-mikolayivna-romancenko-tficof&quot;,
-            &quot;biography&quot;: &quot;Fugiat cumque rerum quia veniam libero repudiandae adipisci atque et modi distinctio quasi laboriosam et et ut quo.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/005577?text=people+similique&quot;,
-            &quot;type&quot;: &quot;actor&quot;,
-            &quot;gender&quot;: &quot;other&quot;,
-            &quot;birth_date&quot;: &quot;1983-04-06T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 18,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5pranjma4k0d2m2n72&quot;,
-            &quot;name&quot;: &quot;Ігор Йосипович Крамарчук&quot;,
-            &quot;slug&quot;: &quot;igor-iosipovic-kramarcuk-yvk089&quot;,
-            &quot;biography&quot;: &quot;Eveniet omnis nam architecto numquam at doloribus odio corrupti velit ab iste aut ullam ut cupiditate.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0011cc?text=people+architecto&quot;,
-            &quot;type&quot;: &quot;actor&quot;,
-            &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;1953-02-13T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 16,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz6bqadzx4wbbnyabws0&quot;,
-            &quot;name&quot;: &quot;Шевчук Василь Анатолійович&quot;,
-            &quot;slug&quot;: &quot;sevcuk-vasil-anatoliiovic-gztas8&quot;,
-            &quot;biography&quot;: &quot;Numquam quos consequatur quos placeat non similique blanditiis rerum nesciunt voluptas doloribus cum.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00aa44?text=people+et&quot;,
-            &quot;type&quot;: &quot;actor&quot;,
-            &quot;gender&quot;: &quot;other&quot;,
-            &quot;birth_date&quot;: &quot;1965-06-22T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 14,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5291tebe20dp693x7m&quot;,
-            &quot;name&quot;: &quot;Мирослав Миколайович Кравченко&quot;,
-            &quot;slug&quot;: &quot;miroslav-mikolaiovic-kravcenko-vfmoeb&quot;,
-            &quot;biography&quot;: &quot;Rem autem adipisci molestias eius eos quia facilis accusantium aut est dolorem non voluptas temporibus est.&quot;,
-            &quot;image&quot;: null,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;1987-03-21T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 6,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5nav5g5pc6jx0tmtgk&quot;,
-            &quot;name&quot;: &quot;Ірина Олексіївна Антоненко&quot;,
-            &quot;slug&quot;: &quot;irina-oleksiyivna-antonenko-2vk9sl&quot;,
-            &quot;biography&quot;: &quot;Sed voluptas sed est cum nemo enim illo aut voluptas in quia harum dolor quia.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ccdd?text=people+fugiat&quot;,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;1954-12-22T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 6,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5xd71d7xn8ttczypgs&quot;,
-            &quot;name&quot;: &quot;Ярослава Василівна Павлюк&quot;,
-            &quot;slug&quot;: &quot;iaroslava-vasilivna-pavliuk-bc9max&quot;,
-            &quot;biography&quot;: &quot;Blanditiis qui et illum nihil blanditiis occaecati voluptas aut quod quia blanditiis qui labore voluptas soluta maxime et totam ea.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ffee?text=people+voluptas&quot;,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: &quot;1947-11-02T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 4,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5wrk3ts8s94td74z2n&quot;,
-            &quot;name&quot;: &quot;Сергій Іванович Шевчук&quot;,
-            &quot;slug&quot;: &quot;sergii-ivanovic-sevcuk-y8tstc&quot;,
-            &quot;biography&quot;: &quot;Et odit sit dolores sed ut enim totam accusamus eum ad laboriosam quis quos.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ff44?text=people+incidunt&quot;,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: null,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 4,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz477xd12vr3bzrxm5p7&quot;,
-            &quot;name&quot;: &quot;Ігор Іванович Петренко&quot;,
-            &quot;slug&quot;: &quot;igor-ivanovic-petrenko-v44kzm&quot;,
-            &quot;biography&quot;: &quot;Et sit ea in eius harum modi ullam dolor in et commodi quia ex nihil provident sed molestiae.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0033bb?text=people+laborum&quot;,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: null,
-            &quot;birth_date&quot;: &quot;1984-11-05T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 4,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz58a5f0b6angk4gmbwx&quot;,
-            &quot;name&quot;: &quot;Крамаренко Геннадій Євгенійович&quot;,
-            &quot;slug&quot;: &quot;kramarenko-gennadii-jevgeniiovic-fckgce&quot;,
-            &quot;biography&quot;: &quot;Possimus cum aspernatur velit sit nihil recusandae delectus mollitia sunt sit ea neque autem culpa nesciunt.&quot;,
-            &quot;image&quot;: null,
-            &quot;type&quot;: &quot;director&quot;,
-            &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: null,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz3xskywt0rtdy5e94f9&quot;,
-            &quot;name&quot;: &quot;Пономаренко Артур Васильович&quot;,
-            &quot;slug&quot;: &quot;ponomarenko-artur-vasilyovic-zhyqct&quot;,
-            &quot;biography&quot;: &quot;Nostrum itaque temporibus facere laborum fugiat praesentium aliquam assumenda placeat facere perspiciatis omnis culpa ea ea eum vitae at laboriosam.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ee77?text=people+est&quot;,
-            &quot;type&quot;: &quot;cinematographer&quot;,
-            &quot;gender&quot;: null,
-            &quot;birth_date&quot;: null,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz3q8tjxvwmwgq25qxm5&quot;,
-            &quot;name&quot;: &quot;Дмитро Тарасович Мельниченко&quot;,
-            &quot;slug&quot;: &quot;dmitro-tarasovic-melnicenko-t7uxlv&quot;,
-            &quot;biography&quot;: &quot;Voluptas sunt rem odio unde incidunt iste dolores aut ex veniam quod ducimus.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00dd66?text=people+neque&quot;,
-            &quot;type&quot;: &quot;writer&quot;,
-            &quot;gender&quot;: &quot;other&quot;,
-            &quot;birth_date&quot;: &quot;1998-11-21T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz3y305ysdqf8kk131gr&quot;,
-            &quot;name&quot;: &quot;Наташа Михайлівна Крамарчук&quot;,
-            &quot;slug&quot;: &quot;natasa-mixailivna-kramarcuk-fdjadg&quot;,
-            &quot;biography&quot;: &quot;Iusto aut fuga qui rerum quo nulla sequi adipisci occaecati possimus.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ee66?text=people+corporis&quot;,
+            &quot;id&quot;: &quot;01jven45jg7k6s919wx686grnt&quot;,
+            &quot;name&quot;: &quot;Ерен Єгер&quot;,
+            &quot;slug&quot;: &quot;eren-jeger&quot;,
+            &quot;biography&quot;: &quot;Персонаж Ерен Єгер став символом жанру та надихнув багатьох творців. Cum aut voluptas officiis velit. Molestiae qui aut rerum facilis et ut.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
             &quot;type&quot;: &quot;character&quot;,
             &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;1960-03-05T00:00:00.000000Z&quot;,
+            &quot;birth_date&quot;: null,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 17,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz3xskywt0rtdy5e94f8&quot;,
-            &quot;name&quot;: &quot;Раїса Петрівна Таращук&quot;,
-            &quot;slug&quot;: &quot;rayisa-petrivna-tarashhuk-nqdie8&quot;,
-            &quot;biography&quot;: &quot;Est ratione aut aliquid laudantium libero amet vel esse vel vitae ab eum ea voluptas perspiciatis cupiditate perspiciatis animi.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/007733?text=people+dolorem&quot;,
-            &quot;type&quot;: &quot;makeup_artist&quot;,
+            &quot;id&quot;: &quot;01jven45jm7cv3ygshsrz0sj6p&quot;,
+            &quot;name&quot;: &quot;Едвард Елрік&quot;,
+            &quot;slug&quot;: &quot;edvard-elrik&quot;,
+            &quot;biography&quot;: &quot;Едвард Елрік - один з найбільш впізнаваних аніме-персонажів, який має мільйони шанувальників. Non ut error numquam. Magnam libero earum eaque ab porro.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/2.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
             &quot;gender&quot;: &quot;male&quot;,
-            &quot;birth_date&quot;: &quot;2003-03-17T00:00:00.000000Z&quot;,
+            &quot;birth_date&quot;: null,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 16,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz3wax8z7zkzs5krcb06&quot;,
-            &quot;name&quot;: &quot;Андрій Анатолійович Середа&quot;,
-            &quot;slug&quot;: &quot;andrii-anatoliiovic-sereda-2yyel3&quot;,
-            &quot;biography&quot;: &quot;Itaque delectus est corporis fugit quis reiciendis autem sed debitis beatae mollitia quo sit voluptatibus repudiandae.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ee55?text=people+voluptatibus&quot;,
-            &quot;type&quot;: &quot;stunt_performer&quot;,
-            &quot;gender&quot;: null,
-            &quot;birth_date&quot;: &quot;1960-03-31T00:00:00.000000Z&quot;,
-            &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz3pj3tvz6kfydtn5aj6&quot;,
-            &quot;name&quot;: &quot;Діана Анатоліївна Броварчук&quot;,
-            &quot;slug&quot;: &quot;diana-anatoliyivna-brovarcuk-uqxpgv&quot;,
-            &quot;biography&quot;: &quot;Id sint sed perferendis in laboriosam officiis animi autem suscipit qui fuga accusamus porro optio et.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/008844?text=people+consequatur&quot;,
-            &quot;type&quot;: &quot;composer&quot;,
+            &quot;id&quot;: &quot;01jven45jm7cv3ygshsrz0sj6n&quot;,
+            &quot;name&quot;: &quot;Асука Ленглі&quot;,
+            &quot;slug&quot;: &quot;asuka-lengli&quot;,
+            &quot;biography&quot;: &quot;Асука Ленглі - один з найбільш впізнаваних аніме-персонажів, який має мільйони шанувальників. Aut vel qui eligendi. Dolore harum ipsam et qui et ut ut.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/3.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
             &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: &quot;1957-05-30T00:00:00.000000Z&quot;,
+            &quot;birth_date&quot;: null,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 16,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz3vfv4ft59457b1wh1e&quot;,
-            &quot;name&quot;: &quot;Раїса Сергіївна Крамарчук&quot;,
-            &quot;slug&quot;: &quot;rayisa-sergiyivna-kramarcuk-byn33w&quot;,
-            &quot;biography&quot;: &quot;Reiciendis aut reprehenderit impedit ut ut modi quia eaque dicta ipsa non ea qui et provident et et ut.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ff11?text=people+amet&quot;,
-            &quot;type&quot;: &quot;production_designer&quot;,
+            &quot;id&quot;: &quot;01jven45jkj7syk4newy6esysx&quot;,
+            &quot;name&quot;: &quot;Леві Аккерман&quot;,
+            &quot;slug&quot;: &quot;levi-akkerman&quot;,
+            &quot;biography&quot;: &quot;Персонаж Леві Аккерман відомий своїм унікальним характером та розвитком протягом серіалу. Accusamus repellendus consequatur nemo excepturi dolores laborum est non. Doloremque enim quibusdam quibusdam deleniti. Enim autem adipisci quas repudiandae ducimus eveniet nesciunt.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/3.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: null,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 15,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45jjv5drrcj9z0rr525a&quot;,
+            &quot;name&quot;: &quot;Спайк Шпігель&quot;,
+            &quot;slug&quot;: &quot;spaik-spigel&quot;,
+            &quot;biography&quot;: &quot;Персонаж Спайк Шпігель відомий своїм унікальним характером та розвитком протягом серіалу. Occaecati quis dignissimos vel totam pariatur aut est modi. Assumenda velit saepe officia iure numquam deleniti. A ipsa non optio laborum laudantium.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: null,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 14,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45jfmb482n90cjeap9j1&quot;,
+            &quot;name&quot;: &quot;Мікаса Аккерман&quot;,
+            &quot;slug&quot;: &quot;mikasa-akkerman&quot;,
+            &quot;biography&quot;: &quot;Мікаса Аккерман - один з найбільш впізнаваних аніме-персонажів, який має мільйони шанувальників. Dignissimos inventore illo tenetur veniam. Dolor quae omnis et error eius.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
             &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: &quot;1965-04-14T00:00:00.000000Z&quot;,
+            &quot;birth_date&quot;: &quot;2006-06-20T00:00:00.000000Z&quot;,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 14,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz43q3s3w5pkjr438g4d&quot;,
-            &quot;name&quot;: &quot;Єлизавета Романівна Антоненко&quot;,
-            &quot;slug&quot;: &quot;jelizaveta-romanivna-antonenko-tlbhjy&quot;,
-            &quot;biography&quot;: &quot;Consequatur voluptatem praesentium qui et consectetur quos dolor maxime nostrum eos molestiae.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ff77?text=people+magni&quot;,
-            &quot;type&quot;: &quot;costume_designer&quot;,
+            &quot;id&quot;: &quot;01jven45jdww20c2w6s9xy26tp&quot;,
+            &quot;name&quot;: &quot;Наруто Узумакі&quot;,
+            &quot;slug&quot;: &quot;naruto-uzumaki&quot;,
+            &quot;biography&quot;: &quot;Персонаж Наруто Узумакі став символом жанру та надихнув багатьох творців. Beatae sint unde voluptas eveniet repellat odit. Quis adipisci ut ex laudantium ducimus.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: null,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 13,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45jh0dtc0a56j4sbjysf&quot;,
+            &quot;name&quot;: &quot;Гоку&quot;,
+            &quot;slug&quot;: &quot;goku&quot;,
+            &quot;biography&quot;: &quot;Гоку - популярний персонаж аніме, який став культовим серед шанувальників. Nulla aperiam eum totam repellendus porro. Ducimus autem fuga et itaque libero molestiae officia. Vitae rerum nulla rem quia facilis itaque quas.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: null,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 13,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45jh0dtc0a56j4sbjysg&quot;,
+            &quot;name&quot;: &quot;Сейлор Мун&quot;,
+            &quot;slug&quot;: &quot;seilor-mun&quot;,
+            &quot;biography&quot;: &quot;Персонаж Сейлор Мун став символом жанру та надихнув багатьох творців. Magni sit iure quisquam itaque accusamus aliquam. Pariatur quae perspiciatis ab ut eligendi minus possimus. Ab nobis possimus officiis magni omnis.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/4.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
             &quot;gender&quot;: &quot;female&quot;,
-            &quot;birth_date&quot;: &quot;1957-07-14T00:00:00.000000Z&quot;,
+            &quot;birth_date&quot;: &quot;2015-04-02T00:00:00.000000Z&quot;,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 13,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz3tz1mxqwbm98rwgwcz&quot;,
-            &quot;name&quot;: &quot;Мірошниченко Валерія Михайлівна&quot;,
-            &quot;slug&quot;: &quot;mirosnicenko-valeriia-mixailivna-jdxt03&quot;,
-            &quot;biography&quot;: &quot;Non explicabo unde qui mollitia omnis sequi suscipit nemo et.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/006677?text=people+nesciunt&quot;,
-            &quot;type&quot;: &quot;composer&quot;,
-            &quot;gender&quot;: null,
-            &quot;birth_date&quot;: &quot;1973-10-05T00:00:00.000000Z&quot;,
+            &quot;id&quot;: &quot;01jven45jedcejm5dvv3b1sya5&quot;,
+            &quot;name&quot;: &quot;Саске Учіха&quot;,
+            &quot;slug&quot;: &quot;saske-ucixa&quot;,
+            &quot;biography&quot;: &quot;Персонаж Саске Учіха відомий своїм унікальним характером та розвитком протягом серіалу. Commodi aspernatur et enim voluptate ab accusamus quaerat. Voluptas rerum quod id qui.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/5.jpg&quot;,
+            &quot;type&quot;: &quot;character&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: null,
             &quot;death_date&quot;: null,
-            &quot;movies_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;movies_count&quot;: 12,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45jbhd085a5rp89m99y2&quot;,
+            &quot;name&quot;: &quot;Кетрін Бігелоу&quot;,
+            &quot;slug&quot;: &quot;ketrin-bigelou&quot;,
+            &quot;biography&quot;: &quot;Кетрін Бігелоу - відомий режисер, який створив безліч культових фільмів. Et aliquid numquam adipisci dolorem voluptatum illum. Maxime occaecati et enim. Veniam qui hic consequatur unde voluptatibus est.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/directors/1.jpg&quot;,
+            &quot;type&quot;: &quot;director&quot;,
+            &quot;gender&quot;: &quot;female&quot;,
+            &quot;birth_date&quot;: &quot;1984-09-19T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 10,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hky0qdc8gdy5zstzj7&quot;,
+            &quot;name&quot;: &quot;Роберт Дауні-молодший&quot;,
+            &quot;slug&quot;: &quot;robert-dauni-molodsii&quot;,
+            &quot;biography&quot;: &quot;Роберт Дауні-молодший - відомий актор, який знявся у багатьох популярних фільмах та серіалах. Vitae quod est beatae voluptatibus cupiditate error et. Amet ab et porro ea.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1957-12-29T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 10,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hnhrf2ek80vb7m5exz&quot;,
+            &quot;name&quot;: &quot;Дженніфер Лоуренс&quot;,
+            &quot;slug&quot;: &quot;dzennifer-lourens&quot;,
+            &quot;biography&quot;: &quot;Дженніфер Лоуренс - актор, який отримав визнання критиків та глядачів за свої ролі у кіно та на телебаченні. Sed sed odio voluptatem dignissimos laudantium nulla minus. Autem explicabo consectetur iste ipsam magni. Quia ut ab nam velit qui magni.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;female&quot;,
+            &quot;birth_date&quot;: &quot;1978-04-04T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 9,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hv1whm0jh0m34r18m0&quot;,
+            &quot;name&quot;: &quot;Раян Гослінг&quot;,
+            &quot;slug&quot;: &quot;raian-gosling&quot;,
+            &quot;biography&quot;: &quot;Раян Гослінг - один з найбільш впізнаваних акторів сучасності, який має мільйони шанувальників. Nihil temporibus voluptatem sapiente dolore. Possimus pariatur ex animi voluptatem a. Nisi qui nisi non illo.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/4.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1956-07-18T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 9,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45j41f01zfbf1f6r9kgy&quot;,
+            &quot;name&quot;: &quot;Наталі Портман&quot;,
+            &quot;slug&quot;: &quot;natali-portman&quot;,
+            &quot;biography&quot;: &quot;Наталі Портман - актор, який отримав визнання критиків та глядачів за свої ролі у кіно та на телебаченні. Ducimus totam dolorem molestias ut reiciendis. Quia sapiente enim nam cumque aut delectus. Iusto eos velit labore eaque at dolorem.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;female&quot;,
+            &quot;birth_date&quot;: &quot;1981-10-29T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 9,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45j6aprsy9d7jx2veasp&quot;,
+            &quot;name&quot;: &quot;Крістофер Нолан&quot;,
+            &quot;slug&quot;: &quot;kristofer-nolan&quot;,
+            &quot;biography&quot;: &quot;Талановитий режисер Крістофер Нолан відомий своїм умінням розкривати глибокі теми через кінематограф. Aut ut corporis voluptas ex assumenda. Natus earum eius aut praesentium libero.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/directors/3.jpg&quot;,
+            &quot;type&quot;: &quot;director&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1953-02-25T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hxex1kmc2pqd8sxexq&quot;,
+            &quot;name&quot;: &quot;Галь Гадот&quot;,
+            &quot;slug&quot;: &quot;gal-gadot&quot;,
+            &quot;biography&quot;: &quot;Актор Галь Гадот відомий своєю різноманітністю ролей та глибоким підходом до кожного персонажа. Qui et officiis enim odio et totam. Molestias dolor aut veniam aut.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;female&quot;,
+            &quot;birth_date&quot;: &quot;1963-05-16T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hwzfqy9mnxt1skq828&quot;,
+            &quot;name&quot;: &quot;Кріс Гемсворт&quot;,
+            &quot;slug&quot;: &quot;kris-gemsvort&quot;,
+            &quot;biography&quot;: &quot;Кріс Гемсворт - один з найбільш впізнаваних акторів сучасності, який має мільйони шанувальників. Est quas commodi natus est consequuntur aut est. Deserunt omnis quia ipsum voluptatem aut debitis voluptate.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1964-04-12T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45j7ykhgxqhayzqzvz1f&quot;,
+            &quot;name&quot;: &quot;Квентін Тарантіно&quot;,
+            &quot;slug&quot;: &quot;kventin-tarantino&quot;,
+            &quot;biography&quot;: &quot;Режисер Квентін Тарантіно відомий своїм унікальним стилем та інноваційним підходом до кіновиробництва. Ratione quia maiores et accusamus. Dolores et officiis molestias et odit accusamus quos. Blanditiis in et ullam nostrum libero facere ut.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/directors/2.jpg&quot;,
+            &quot;type&quot;: &quot;director&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1957-05-11T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hz767cdf94t9d4y7eh&quot;,
+            &quot;name&quot;: &quot;Кіану Рівз&quot;,
+            &quot;slug&quot;: &quot;kianu-rivz&quot;,
+            &quot;biography&quot;: &quot;Талановитий актор Кіану Рівз відомий своєю здатністю перевтілюватися у різноманітних персонажів. Hic occaecati laborum molestiae voluptatem porro libero ullam. Vel ad sed neque facilis rerum. Non accusantium voluptas aut repellat est eos a.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/3.jpg&quot;,
+            &quot;type&quot;: &quot;actor&quot;,
+            &quot;gender&quot;: &quot;male&quot;,
+            &quot;birth_date&quot;: &quot;1992-07-27T00:00:00.000000Z&quot;,
+            &quot;death_date&quot;: null,
+            &quot;movies_count&quot;: 7,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ]
 }</code>
@@ -2826,14 +2994,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/popular/tags" \
+    --get "http://127.0.0.1:8000/api/v1/popular/tags" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/popular/tags"
+    "http://127.0.0.1:8000/api/v1/popular/tags"
 );
 
 const headers = {
@@ -2858,305 +3026,297 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzyny1wpmvvx8bns62cmag7&quot;,
-            &quot;name&quot;: &quot;Horror&quot;,
-            &quot;slug&quot;: &quot;horror-jqzw0w&quot;,
-            &quot;description&quot;: &quot;Et minima alias illo sed atque ipsam natus quas tenetur non odit corrupti omnis.&quot;,
-            &quot;image&quot;: null,
+            &quot;id&quot;: &quot;01jven45g9twgdhcf176shfsc3&quot;,
+            &quot;name&quot;: &quot;Анімація&quot;,
+            &quot;slug&quot;: &quot;animaciia&quot;,
+            &quot;description&quot;: &quot;Жанр Анімація має багату історію та традиції в кінематографі. Et saepe dolores cupiditate porro natus. Dolorem repudiandae vel suscipit animi fugit sunt laudantium.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/1.jpg&quot;,
             &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Мультфільм&quot;,
+                &quot;Animation&quot;
+            ],
+            &quot;movies_count&quot;: 11,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45g78wsxmv39neeeqj8f&quot;,
+            &quot;name&quot;: &quot;Пригоди&quot;,
+            &quot;slug&quot;: &quot;prigodi&quot;,
+            &quot;description&quot;: &quot;Жанр Пригоди характеризується особливою атмосферою та стилем оповіді. Praesentium rerum ipsum et minima. Beatae atque libero aut. Ut nemo tenetur praesentium voluptatem qui in ad labore.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/5.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Adventure&quot;
+            ],
+            &quot;movies_count&quot;: 11,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gj6tfxep1k9p7xz5nr&quot;,
+            &quot;name&quot;: &quot;Сімейний&quot;,
+            &quot;slug&quot;: &quot;simeinii&quot;,
+            &quot;description&quot;: &quot;Сімейний - один з найпопулярніших жанрів кіно, який має мільйони шанувальників по всьому світу. Repellendus aliquam possimus ex aut ea. Est ut impedit mollitia pariatur vitae non magnam sint.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/4.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Family&quot;
+            ],
+            &quot;movies_count&quot;: 9,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gkqr6zvmjdqymthbdt&quot;,
+            &quot;name&quot;: &quot;Детектив&quot;,
+            &quot;slug&quot;: &quot;detektiv&quot;,
+            &quot;description&quot;: &quot;Стрічки в жанрі Детектив завжди привертають увагу глядачів своєю унікальністю. Quam similique atque provident maiores quis esse voluptas. Dolorum consequatur perferendis placeat nesciunt ut iure.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/4.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Mystery&quot;,
+                &quot;Detective&quot;
+            ],
+            &quot;movies_count&quot;: 9,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gf7g7tyzqjxmfatttk&quot;,
+            &quot;name&quot;: &quot;Військовий&quot;,
+            &quot;slug&quot;: &quot;viiskovii&quot;,
+            &quot;description&quot;: &quot;Стрічки в жанрі Військовий завжди привертають увагу глядачів своєю унікальністю. Non sit voluptatibus repudiandae maxime similique. Quo voluptatem aut aperiam qui.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/5.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;War&quot;,
+                &quot;Military&quot;
+            ],
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gg79ff5akc7c7xe6px&quot;,
+            &quot;name&quot;: &quot;Вестерн&quot;,
+            &quot;slug&quot;: &quot;vestern&quot;,
+            &quot;description&quot;: &quot;Стрічки в жанрі Вестерн завжди привертають увагу глядачів своєю унікальністю. Et earum molestias sunt. Accusantium quibusdam fugiat ea. Architecto quod rerum voluptatibus possimus.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/1.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Western&quot;
+            ],
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45g14yd02acatk425724&quot;,
+            &quot;name&quot;: &quot;Драма&quot;,
+            &quot;slug&quot;: &quot;drama&quot;,
+            &quot;description&quot;: &quot;Фільми жанру Драма відрізняються особливим підходом до сюжету та персонажів. Sed ut exercitationem cumque voluptatibus culpa vel praesentium laboriosam. Et voluptas ipsum sit officia et explicabo repudiandae dolorum.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/3.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Drama&quot;
+            ],
+            &quot;movies_count&quot;: 8,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45g5pvd8wv6jydyj75rb&quot;,
+            &quot;name&quot;: &quot;Романтика&quot;,
+            &quot;slug&quot;: &quot;romantika&quot;,
+            &quot;description&quot;: &quot;Стрічки в жанрі Романтика завжди привертають увагу глядачів своєю унікальністю. Qui laudantium consequuntur mollitia dolor odit voluptatem. Consequatur minus velit fugit ullam ut ut. Soluta est sed eum reiciendis et quibusdam.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/1.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Мелодрама&quot;,
+                &quot;Romance&quot;
+            ],
+            &quot;movies_count&quot;: 7,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45g4kmfmfkyz9y9f9ys3&quot;,
+            &quot;name&quot;: &quot;Трилер&quot;,
+            &quot;slug&quot;: &quot;triler&quot;,
+            &quot;description&quot;: &quot;Фільми жанру Трилер відрізняються особливим підходом до сюжету та персонажів. Laudantium omnis quisquam perspiciatis quia porro aliquam nihil natus. Repellat dicta nobis inventore aliquam.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/5.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Thriller&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gtw7jj8qcyd5dhmnnh&quot;,
+            &quot;name&quot;: &quot;Бойові мистецтва&quot;,
+            &quot;slug&quot;: &quot;boiovi-mistectva&quot;,
+            &quot;description&quot;: &quot;Стрічки з тегом Бойові мистецтва часто досліджують специфічні аспекти цієї тематики. Quod necessitatibus et explicabo. Illo omnis iure accusamus et mollitia iure quis.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/1.jpg&quot;,
+            &quot;is_genre&quot;: false,
+            &quot;aliases&quot;: [
+                &quot;Martial Arts&quot;,
+                &quot;Kung Fu&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gabk9bmnzw9pys9sf9&quot;,
+            &quot;name&quot;: &quot;Фентезі&quot;,
+            &quot;slug&quot;: &quot;fentezi&quot;,
+            &quot;description&quot;: &quot;Фільми жанру Фентезі відрізняються особливим підходом до сюжету та персонажів. Expedita voluptas deserunt id officiis commodi. Nostrum sed quo laborum repudiandae sequi.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/4.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Fantasy&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gdzw8jv4ygsky19pjz&quot;,
+            &quot;name&quot;: &quot;Документальний&quot;,
+            &quot;slug&quot;: &quot;dokumentalnii&quot;,
+            &quot;description&quot;: &quot;Жанр Документальний характеризується особливою атмосферою та стилем оповіді. Ad eius rem non voluptate quam temporibus. Ex sunt est culpa enim. At voluptatem placeat ut eum aut.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/5.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Documentary&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gj6tfxep1k9p7xz5nq&quot;,
+            &quot;name&quot;: &quot;Біографія&quot;,
+            &quot;slug&quot;: &quot;biografiia&quot;,
+            &quot;description&quot;: &quot;Жанр Біографія має багату історію та традиції в кінематографі. Molestiae inventore sed accusantium dolorum tenetur quis. Aut explicabo vel magni.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/2.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Biographical&quot;,
+                &quot;Biography&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gnn0caztcaxs0xd1rj&quot;,
+            &quot;name&quot;: &quot;Вампіри&quot;,
+            &quot;slug&quot;: &quot;vampiri&quot;,
+            &quot;description&quot;: &quot;Фільми, позначені тегом Вампіри, пропонують унікальний погляд на цю тематику. Veniam optio quia nesciunt harum. Aut sed culpa temporibus aspernatur numquam. Magni culpa eveniet pariatur debitis.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/3.jpg&quot;,
+            &quot;is_genre&quot;: false,
+            &quot;aliases&quot;: [
+                &quot;Vampires&quot;,
+                &quot;Bloodsuckers&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hdqg4xdz4nzkf1vvfe&quot;,
+            &quot;name&quot;: &quot;Кулінарія&quot;,
+            &quot;slug&quot;: &quot;kulinariia&quot;,
+            &quot;description&quot;: &quot;Кулінарія - популярна тема в сучасному кінематографі, яка знаходить відгук у багатьох глядачів. Qui quisquam suscipit atque dolorem velit rerum. In nulla quidem sit dolorem voluptatem dolores molestias.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/2.jpg&quot;,
+            &quot;is_genre&quot;: false,
             &quot;aliases&quot;: [],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45fz0vppeg6phve451gg&quot;,
+            &quot;name&quot;: &quot;Комедія&quot;,
+            &quot;slug&quot;: &quot;komediia&quot;,
+            &quot;description&quot;: &quot;Комедія - один з найпопулярніших жанрів кіно, який має мільйони шанувальників по всьому світу. Ut reprehenderit accusamus earum non alias quo id cumque. Nesciunt rerum enim omnis modi. Esse rem officiis dolorem ea.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/1.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Comedy&quot;
+            ],
+            &quot;movies_count&quot;: 5,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45fvhgr75y9gqgzn9ym1&quot;,
+            &quot;name&quot;: &quot;Бойовик&quot;,
+            &quot;slug&quot;: &quot;boiovik&quot;,
+            &quot;description&quot;: &quot;Жанр Бойовик характеризується особливою атмосферою та стилем оповіді. Accusantium blanditiis quaerat error iste expedita ea quos. Et autem voluptatem dolorem sunt velit et.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/4.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Екшн&quot;,
+                &quot;Action&quot;
+            ],
+            &quot;movies_count&quot;: 5,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45ghrq9h12atnc24x1xx&quot;,
+            &quot;name&quot;: &quot;Спорт&quot;,
+            &quot;slug&quot;: &quot;sport&quot;,
+            &quot;description&quot;: &quot;Жанр Спорт характеризується особливою атмосферою та стилем оповіді. Aut fugiat et velit et rerum quod. Autem magnam tempora excepturi.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/3.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Sports&quot;
+            ],
+            &quot;movies_count&quot;: 5,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45g2s3wkf3m2p43zvtd7&quot;,
+            &quot;name&quot;: &quot;Фантастика&quot;,
+            &quot;slug&quot;: &quot;fantastika&quot;,
+            &quot;description&quot;: &quot;Фільми жанру Фантастика відрізняються особливим підходом до сюжету та персонажів. Rerum ea aliquid cupiditate et fugiat. Est est sit distinctio rerum autem. Quo vel et error atque numquam quidem accusantium.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/2.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Sci-Fi&quot;,
+                &quot;Science Fiction&quot;
+            ],
+            &quot;movies_count&quot;: 5,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45ghrq9h12atnc24x1xw&quot;,
+            &quot;name&quot;: &quot;Мюзикл&quot;,
+            &quot;slug&quot;: &quot;miuzikl&quot;,
+            &quot;description&quot;: &quot;Жанр Мюзикл характеризується особливою атмосферою та стилем оповіді. Rerum molestiae et culpa numquam molestiae non nostrum. Aliquam quasi ut omnis ad assumenda.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/2.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Musical&quot;
+            ],
             &quot;movies_count&quot;: 4,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny288b36awa9xczb0h9g&quot;,
-            &quot;name&quot;: &quot;aut a076b1&quot;,
-            &quot;slug&quot;: &quot;aut-a076b1-ulqtny&quot;,
-            &quot;description&quot;: &quot;Et vero accusantium iure velit debitis dolor quia a placeat fugiat ad.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0077dd?text=tags+neque&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;ipsa&quot;,
-                &quot;repudiandae&quot;,
-                &quot;et&quot;,
-                &quot;perferendis&quot;,
-                &quot;nihil&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny2q6rm2zqjcfy70y7bh&quot;,
-            &quot;name&quot;: &quot;Inspirational&quot;,
-            &quot;slug&quot;: &quot;inspirational-zprzoz&quot;,
-            &quot;description&quot;: &quot;Sit in voluptatibus accusantium distinctio quidem temporibus facere sit expedita.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00eebb?text=tags+aut&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;distinctio&quot;,
-                &quot;sequi&quot;,
-                &quot;rerum&quot;,
-                &quot;nemo&quot;,
-                &quot;error&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1wpmvvx8bns62cmag6&quot;,
-            &quot;name&quot;: &quot;Surreal&quot;,
-            &quot;slug&quot;: &quot;surreal-b0me1i&quot;,
-            &quot;description&quot;: &quot;Ut commodi laborum illo ut quod ullam est qui veniam deleniti at maxime neque nihil.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00dd44?text=tags+molestiae&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;tempore&quot;,
-                &quot;cum&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1se2tfhd5681b580d8&quot;,
-            &quot;name&quot;: &quot;Thought-Provoking&quot;,
-            &quot;slug&quot;: &quot;thought-provoking-rbn5ri&quot;,
-            &quot;description&quot;: &quot;Nulla error reiciendis laborum nam repellat facilis nesciunt facilis voluptatem dignissimos molestias dolor qui.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0033dd?text=tags+possimus&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;non&quot;,
-                &quot;ut&quot;,
-                &quot;cupiditate&quot;,
-                &quot;assumenda&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny3pyfsa26t0pdp5s1ws&quot;,
-            &quot;name&quot;: &quot;Horror 621&quot;,
-            &quot;slug&quot;: &quot;horror-621-zwlheb&quot;,
-            &quot;description&quot;: &quot;Ut praesentium qui eos voluptas illo quis odit voluptates.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00cc88?text=tags+tempora&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1rshp47wtnv1941x26&quot;,
-            &quot;name&quot;: &quot;Thought-Provoking&quot;,
-            &quot;slug&quot;: &quot;thought-provoking-6moqwf&quot;,
-            &quot;description&quot;: &quot;Aliquam earum aut accusamus non assumenda excepturi eos.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0022cc?text=tags+amet&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;saepe&quot;,
-                &quot;sit&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1t1jgv679f3nzc4ax8&quot;,
-            &quot;name&quot;: &quot;Documentary&quot;,
-            &quot;slug&quot;: &quot;documentary-fc3067&quot;,
-            &quot;description&quot;: &quot;Inventore doloribus et rerum sunt expedita aut delectus voluptatem non velit.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/003311?text=tags+similique&quot;,
-            &quot;is_genre&quot;: true,
-            &quot;aliases&quot;: [
-                &quot;officia&quot;,
-                &quot;sunt&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1kghk7hbbws51yn2hg&quot;,
-            &quot;name&quot;: &quot;Based on Book 381&quot;,
-            &quot;slug&quot;: &quot;based-on-book-381-7dacre&quot;,
-            &quot;description&quot;: &quot;Qui qui iste repudiandae in enim assumenda aut similique sunt eum porro suscipit quo dignissimos.&quot;,
-            &quot;image&quot;: null,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;odio&quot;,
-                &quot;aut&quot;,
-                &quot;vero&quot;,
-                &quot;quaerat&quot;,
-                &quot;cupiditate&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1c6a6x1dmbrseced10&quot;,
-            &quot;name&quot;: &quot;Dystopian&quot;,
-            &quot;slug&quot;: &quot;dystopian-v6ompn&quot;,
-            &quot;description&quot;: &quot;Dolor provident beatae aut enim temporibus in magni debitis eos maiores deserunt qui.&quot;,
-            &quot;image&quot;: null,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;iste&quot;,
-                &quot;nulla&quot;,
-                &quot;excepturi&quot;,
-                &quot;consequatur&quot;
-            ],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny17m0jxb56dt8jtf310&quot;,
-            &quot;name&quot;: &quot;doloremque 25e7a6&quot;,
-            &quot;slug&quot;: &quot;doloremque-25e7a6-yofxil&quot;,
-            &quot;description&quot;: &quot;Dolor explicabo quae delectus et libero enim veritatis corrupti possimus.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00dd77?text=tags+id&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny18bs11fstjr9cmf956&quot;,
-            &quot;name&quot;: &quot;illum ba88ce&quot;,
-            &quot;slug&quot;: &quot;illum-ba88ce-bommc2&quot;,
-            &quot;description&quot;: &quot;Dolor voluptatem inventore dolore et animi sit fuga assumenda dignissimos commodi non.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/003366?text=tags+asperiores&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1rshp47wtnv1941x27&quot;,
-            &quot;name&quot;: &quot;Science Fiction&quot;,
-            &quot;slug&quot;: &quot;science-fiction-xcts6g&quot;,
-            &quot;description&quot;: &quot;Qui velit nisi eveniet tempora doloremque qui rerum aut possimus et numquam qui.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0066aa?text=tags+nulla&quot;,
-            &quot;is_genre&quot;: true,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1fh7rgy73gqbd1nc06&quot;,
-            &quot;name&quot;: &quot;Feel-Good&quot;,
-            &quot;slug&quot;: &quot;feel-good-3hgsxt&quot;,
-            &quot;description&quot;: &quot;Eveniet omnis quibusdam quam delectus quia accusamus voluptate.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00cc00?text=tags+excepturi&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;maxime&quot;,
-                &quot;similique&quot;,
-                &quot;velit&quot;
-            ],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1demvpt08hs8xekkkp&quot;,
-            &quot;name&quot;: &quot;Surreal&quot;,
-            &quot;slug&quot;: &quot;surreal-gvfjvq&quot;,
-            &quot;description&quot;: &quot;Qui repellat quia error placeat similique quia.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/005533?text=tags+repudiandae&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;officia&quot;,
-                &quot;sit&quot;,
-                &quot;omnis&quot;,
-                &quot;sed&quot;
-            ],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny15gpbw5bgcamd62bsy&quot;,
-            &quot;name&quot;: &quot;Cult Classic 854&quot;,
-            &quot;slug&quot;: &quot;cult-classic-854-a6osft&quot;,
-            &quot;description&quot;: &quot;Facilis tempore voluptatem a eveniet earum vel et et.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/003322?text=tags+natus&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1ba5wbjnsefxxpd8hs&quot;,
-            &quot;name&quot;: &quot;Scary&quot;,
-            &quot;slug&quot;: &quot;scary-mixp8u&quot;,
-            &quot;description&quot;: &quot;Enim nemo veritatis quibusdam voluptas fugit necessitatibus nihil quibusdam commodi deserunt ipsam.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/007799?text=tags+autem&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny25htht3cqvvhtdhdjn&quot;,
-            &quot;name&quot;: &quot;Anime 898&quot;,
-            &quot;slug&quot;: &quot;anime-898-khdzj5&quot;,
-            &quot;description&quot;: &quot;Quia facere dolores illo reiciendis repudiandae at rerum in eveniet natus asperiores.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/002211?text=tags+aspernatur&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;qui&quot;,
-                &quot;facilis&quot;,
-                &quot;aliquam&quot;
-            ],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1hbf9jh890agy06430&quot;,
-            &quot;name&quot;: &quot;Heist&quot;,
-            &quot;slug&quot;: &quot;heist-s2v4nw&quot;,
-            &quot;description&quot;: &quot;Assumenda dolorum officiis et nisi sapiente quia aspernatur.&quot;,
-            &quot;image&quot;: null,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyny1xn1h2tvq8gyfydnfa&quot;,
-            &quot;name&quot;: &quot;Nostalgic&quot;,
-            &quot;slug&quot;: &quot;nostalgic-lc67bz&quot;,
-            &quot;description&quot;: &quot;Omnis quibusdam quo aut ullam qui saepe sed sunt voluptatem.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/007744?text=tags+officiis&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [
-                &quot;sit&quot;,
-                &quot;sapiente&quot;,
-                &quot;illum&quot;
-            ],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ]
 }</code>
@@ -3246,14 +3406,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/popular/selections" \
+    --get "http://127.0.0.1:8000/api/v1/popular/selections" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/popular/selections"
+    "http://127.0.0.1:8000/api/v1/popular/selections"
 );
 
 const headers = {
@@ -3278,12 +3438,138 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: []
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: &quot;01jven464snknrzm4bp78vmh8m&quot;,
+            &quot;name&quot;: &quot;Фільми про війну&quot;,
+            &quot;slug&quot;: &quot;filmi-pro-viinu&quot;,
+            &quot;description&quot;: &quot;У цій підбірці \&quot;Фільми про війну\&quot; ви знайдете фільми та серіали, які не залишать вас байдужими. Voluptates accusamus adipisci mollitia aliquam. Qui mollitia sed aut quaerat. Vel ut itaque facere tempore nobis. Atque placeat et incidunt rerum libero error doloribus.\n\nNihil et nemo id hic et ea fugit. Odit at iusto quo maiores. Perspiciatis ex qui neque dolorum doloremque ut a.&quot;,
+            &quot;meta_title&quot;: &quot;Фільми про війну | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Фільми про війну. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/2.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 13,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4653wk0hp39g1tqdcn58&quot;,
+            &quot;name&quot;: &quot;Документальні фільми&quot;,
+            &quot;slug&quot;: &quot;dokumentalni-filmi&quot;,
+            &quot;description&quot;: &quot;У цій підбірці \&quot;Документальні фільми\&quot; ви знайдете фільми та серіали, які не залишать вас байдужими. Aliquam aut ad et iusto nostrum assumenda. Accusantium perferendis ut tempore distinctio occaecati. Debitis voluptate cum voluptas iste ut.\n\nLaudantium ipsa minima veritatis nihil quia necessitatibus. Laborum nihil earum iusto et molestiae. Voluptatem ad rerum et amet quae quia veniam. Et non asperiores enim. Necessitatibus cum alias rerum quos aliquam magnam omnis adipisci.&quot;,
+            &quot;meta_title&quot;: &quot;Документальні фільми | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Документальні фільми. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/3.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 8,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4656edh44h2r21ex10vz&quot;,
+            &quot;name&quot;: &quot;Мультфільми для дітей&quot;,
+            &quot;slug&quot;: &quot;multfilmi-dlia-ditei&quot;,
+            &quot;description&quot;: &quot;Підбірка \&quot;Мультфільми для дітей\&quot; містить найкращі фільми та серіали, які варто подивитися. Debitis et quia id inventore necessitatibus soluta quod. Consequuntur ea cumque veritatis delectus. Esse tenetur voluptas sunt at consequatur dolorem. Omnis est asperiores ducimus nisi fugit debitis.\n\nInventore velit voluptas molestias totam qui asperiores. Dignissimos magni sequi optio officia quasi quaerat sapiente. Facilis laboriosam impedit et saepe iste.&quot;,
+            &quot;meta_title&quot;: &quot;Мультфільми для дітей | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Мультфільми для дітей. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/5.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 7,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4659wv50z3ge1ssarxyv&quot;,
+            &quot;name&quot;: &quot;Фільми жахів&quot;,
+            &quot;slug&quot;: &quot;filmi-zaxiv&quot;,
+            &quot;description&quot;: &quot;Підбірка \&quot;Фільми жахів\&quot; містить найкращі фільми та серіали, які варто подивитися. Vel debitis veritatis neque sed iste ipsa inventore. Optio soluta facilis eum magnam harum. Exercitationem eos voluptas error enim minima consequatur. Facere rerum amet officiis delectus voluptatem omnis.\n\nCumque totam et voluptas voluptatum aliquid aut saepe. Voluptas sunt iste facere cupiditate similique. Debitis officia et eos dolores maiores.&quot;,
+            &quot;meta_title&quot;: &quot;Фільми жахів | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Фільми жахів. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/3.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 9,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven465chw4sf3rhr12p11xv&quot;,
+            &quot;name&quot;: &quot;Фільми, засновані на реальних подіях&quot;,
+            &quot;slug&quot;: &quot;filmi-zasnovani-na-realnix-podiiax&quot;,
+            &quot;description&quot;: &quot;Підбірка \&quot;Фільми, засновані на реальних подіях\&quot; містить найкращі фільми та серіали, які варто подивитися. Perspiciatis officia aut et impedit tenetur exercitationem est. Omnis facere omnis consectetur nemo sed. Quia doloremque suscipit aspernatur temporibus. Praesentium magni dolores nam dolorem dicta consectetur.\n\nAutem est at aut molestias quos aut. Natus accusamus neque dolor atque vel harum. Reprehenderit perspiciatis molestias officiis dolores quos. Rerum voluptas nulla sed omnis facere. Laudantium totam odio iusto tempora earum quisquam.&quot;,
+            &quot;meta_title&quot;: &quot;Фільми, засновані на реальних подіях | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Фільми, засновані на реальних подіях. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/2.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 8,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven465fk538gzys34vrg65t&quot;,
+            &quot;name&quot;: &quot;Найкращі серіали всіх часів&quot;,
+            &quot;slug&quot;: &quot;naikrashhi-seriali-vsix-casiv&quot;,
+            &quot;description&quot;: &quot;У цій підбірці \&quot;Найкращі серіали всіх часів\&quot; ви знайдете фільми та серіали, які не залишать вас байдужими. Nemo impedit aut odio animi cupiditate nam. Eum sit eius est facilis est dolores. Minus itaque voluptatibus qui rerum aperiam nobis sit. Et quia sequi dolores et.\n\nSed optio est voluptas et magnam. Iure quia cum eos ut et reprehenderit quidem repellendus. Minima eveniet dolor ut nihil consequatur aut dolor. Autem eveniet ut rerum sit natus aut repellat dolorem.&quot;,
+            &quot;meta_title&quot;: &quot;Найкращі серіали всіх часів | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Найкращі серіали всіх часів. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/1.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 10,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven465kjtjgeyxbdnttns5a&quot;,
+            &quot;name&quot;: &quot;Фільми для сімейного перегляду&quot;,
+            &quot;slug&quot;: &quot;filmi-dlia-simeinogo-peregliadu&quot;,
+            &quot;description&quot;: &quot;У \&quot;Фільми для сімейного перегляду\&quot; зібрані найцікавіші та найяскравіші представники жанру. Et neque ab atque beatae sunt velit. Necessitatibus expedita debitis veniam asperiores. Molestias rerum corrupti deleniti perferendis repellendus. Aut qui quia asperiores rerum quia alias.\n\nVero magnam quas beatae ab eaque. Corporis sed sunt quia. Maiores vero delectus nulla harum rerum possimus. Aut eos sunt ducimus delectus hic dolores nihil odit.&quot;,
+            &quot;meta_title&quot;: &quot;Фільми для сімейного перегляду | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Фільми для сімейного перегляду. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/5.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 15,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven465q6ry0fccwm2bb8jzb&quot;,
+            &quot;name&quot;: &quot;Романтичні комедії&quot;,
+            &quot;slug&quot;: &quot;romanticni-komediyi&quot;,
+            &quot;description&quot;: &quot;Підбірка \&quot;Романтичні комедії\&quot; створена спеціально для шанувальників якісного кіно. Magnam earum est nulla qui mollitia. Beatae suscipit dolorem aut natus aut blanditiis doloremque accusantium. Omnis architecto assumenda ex temporibus dolor. Accusamus modi non aliquam incidunt sint amet.\n\nQuis consequatur et dolor ipsa. Eaque qui laborum excepturi omnis. Omnis vitae et nihil error rerum dolor. Explicabo autem sed recusandae aut quo.&quot;,
+            &quot;meta_title&quot;: &quot;Романтичні комедії | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Романтичні комедії. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/2.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 11,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven465x3eyn2kxxwsdpy62w&quot;,
+            &quot;name&quot;: &quot;Фільми, які змінили кінематограф&quot;,
+            &quot;slug&quot;: &quot;filmi-iaki-zminili-kinematograf&quot;,
+            &quot;description&quot;: &quot;У цій підбірці \&quot;Фільми, які змінили кінематограф\&quot; ви знайдете фільми та серіали, які не залишать вас байдужими. Suscipit autem saepe voluptas eius. Quis et quia aliquid non vel nostrum quibusdam repellat. Dolorem animi quas ducimus id. Ducimus necessitatibus aut pariatur eum mollitia minima non. Est eius minima laborum.\n\nReiciendis et impedit illo nam qui aut totam voluptatem. Sapiente tempore odit quia.&quot;,
+            &quot;meta_title&quot;: &quot;Фільми, які змінили кінематограф | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Підбірка Фільми, які змінили кінематограф. Дивіться онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/2.jpg&quot;,
+            &quot;is_published&quot;: true,
+            &quot;movies_count&quot;: 5,
+            &quot;user_lists_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        }
+    ]
 }</code>
  </pre>
     </span>
@@ -3371,14 +3657,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;kinds[]=movie&amp;statuses[]=released&amp;studio_ids[]=architecto&amp;tag_ids[]=architecto&amp;person_ids[]=architecto&amp;countries[]=ng&amp;min_score=1&amp;max_score=10&amp;min_year=2000&amp;max_year=2023&amp;min_duration=10&amp;max_duration=180&amp;min_episodes_count=1&amp;max_episodes_count=24" \
+    --get "http://127.0.0.1:8000/api/v1/movies?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;kinds[]=movie&amp;statuses[]=rumored&amp;studio_ids[]=architecto&amp;tag_ids[]=architecto&amp;person_ids[]=architecto&amp;countries[]=ng&amp;min_score=1&amp;max_score=10&amp;min_year=2000&amp;max_year=2023&amp;min_duration=10&amp;max_duration=180&amp;min_episodes_count=1&amp;max_episodes_count=24" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies"
+    "http://127.0.0.1:8000/api/v1/movies"
 );
 
 const params = {
@@ -3388,7 +3674,7 @@ const params = {
     "sort": "created_at",
     "direction": "desc",
     "kinds[0]": "movie",
-    "statuses[0]": "released",
+    "statuses[0]": "rumored",
     "studio_ids[0]": "architecto",
     "tag_ids[0]": "architecto",
     "person_ids[0]": "architecto",
@@ -3427,8 +3713,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3764,14 +4049,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3"
 );
 
 const headers = {
@@ -3796,87 +4081,133 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-        &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-        &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-        &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
+        &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+        &quot;name&quot;: &quot;Офіс 3&quot;,
+        &quot;slug&quot;: &quot;ofis-3&quot;,
+        &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
         &quot;backdrop&quot;: null,
-        &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-        &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-        &quot;kind&quot;: &quot;movie&quot;,
-        &quot;status&quot;: &quot;anons&quot;,
-        &quot;duration&quot;: 132,
-        &quot;formatted_duration&quot;: &quot;2 год 12 хв&quot;,
+        &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+        &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+        &quot;kind&quot;: &quot;tv_series&quot;,
+        &quot;status&quot;: &quot;released&quot;,
+        &quot;duration&quot;: null,
+        &quot;formatted_duration&quot;: null,
+        &quot;episodes_count&quot;: 7,
         &quot;countries&quot;: [
-            &quot;UA&quot;
+            &quot;Україна&quot;,
+            &quot;Мексика&quot;,
+            &quot;Велика Британія&quot;
         ],
         &quot;aliases&quot;: [
-            &quot;laborum&quot;,
-            &quot;aut&quot;,
-            &quot;libero&quot;
+            &quot;Quaerat velit numquam illo.&quot;,
+            &quot;Офіс 3: minima ut aut&quot;
         ],
-        &quot;first_air_date&quot;: &quot;2023-09-18T00:00:00.000000Z&quot;,
-        &quot;year&quot;: &quot;2023&quot;,
-        &quot;imdb_score&quot;: 4.64,
+        &quot;first_air_date&quot;: &quot;2015-11-08T00:00:00.000000Z&quot;,
+        &quot;last_air_date&quot;: &quot;2020-11-06T00:00:00.000000Z&quot;,
+        &quot;year&quot;: &quot;2015&quot;,
+        &quot;imdb_score&quot;: 5.5,
         &quot;is_published&quot;: true,
         &quot;studio&quot;: {
-            &quot;id&quot;: &quot;01jtzynz0an2kmg2z3kw7csqek&quot;,
-            &quot;name&quot;: &quot;Інфоком-Дизайн&quot;,
-            &quot;slug&quot;: &quot;infokom-dizain-734n7o&quot;,
-            &quot;description&quot;: &quot;Voluptatibus repudiandae voluptatibus est excepturi eos. Reprehenderit sit optio autem maxime. Recusandae laboriosam ipsam dolore quia et. Iusto dolor rerum asperiores fugit id.&quot;
+            &quot;id&quot;: &quot;01jven45f1wnr3j4e2mcsdsrz4&quot;,
+            &quot;name&quot;: &quot;New Line Cinema&quot;,
+            &quot;slug&quot;: &quot;new-line-cinema&quot;,
+            &quot;description&quot;: &quot;Заснована у XX столітті, студія New Line Cinema стала однією з найвпливовіших у кіноіндустрії. Et rerum eius eaque. Sed at non veniam tempore. Sunt debitis animi eius ducimus et ut provident. Modi voluptatum maxime voluptas voluptatibus dolores.&quot;
         },
         &quot;tags&quot;: [
             {
-                &quot;id&quot;: &quot;01jtzyny15gpbw5bgcamd62bsy&quot;,
-                &quot;name&quot;: &quot;Cult Classic 854&quot;,
-                &quot;slug&quot;: &quot;cult-classic-854-a6osft&quot;,
-                &quot;description&quot;: &quot;Facilis tempore voluptatem a eveniet earum vel et et.&quot;,
-                &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/003322?text=tags+natus&quot;,
-                &quot;is_genre&quot;: false,
-                &quot;aliases&quot;: [],
-                &quot;movies_count&quot;: 2,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+                &quot;id&quot;: &quot;01jven45gc073pf96m5jwfqhhv&quot;,
+                &quot;name&quot;: &quot;Кримінал&quot;,
+                &quot;slug&quot;: &quot;kriminal&quot;,
+                &quot;description&quot;: &quot;Кримінал - один з найпопулярніших жанрів кіно, який має мільйони шанувальників по всьому світу. Iste omnis et et cupiditate. Rem voluptatum repellendus sequi nam sit non. Quisquam quia alias praesentium quo.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/genres/3.jpg&quot;,
+                &quot;is_genre&quot;: true,
+                &quot;aliases&quot;: [
+                    &quot;Crime&quot;
+                ],
+                &quot;movies_count&quot;: 3,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
             },
             {
-                &quot;id&quot;: &quot;01jtzyny2a60r3yee0qc2pfbsk&quot;,
-                &quot;name&quot;: &quot;Adventure 314&quot;,
-                &quot;slug&quot;: &quot;adventure-314-b6besf&quot;,
-                &quot;description&quot;: &quot;Quos corporis amet ipsa atque saepe laboriosam aut itaque commodi iusto sit.&quot;,
-                &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00dd66?text=tags+adipisci&quot;,
+                &quot;id&quot;: &quot;01jven45gm5d4358ysb3m321m2&quot;,
+                &quot;name&quot;: &quot;Зомбі&quot;,
+                &quot;slug&quot;: &quot;zombi&quot;,
+                &quot;description&quot;: &quot;Стрічки з тегом Зомбі часто досліджують специфічні аспекти цієї тематики. Porro pariatur rerum hic. Suscipit adipisci quasi sint velit.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/tags/5.jpg&quot;,
                 &quot;is_genre&quot;: false,
                 &quot;aliases&quot;: [
-                    &quot;omnis&quot;
+                    &quot;Zombies&quot;,
+                    &quot;Undead&quot;
                 ],
                 &quot;movies_count&quot;: 2,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
             },
             {
-                &quot;id&quot;: &quot;01jtzyny3pyfsa26t0pdp5s1ws&quot;,
-                &quot;name&quot;: &quot;Horror 621&quot;,
-                &quot;slug&quot;: &quot;horror-621-zwlheb&quot;,
-                &quot;description&quot;: &quot;Ut praesentium qui eos voluptas illo quis odit voluptates.&quot;,
-                &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00cc88?text=tags+tempora&quot;,
+                &quot;id&quot;: &quot;01jven45gnn0caztcaxs0xd1rj&quot;,
+                &quot;name&quot;: &quot;Вампіри&quot;,
+                &quot;slug&quot;: &quot;vampiri&quot;,
+                &quot;description&quot;: &quot;Фільми, позначені тегом Вампіри, пропонують унікальний погляд на цю тематику. Veniam optio quia nesciunt harum. Aut sed culpa temporibus aspernatur numquam. Magni culpa eveniet pariatur debitis.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/tags/3.jpg&quot;,
+                &quot;is_genre&quot;: false,
+                &quot;aliases&quot;: [
+                    &quot;Vampires&quot;,
+                    &quot;Bloodsuckers&quot;
+                ],
+                &quot;movies_count&quot;: 6,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: &quot;01jven45gy1vwkakv5aze4rc6t&quot;,
+                &quot;name&quot;: &quot;Кіберпанк&quot;,
+                &quot;slug&quot;: &quot;kiberpank&quot;,
+                &quot;description&quot;: &quot;Фільми з тегом Кіберпанк об&#039;єднані спільною тематикою та елементами. Et dolor atque voluptatibus animi pariatur maxime aperiam corporis. Incidunt quae dolore possimus nam. Excepturi magni nemo ipsa consequuntur in voluptatem.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/tags/2.jpg&quot;,
+                &quot;is_genre&quot;: false,
+                &quot;aliases&quot;: [
+                    &quot;Cyberpunk&quot;
+                ],
+                &quot;movies_count&quot;: 4,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: &quot;01jven45hb7bd6xdyjm2b0wf84&quot;,
+                &quot;name&quot;: &quot;Музика&quot;,
+                &quot;slug&quot;: &quot;muzika&quot;,
+                &quot;description&quot;: &quot;Тег Музика об&#039;єднує різноманітні фільми, які мають спільні елементи. Earum cum ut commodi quae ut doloribus fugiat. Labore adipisci eaque hic reiciendis.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/tags/1.jpg&quot;,
                 &quot;is_genre&quot;: false,
                 &quot;aliases&quot;: [],
                 &quot;movies_count&quot;: 3,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+            },
+            {
+                &quot;id&quot;: &quot;01jven45hdqg4xdz4nzkf1vvfe&quot;,
+                &quot;name&quot;: &quot;Кулінарія&quot;,
+                &quot;slug&quot;: &quot;kulinariia&quot;,
+                &quot;description&quot;: &quot;Кулінарія - популярна тема в сучасному кінематографі, яка знаходить відгук у багатьох глядачів. Qui quisquam suscipit atque dolorem velit rerum. In nulla quidem sit dolorem voluptatem dolores molestias.&quot;,
+                &quot;image&quot;: &quot;/storage/test_files/images/tags/2.jpg&quot;,
+                &quot;is_genre&quot;: false,
+                &quot;aliases&quot;: [],
+                &quot;movies_count&quot;: 6,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
             }
         ],
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
         &quot;seo&quot;: {
-            &quot;title&quot;: &quot;Nam quo et velit aliquid quisquam corrupti.&quot;,
-            &quot;description&quot;: &quot;Voluptas est tenetur eos quia dolor. In laborum aperiam fuga id ea quibusdam. Dolorem est ut maiores aut eum eius qui.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/1200x630.png/003344?text=seo+SEO+Image+ut&quot;
+            &quot;title&quot;: &quot;Офіс 3 дивитися онлайн | Netflix&quot;,
+            &quot;description&quot;: &quot;Дивіться Офіс 3 онлайн на Netflix. Висока якість, без реклами.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/movies_meta/5.jpg&quot;
         }
     }
 }</code>
@@ -3958,10 +4289,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -3978,14 +4309,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes"
 );
 
 const headers = {
@@ -4010,32 +4341,1010 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzsc08ena0qm8ttv3vcb&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 1,
-            &quot;name&quot;: &quot;Quidem sunt aliquam id.&quot;,
-            &quot;slug&quot;: &quot;quidem-sunt-aliquam-id-hgwstn&quot;,
-            &quot;full_name&quot;: &quot;Episode 1: Quidem sunt aliquam id.&quot;,
-            &quot;description&quot;: &quot;Enim ipsa expedita quas sunt placeat voluptas libero. Aut voluptatem porro sequi voluptas ex. Et consectetur molestiae autem et architecto provident nisi.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2022-06-09&quot;,
+            &quot;id&quot;: &quot;01jven4608wvdj0ne5pqq9wknd&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 6,
+            &quot;name&quot;: &quot;Епізод 6: Et quidem.&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-6&quot;,
+            &quot;full_name&quot;: &quot;Episode 6: Епізод 6: Et quidem.&quot;,
+            &quot;description&quot;: &quot;У 6-му епізоді серіалу Офіс 3 головні герої стикаються з новими викликами. Voluptate itaque vitae occaecati numquam neque repellendus. Odio nam cumque neque. Suscipit ratione commodi ea magni facere error nobis. Repellendus animi aut recusandae tenetur perspiciatis omnis. Aspernatur optio veritatis ut laboriosam recusandae.&quot;,
+            &quot;duration&quot;: 59,
+            &quot;formatted_duration&quot;: &quot;59 хв&quot;,
+            &quot;air_date&quot;: &quot;2018-07-23&quot;,
             &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/XI9fK4S2&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/hybDBcDA/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/qmpKX77E&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/rSFxfeEF/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 6: Et quidem. | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 6: Et quidem. серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jveq52e5dyh76cxct7vg63xy&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 12,
+            &quot;name&quot;: &quot;Епізод 12: Сповідь&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-12&quot;,
+            &quot;full_name&quot;: &quot;Episode 12: Епізод 12: Сповідь&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nНапружений епізод, який не залишить байдужим жодного глядача серіалу Офіс 3.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-03-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=Ym2AJqfFTAh&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/bhQTjiqw.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 12: Сповідь | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 12: Сповідь серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:53:13.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven4607wx5f4qf3txbk2r4d&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 4,
+            &quot;name&quot;: &quot;Епізод 4&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-4&quot;,
+            &quot;full_name&quot;: &quot;Episode 4: Епізод 4&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Офіс 3 глядачі дізнаються більше про минуле головних героїв. Aliquam dignissimos molestiae ducimus ipsam placeat nostrum autem. Et et reprehenderit facere. Culpa voluptatem sunt facere illum eum consequuntur quia.&quot;,
+            &quot;duration&quot;: 56,
+            &quot;formatted_duration&quot;: &quot;56 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-01-16&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/hR4KdHyg&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/APL3gPid/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 4 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 4 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven4608wvdj0ne5pqq9wkne&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 7,
+            &quot;name&quot;: &quot;Епізод 7&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-7&quot;,
+            &quot;full_name&quot;: &quot;Episode 7: Епізод 7&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Офіс 3 глядачі дізнаються більше про минуле головних героїв. Reprehenderit aut accusamus dolor hic repellendus exercitationem odio. Ut corrupti consectetur aspernatur voluptas est vitae. Sed quia commodi placeat et cum.&quot;,
+            &quot;duration&quot;: 23,
+            &quot;formatted_duration&quot;: &quot;23 хв&quot;,
+            &quot;air_date&quot;: &quot;2017-07-05&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/ucoH4uqM&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/gLMFaj46/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/EOMi9f1r&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/79m6UQtX/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 7 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 7 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807q81kc22ew50k51tmy&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 10,
+            &quot;name&quot;: &quot;Епізод 10: Нове життя&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-10&quot;,
+            &quot;full_name&quot;: &quot;Episode 10: Епізод 10: Нове життя&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЕпізод 10 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 59,
+            &quot;formatted_duration&quot;: &quot;59 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-01-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=52tHE3Xq0D8&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/YNYHuxY1.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=NloFH4GMoQC&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/EpH0PUcY.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Tretyakoff Production&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=IPmAr8K1ONZ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/GTaNOPln.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Tretyakoff Production&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 10: Нове життя | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 10: Нове життя серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807r5pyhf2d11jj8sbye&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 11,
+            &quot;name&quot;: &quot;Епізод 11: Спокута&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-11&quot;,
+            &quot;full_name&quot;: &quot;Episode 11: Епізод 11: Спокута&quot;,
+            &quot;description&quot;: &quot;Таємниці минулого починають розкриватися, змінюючи уявлення героїв про себе та оточуючих.\n\nЕпізод 11 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 46,
+            &quot;formatted_duration&quot;: &quot;46 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-06&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=15OA2WutvB1&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/1GPGak5t.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=YGvi6moHDTQ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/XaXrdafY.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=neELhry9rm0&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/SUxEinHH.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 11: Спокута | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 11: Спокута серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven46051jqabcpxh0b4be3f&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 1,
+            &quot;name&quot;: &quot;Епізод 1&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-1&quot;,
+            &quot;full_name&quot;: &quot;Episode 1: Епізод 1&quot;,
+            &quot;description&quot;: &quot;Епізод 1 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Veritatis ea quisquam blanditiis voluptates aliquid. Distinctio fugit enim similique est ut recusandae. Magni ad quia accusantium enim rerum at aut. Nobis et eveniet quis architecto.&quot;,
+            &quot;duration&quot;: 50,
+            &quot;formatted_duration&quot;: &quot;50 хв&quot;,
+            &quot;air_date&quot;: &quot;2019-09-05&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/4jTrIN9V&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/phBi7c5E/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/WLcTzzSM&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/Umahy242/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 1 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 1 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven46051jqabcpxh0b4be3g&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 2,
+            &quot;name&quot;: &quot;Епізод 2&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-2&quot;,
+            &quot;full_name&quot;: &quot;Episode 2: Епізод 2&quot;,
+            &quot;description&quot;: &quot;Епізод 2 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Id explicabo impedit expedita vel perferendis est. Ut saepe dolorum voluptas inventore sapiente. Iusto magni voluptate et aperiam voluptate beatae. Amet repudiandae repudiandae dolorem veniam.&quot;,
+            &quot;duration&quot;: 58,
+            &quot;formatted_duration&quot;: &quot;58 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-03-03&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/F2r0lf3u&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/OKFoW86n/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/ggDPs0aG&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/xHlL6q3r/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 2 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 2 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven4607wx5f4qf3txbk2r4e&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 5,
+            &quot;name&quot;: &quot;Епізод 5&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-5&quot;,
+            &quot;full_name&quot;: &quot;Episode 5: Епізод 5&quot;,
+            &quot;description&quot;: &quot;У цій серії Офіс 3 відбуваються ключові події, які змінюють хід всього сюжету. Sint iure est veritatis. Aperiam incidunt consequuntur dolor in voluptatem cum. Ea dolorum doloremque vero magnam dolor.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2017-06-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/BglPFkAY&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/zC6W0EyE/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 5 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 5 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jven4606yhx86aaq1cfe9ssp&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 3,
+            &quot;name&quot;: &quot;Епізод 3: Quis nobis voluptas natus.&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-3&quot;,
+            &quot;full_name&quot;: &quot;Episode 3: Епізод 3: Quis nobis voluptas natus.&quot;,
+            &quot;description&quot;: &quot;Епізод 3 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Rerum vel nisi tempore quisquam dolorem delectus saepe corporis. Qui dolorum quam ab iure. Occaecati debitis voluptatem sint unde vel impedit quia accusamus. Beatae qui amet aut repellat similique commodi quam.&quot;,
+            &quot;duration&quot;: 46,
+            &quot;formatted_duration&quot;: &quot;46 хв&quot;,
+            &quot;air_date&quot;: &quot;2015-11-09&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/MvPJQ4w7&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/Ej6oEhjR/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/DlzU7H4j&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/MbrLTpvw/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 3: Quis nobis voluptas natus. | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 3: Quis nobis voluptas natus. серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807pmvn5thg65tx6h5nt&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 9,
+            &quot;name&quot;: &quot;Епізод 9: Таємниця минулого&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-9&quot;,
+            &quot;full_name&quot;: &quot;Episode 9: Епізод 9: Таємниця минулого&quot;,
+            &quot;description&quot;: &quot;Герой змушений зіткнутися зі своїми найбільшими страхами, щоб захистити тих, кого любить.\n\nЦей епізод серіалу Офіс 3 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 50,
+            &quot;formatted_duration&quot;: &quot;50 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-04&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_7.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=Nl4XZD3wvYD&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/73myRkRt.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=nnQJ13frf8B&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/08R5dJ7I.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=kYNwdgUeXpS&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/cvOcF5dJ.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 9: Таємниця минулого | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 9: Таємниця минулого серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807d3gqcsxt1yxpjr7ft&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 8,
+            &quot;name&quot;: &quot;Епізод 8: Повернення додому&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-8&quot;,
+            &quot;full_name&quot;: &quot;Episode 8: Епізод 8: Повернення додому&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЦей епізод серіалу Офіс 3 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 45,
+            &quot;formatted_duration&quot;: &quot;45 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-14&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=OAOHDtd8zmY&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/m0U1kXDi.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Так Треба Продакшн&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=z8GGpoKCwo1&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/vOVyDkQo.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=tqckeeJ4GbZ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/h134Ju5v.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 8: Повернення додому | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 8: Повернення додому серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;01jveq52e6stpjjks8cajwyqq4&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 13,
+            &quot;name&quot;: &quot;Епізод 13: Початок кінця&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-13&quot;,
+            &quot;full_name&quot;: &quot;Episode 13: Епізод 13: Початок кінця&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЕпізод 13 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-04-24&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=jcxRCwRfsqW&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/p49d1Oo7.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=wNzREVPiyrm&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/Lc5E9PgF.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=b7JrdIlRxwb&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/fFLT9tzA.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Так Треба Продакшн&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 13: Початок кінця | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 13: Початок кінця серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:53:13.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
+            &quot;movie&quot;: {
+                &quot;id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+                &quot;name&quot;: &quot;Офіс 3&quot;,
+                &quot;slug&quot;: &quot;ofis-3&quot;,
+                &quot;description&quot;: &quot;Офіс 3 - це драматичний серіал про складні людські стосунки та життєві випробування. Velit numquam soluta ullam possimus. Mollitia eos deserunt perferendis facilis sit et. Maxime quo quibusdam debitis ducimus incidunt. Veniam minus distinctio omnis vitae. Et doloremque ex voluptatem impedit aliquid aliquam facilis impedit.\n\nEveniet sit error nobis vel nesciunt dolores. Sint vero iste in et sint. Qui eveniet est non rem similique.\n\nLibero quo vero quis vel pariatur. In qui eum culpa consequatur quae nam ut expedita. Quae veritatis consectetur aut repellendus nesciunt libero voluptas.&quot;,
+                &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+                &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+                &quot;kind&quot;: &quot;tv_series&quot;,
+                &quot;status&quot;: &quot;released&quot;,
+                &quot;release_year&quot;: &quot;2015&quot;,
+                &quot;imdb_score&quot;: 5.5,
+                &quot;aliases&quot;: [
+                    &quot;Quaerat velit numquam illo.&quot;,
+                    &quot;Офіс 3: minima ut aut&quot;
+                ],
+                &quot;countries&quot;: [
+                    &quot;Україна&quot;,
+                    &quot;Мексика&quot;,
+                    &quot;Велика Британія&quot;
+                ],
+                &quot;episodes_count&quot;: 7,
+                &quot;average_rating&quot;: 0,
+                &quot;main_genre&quot;: &quot;Кримінал&quot;,
+                &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+                &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+            }
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -4050,7 +5359,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -4060,10 +5369,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/episodes&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/episodes&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 1,
-        &quot;total&quot;: 1
+        &quot;to&quot;: 13,
+        &quot;total&quot;: 13
     }
 }</code>
  </pre>
@@ -4144,10 +5453,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug--episodes"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -4164,14 +5473,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3/persons" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3/persons"
 );
 
 const headers = {
@@ -4196,49 +5505,158 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynz3jx17vkjqey21q8a4w&quot;,
-            &quot;name&quot;: &quot;Панасюк Ірина Анатоліївна&quot;,
-            &quot;slug&quot;: &quot;panasiuk-irina-anatoliyivna-p9jbku&quot;,
-            &quot;image&quot;: null,
-            &quot;birth_date&quot;: &quot;1956-10-01&quot;,
+            &quot;id&quot;: &quot;01jven45hnhrf2ek80vb7m5exz&quot;,
+            &quot;name&quot;: &quot;Дженніфер Лоуренс&quot;,
+            &quot;slug&quot;: &quot;dzennifer-lourens&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1978-04-04&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Veniam voluptatem quia eos autem aliquam nostrum ipsa dolor tempore sed et quis asperiores est quisquam.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Дженніфер Лоуренс - актор, який отримав визнання критиків та глядачів за свої ролі у кіно та на телебаченні. Sed sed odio voluptatem dignissimos laudantium nulla minus. Autem explicabo consectetur iste ipsam magni. Quia ut ab nam velit qui magni.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz4p82t1r92b47jm7x2y&quot;,
-            &quot;name&quot;: &quot;Мельниченко Тамара Анатоліївна&quot;,
-            &quot;slug&quot;: &quot;melnicenko-tamara-anatoliyivna-teirci&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0099cc?text=people+quas&quot;,
-            &quot;birth_date&quot;: null,
+            &quot;id&quot;: &quot;01jven45hwzfqy9mnxt1skq828&quot;,
+            &quot;name&quot;: &quot;Кріс Гемсворт&quot;,
+            &quot;slug&quot;: &quot;kris-gemsvort&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1964-04-12&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Molestiae voluptates omnis et provident ea ipsa et aut delectus iure cum numquam veniam est quia qui eum sint minus sed.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Кріс Гемсворт - один з найбільш впізнаваних акторів сучасності, який має мільйони шанувальників. Est quas commodi natus est consequuntur aut est. Deserunt omnis quia ipsum voluptatem aut debitis voluptate.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz5wrk3ts8s94td74z2n&quot;,
-            &quot;name&quot;: &quot;Сергій Іванович Шевчук&quot;,
-            &quot;slug&quot;: &quot;sergii-ivanovic-sevcuk-y8tstc&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ff44?text=people+incidunt&quot;,
-            &quot;birth_date&quot;: null,
+            &quot;id&quot;: &quot;01jven45hxex1kmc2pqd8sxexq&quot;,
+            &quot;name&quot;: &quot;Галь Гадот&quot;,
+            &quot;slug&quot;: &quot;gal-gadot&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1963-05-16&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Et odit sit dolores sed ut enim totam accusamus eum ad laboriosam quis quos.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Актор Галь Гадот відомий своєю різноманітністю ролей та глибоким підходом до кожного персонажа. Qui et officiis enim odio et totam. Molestias dolor aut veniam aut.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hynshqjhwcaaqbgfcs&quot;,
+            &quot;name&quot;: &quot;Дуейн Джонсон&quot;,
+            &quot;slug&quot;: &quot;duein-dzonson&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/2.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1990-05-30&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Дуейн Джонсон - один з найбільш впізнаваних акторів сучасності, який має мільйони шанувальників. Voluptates odit voluptate ut necessitatibus ut. Consectetur dolorem autem dignissimos distinctio cum quibusdam repellat. Natus voluptatum cum eveniet velit voluptas nihil.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hynshqjhwcaaqbgfct&quot;,
+            &quot;name&quot;: &quot;Шарліз Терон&quot;,
+            &quot;slug&quot;: &quot;sarliz-teron&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/2.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1986-06-24&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Шарліз Терон - актор, який отримав визнання критиків та глядачів за свої ролі у кіно та на телебаченні. Sit voluptas ea eaque voluptatibus sit. Assumenda dolores fuga veritatis dolorem.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hz767cdf94t9d4y7eh&quot;,
+            &quot;name&quot;: &quot;Кіану Рівз&quot;,
+            &quot;slug&quot;: &quot;kianu-rivz&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/3.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1992-07-27&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Талановитий актор Кіану Рівз відомий своєю здатністю перевтілюватися у різноманітних персонажів. Hic occaecati laborum molestiae voluptatem porro libero ullam. Vel ad sed neque facilis rerum. Non accusantium voluptas aut repellat est eos a.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45j22exsdxp95mtn39fv&quot;,
+            &quot;name&quot;: &quot;Емма Вотсон&quot;,
+            &quot;slug&quot;: &quot;emma-votson&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;2002-04-14&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Талановитий актор Емма Вотсон відомий своєю здатністю перевтілюватися у різноманітних персонажів. Cupiditate illum eveniet possimus est eligendi asperiores voluptas. Provident nihil aut maiores esse.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45j6aprsy9d7jx2veasp&quot;,
+            &quot;name&quot;: &quot;Крістофер Нолан&quot;,
+            &quot;slug&quot;: &quot;kristofer-nolan&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/directors/3.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1953-02-25&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Талановитий режисер Крістофер Нолан відомий своїм умінням розкривати глибокі теми через кінематограф. Aut ut corporis voluptas ex assumenda. Natus earum eius aut praesentium libero.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45k3eb0jfxjm09t6mw9x&quot;,
+            &quot;name&quot;: &quot;Марина Захарчук&quot;,
+            &quot;slug&quot;: &quot;marina-zaxarcuk&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1956-01-12&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Марина Захарчук - Актор озвучення, чиї роботи вирізняються високою якістю та оригінальністю. Minima quia omnis ea quibusdam explicabo ad ut aut. Reiciendis rerum quaerat laborum.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45k8j7yffs2r9apqs10c&quot;,
+            &quot;name&quot;: &quot;Болеслав Захарчук&quot;,
+            &quot;slug&quot;: &quot;boleslav-zaxarcuk&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1978-05-23&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Продюсер Болеслав Захарчук відомий своїм професіоналізмом та творчим підходом до роботи. Iure vero similique dolores aut ad. Quia beatae consequatur ut nam.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45m26ne7cd03x7afcmaw&quot;,
+            &quot;name&quot;: &quot;Владислав Гнатюк&quot;,
+            &quot;slug&quot;: &quot;vladislav-gnatiuk&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/4.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1968-06-13&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Оператор Владислав Гнатюк відомий своїм професіоналізмом та творчим підходом до роботи. Doloremque voluptas ut error ut cum modi. Sequi voluptatem id iusto doloremque eligendi natus.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45m4zqzvvffrdvzkvrw3&quot;,
+            &quot;name&quot;: &quot;Анатолій Іванченко&quot;,
+            &quot;slug&quot;: &quot;anatolii-ivancenko&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1974-04-15&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Анатолій Іванченко - один з найкращих спеціалістів у своїй галузі, чиї роботи отримали визнання. Blanditiis itaque quam sunt molestias. Necessitatibus incidunt impedit ullam eius. Tenetur eveniet quod vitae vero nihil.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45m7jz9p0s8cgtf6vxwm&quot;,
+            &quot;name&quot;: &quot;Маргарита Броварчук&quot;,
+            &quot;slug&quot;: &quot;margarita-brovarcuk&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1958-10-30&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Маргарита Броварчук - відомий Сценарист, який працював над багатьма успішними проектами. Rerum voluptate officiis dolor repellat et id ab voluptate. Commodi nemo eum illo voluptates odit quaerat deserunt.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/persons?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/persons?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -4253,7 +5671,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/persons?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -4263,10 +5681,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/persons&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/persons&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 3,
-        &quot;total&quot;: 3
+        &quot;to&quot;: 13,
+        &quot;total&quot;: 13
     }
 }</code>
  </pre>
@@ -4347,10 +5765,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug--persons"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -4367,14 +5785,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3/tags" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3/tags"
 );
 
 const headers = {
@@ -4399,54 +5817,97 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzyny15gpbw5bgcamd62bsy&quot;,
-            &quot;name&quot;: &quot;Cult Classic 854&quot;,
-            &quot;slug&quot;: &quot;cult-classic-854-a6osft&quot;,
-            &quot;description&quot;: &quot;Facilis tempore voluptatem a eveniet earum vel et et.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/003322?text=tags+natus&quot;,
-            &quot;is_genre&quot;: false,
-            &quot;aliases&quot;: [],
-            &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+            &quot;id&quot;: &quot;01jven45gc073pf96m5jwfqhhv&quot;,
+            &quot;name&quot;: &quot;Кримінал&quot;,
+            &quot;slug&quot;: &quot;kriminal&quot;,
+            &quot;description&quot;: &quot;Кримінал - один з найпопулярніших жанрів кіно, який має мільйони шанувальників по всьому світу. Iste omnis et et cupiditate. Rem voluptatum repellendus sequi nam sit non. Quisquam quia alias praesentium quo.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/genres/3.jpg&quot;,
+            &quot;is_genre&quot;: true,
+            &quot;aliases&quot;: [
+                &quot;Crime&quot;
+            ],
+            &quot;movies_count&quot;: 3,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzyny2a60r3yee0qc2pfbsk&quot;,
-            &quot;name&quot;: &quot;Adventure 314&quot;,
-            &quot;slug&quot;: &quot;adventure-314-b6besf&quot;,
-            &quot;description&quot;: &quot;Quos corporis amet ipsa atque saepe laboriosam aut itaque commodi iusto sit.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00dd66?text=tags+adipisci&quot;,
+            &quot;id&quot;: &quot;01jven45gm5d4358ysb3m321m2&quot;,
+            &quot;name&quot;: &quot;Зомбі&quot;,
+            &quot;slug&quot;: &quot;zombi&quot;,
+            &quot;description&quot;: &quot;Стрічки з тегом Зомбі часто досліджують специфічні аспекти цієї тематики. Porro pariatur rerum hic. Suscipit adipisci quasi sint velit.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/5.jpg&quot;,
             &quot;is_genre&quot;: false,
             &quot;aliases&quot;: [
-                &quot;omnis&quot;
+                &quot;Zombies&quot;,
+                &quot;Undead&quot;
             ],
             &quot;movies_count&quot;: 2,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzyny3pyfsa26t0pdp5s1ws&quot;,
-            &quot;name&quot;: &quot;Horror 621&quot;,
-            &quot;slug&quot;: &quot;horror-621-zwlheb&quot;,
-            &quot;description&quot;: &quot;Ut praesentium qui eos voluptas illo quis odit voluptates.&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00cc88?text=tags+tempora&quot;,
+            &quot;id&quot;: &quot;01jven45gnn0caztcaxs0xd1rj&quot;,
+            &quot;name&quot;: &quot;Вампіри&quot;,
+            &quot;slug&quot;: &quot;vampiri&quot;,
+            &quot;description&quot;: &quot;Фільми, позначені тегом Вампіри, пропонують унікальний погляд на цю тематику. Veniam optio quia nesciunt harum. Aut sed culpa temporibus aspernatur numquam. Magni culpa eveniet pariatur debitis.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/3.jpg&quot;,
+            &quot;is_genre&quot;: false,
+            &quot;aliases&quot;: [
+                &quot;Vampires&quot;,
+                &quot;Bloodsuckers&quot;
+            ],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45gy1vwkakv5aze4rc6t&quot;,
+            &quot;name&quot;: &quot;Кіберпанк&quot;,
+            &quot;slug&quot;: &quot;kiberpank&quot;,
+            &quot;description&quot;: &quot;Фільми з тегом Кіберпанк об&#039;єднані спільною тематикою та елементами. Et dolor atque voluptatibus animi pariatur maxime aperiam corporis. Incidunt quae dolore possimus nam. Excepturi magni nemo ipsa consequuntur in voluptatem.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/2.jpg&quot;,
+            &quot;is_genre&quot;: false,
+            &quot;aliases&quot;: [
+                &quot;Cyberpunk&quot;
+            ],
+            &quot;movies_count&quot;: 4,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hb7bd6xdyjm2b0wf84&quot;,
+            &quot;name&quot;: &quot;Музика&quot;,
+            &quot;slug&quot;: &quot;muzika&quot;,
+            &quot;description&quot;: &quot;Тег Музика об&#039;єднує різноманітні фільми, які мають спільні елементи. Earum cum ut commodi quae ut doloribus fugiat. Labore adipisci eaque hic reiciendis.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/1.jpg&quot;,
             &quot;is_genre&quot;: false,
             &quot;aliases&quot;: [],
             &quot;movies_count&quot;: 3,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45hdqg4xdz4nzkf1vvfe&quot;,
+            &quot;name&quot;: &quot;Кулінарія&quot;,
+            &quot;slug&quot;: &quot;kulinariia&quot;,
+            &quot;description&quot;: &quot;Кулінарія - популярна тема в сучасному кінематографі, яка знаходить відгук у багатьох глядачів. Qui quisquam suscipit atque dolorem velit rerum. In nulla quidem sit dolorem voluptatem dolores molestias.&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/tags/2.jpg&quot;,
+            &quot;is_genre&quot;: false,
+            &quot;aliases&quot;: [],
+            &quot;movies_count&quot;: 6,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/tags?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/tags?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -4461,7 +5922,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/tags?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -4471,10 +5932,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/tags&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/tags&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 3,
-        &quot;total&quot;: 3
+        &quot;to&quot;: 6,
+        &quot;total&quot;: 6
     }
 }</code>
  </pre>
@@ -4555,10 +6016,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug--tags"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -4575,14 +6036,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings"
 );
 
 const headers = {
@@ -4607,220 +6068,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: &quot;01jtzynzjgrvsnpe1eaydgfmtq&quot;,
-            &quot;user_id&quot;: &quot;01jtzynwwkxhgcjp32w6fjx3wd&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 9,
-            &quot;review&quot;: &quot;&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzjk33ke1sqdd5wekwd5&quot;,
-            &quot;user_id&quot;: &quot;01jtzynxhgbynqvpjkxhffg3ag&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 7,
-            &quot;review&quot;: &quot;Vel quia et ut iure numquam sunt et. Est tempore molestiae iure ut. Nemo qui mollitia quaerat aspernatur.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzjynxwb9vycnyk2k1ne&quot;,
-            &quot;user_id&quot;: &quot;01jtzynwwym68b7n5d1td1venq&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 3,
-            &quot;review&quot;: &quot;Quis sunt illo necessitatibus ab beatae dolorum. Laborum libero occaecati dolor molestias commodi. Quasi et rerum numquam.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzkayf8s1dv5z0d4mcgy&quot;,
-            &quot;user_id&quot;: &quot;01jtzynwx2jcbgfac9m84n18jt&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 2,
-            &quot;review&quot;: &quot;Eveniet quaerat molestiae voluptate. At illo explicabo aut nihil. Deserunt incidunt et hic consequatur consequatur autem.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzky2xbgrs6r3gxq358v&quot;,
-            &quot;user_id&quot;: &quot;01jtzynwwch7z0r7h2yq60qzzh&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 3,
-            &quot;review&quot;: &quot;&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynznsj42hnvz4t5q0p23c&quot;,
-            &quot;user_id&quot;: &quot;01jtzynwx9qdw1psknw47v6446&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;number&quot;: 10,
-            &quot;review&quot;: &quot;&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;movie&quot;: {
-                &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-                &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-                &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-                &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-                &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-                &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-                &quot;kind&quot;: &quot;movie&quot;,
-                &quot;status&quot;: &quot;anons&quot;,
-                &quot;release_year&quot;: &quot;2023&quot;,
-                &quot;imdb_score&quot;: 4.64,
-                &quot;aliases&quot;: [
-                    &quot;laborum&quot;,
-                    &quot;aut&quot;,
-                    &quot;libero&quot;
-                ],
-                &quot;countries&quot;: [
-                    &quot;UA&quot;
-                ],
-                &quot;average_rating&quot;: 5.7,
-                &quot;main_genre&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-            }
-        }
-    ],
+    &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
-        &quot;from&quot;: 1,
+        &quot;from&quot;: null,
         &quot;last_page&quot;: 1,
         &quot;links&quot;: [
             {
@@ -4829,7 +6090,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -4839,10 +6100,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/ratings&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/ratings&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 6,
-        &quot;total&quot;: 6
+        &quot;to&quot;: null,
+        &quot;total&quot;: 0
     }
 }</code>
  </pre>
@@ -4923,10 +6184,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug--ratings"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -4943,14 +6204,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments" \
+    --get "http://127.0.0.1:8000/api/v1/movies/ofis-3/comments" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments"
+    "http://127.0.0.1:8000/api/v1/movies/ofis-3/comments"
 );
 
 const headers = {
@@ -4975,74 +6236,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: &quot;01jtzyp12fb2k0by6vv4j1dh1e&quot;,
-            &quot;body&quot;: &quot;Praesentium qui hic possimus doloribus sint voluptate aut. Aut sed distinctio soluta at.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp12gtvhah17gs291qh1m&quot;,
-            &quot;body&quot;: &quot;Quibusdam placeat quam eaque rerum est est ut. Facilis non nulla ex nostrum. Consequatur necessitatibus nesciunt repudiandae quis mollitia similique aut. Dolor explicabo aut iste voluptatem illum eum.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp12hm4vwe2r9gc5yhtsn&quot;,
-            &quot;body&quot;: &quot;Ducimus aut qui enim autem ad et. Dolores in debitis consequatur dolor velit nemo voluptas. Maiores magni provident quis qui et beatae. Itaque qui et iusto nostrum nesciunt et sit.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp12j635xfkehe9my75wa&quot;,
-            &quot;body&quot;: &quot;Perferendis unde corporis molestiae qui quia ut architecto. Qui quia aspernatur dolor sunt qui aut.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        }
-    ],
+    &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/comments?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/comments?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
-        &quot;from&quot;: 1,
+        &quot;from&quot;: null,
         &quot;last_page&quot;: 1,
         &quot;links&quot;: [
             {
@@ -5051,7 +6258,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/comments?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -5061,10 +6268,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/movies/omnis-id-quaerat-soluta-oiduow/comments&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/movies/ofis-3/comments&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 4,
-        &quot;total&quot;: 4
+        &quot;to&quot;: null,
+        &quot;total&quot;: 0
     }
 }</code>
  </pre>
@@ -5145,10 +6352,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-movies--movie_slug--comments"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -5165,14 +6372,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/episodes?movie_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;aired_after=2001-01-01&amp;include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
+    --get "http://127.0.0.1:8000/api/v1/episodes?movie_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;aired_after=2001-01-01&amp;include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/episodes"
+    "http://127.0.0.1:8000/api/v1/episodes"
 );
 
 const params = {
@@ -5209,15 +6416,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/episodes?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/episodes?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -5232,7 +6438,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/episodes?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -5242,7 +6448,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/episodes&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes&quot;,
         &quot;per_page&quot;: 15,
         &quot;to&quot;: null,
         &quot;total&quot;: 0
@@ -5426,14 +6632,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
+    --get "http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01"
+    "http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01"
 );
 
 const params = {
@@ -5468,263 +6674,751 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzxb17gdknptafrgdxme&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;number&quot;: 18,
-            &quot;name&quot;: &quot;Molestiae aut natus in.&quot;,
-            &quot;slug&quot;: &quot;molestiae-aut-natus-in-o7rdph&quot;,
-            &quot;full_name&quot;: &quot;Episode 18: Molestiae aut natus in.&quot;,
-            &quot;description&quot;: &quot;Facere et ullam rerum natus. Odit harum dicta vitae vitae officiis et totam eveniet. Esse error blanditiis vitae eligendi rem quibusdam. Sed illum voluptas nulla eum.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2026-04-23&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzttfpm79kddtg3pkw5c&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzaqgxm83mgzfrp2s739&quot;,
-            &quot;number&quot;: 20,
-            &quot;name&quot;: &quot;Consectetur cum.&quot;,
-            &quot;slug&quot;: &quot;consectetur-cum-o08iio&quot;,
-            &quot;full_name&quot;: &quot;Episode 20: Consectetur cum.&quot;,
-            &quot;description&quot;: &quot;Expedita autem non dolor quia ut. Nostrum a perspiciatis libero quas recusandae. Ratione omnis alias quis deserunt eveniet consequatur. Magni asperiores rerum quaerat reiciendis.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2026-04-22&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzy98pvvdzt09pbfkfb6&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
+            &quot;id&quot;: &quot;01jven4614h7jwkn523y937ptv&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p3fd9tb1vmm03qt5bv&quot;,
             &quot;number&quot;: 1,
-            &quot;name&quot;: &quot;Temporibus illum doloremque.&quot;,
-            &quot;slug&quot;: &quot;temporibus-illum-doloremque-x7q7n0&quot;,
-            &quot;full_name&quot;: &quot;Episode 1: Temporibus illum doloremque.&quot;,
-            &quot;description&quot;: &quot;Molestiae voluptatum consequatur sequi velit dolorem omnis repudiandae. Vitae aut repellendus eius quia. Consequatur et non quae qui tempora explicabo consequatur. Maxime minus officia voluptatem magnam voluptas ratione.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2026-04-11&quot;,
+            &quot;name&quot;: &quot;Епізод 1&quot;,
+            &quot;slug&quot;: &quot;klinok-shho-znishhuje-demoniv-19-episode-1&quot;,
+            &quot;full_name&quot;: &quot;Episode 1: Епізод 1&quot;,
+            &quot;description&quot;: &quot;Епізод 1 серіалу Клинок, що знищує демонів 19 розкриває нові таємниці та повороти сюжету. Dolores porro vero neque neque blanditiis reiciendis. Eveniet ducimus doloremque laudantium voluptatem optio. Nostrum autem eos ut aperiam voluptatibus odit. Qui recusandae atque quidem qui aut.&quot;,
+            &quot;duration&quot;: 27,
+            &quot;formatted_duration&quot;: &quot;27 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-12-23&quot;,
             &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+            &quot;pictures&quot;: [
+                &quot;/storage/test_files/images/episodes_pictures/3.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/4.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/3.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/1.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/1.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/1df6iDHF&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/LGgJfV1l/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 1 | Клинок, що знищує демонів 19 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 1 серіалу Клинок, що знищує демонів 19 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynztcw1mmk5js9c07q0n9&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;number&quot;: 8,
-            &quot;name&quot;: &quot;Deleniti ex aliquam quod.&quot;,
-            &quot;slug&quot;: &quot;deleniti-ex-aliquam-quod-gz30vk&quot;,
-            &quot;full_name&quot;: &quot;Episode 8: Deleniti ex aliquam quod.&quot;,
-            &quot;description&quot;: &quot;Nihil eum eveniet qui et exercitationem quod expedita. Ut quod explicabo dicta consectetur sit. Aliquam non molestiae quaerat. Quis non qui accusamus illum sequi illo.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2026-03-03&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzw1978b4w028rx85pa8&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzas24nvkvsq0ne1vzbh&quot;,
-            &quot;number&quot;: 9,
-            &quot;name&quot;: &quot;Asperiores a dolorum et.&quot;,
-            &quot;slug&quot;: &quot;asperiores-a-dolorum-et-fk2ck1&quot;,
-            &quot;full_name&quot;: &quot;Episode 9: Asperiores a dolorum et.&quot;,
-            &quot;description&quot;: &quot;Mollitia quibusdam deleniti optio dolores quibusdam ipsum. Minus repudiandae est praesentium numquam. Eum nihil accusamus voluptas.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2026-02-01&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp01g08ekndwekb3wjh3x&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb4kh4cfxxrzmk5pkyy&quot;,
-            &quot;number&quot;: 9,
-            &quot;name&quot;: &quot;Possimus id et et.&quot;,
-            &quot;slug&quot;: &quot;possimus-id-et-et-nrtfgf&quot;,
-            &quot;full_name&quot;: &quot;Episode 9: Possimus id et et.&quot;,
-            &quot;description&quot;: &quot;Et exercitationem aut quia qui quod quibusdam. Assumenda dolorum et fuga similique beatae autem non. Nisi sequi consequatur qui aut. Quasi omnis magni reprehenderit qui provident incidunt alias.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-12-31&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzzs8ayejdydac1gv1tc&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb3hmppzaw7errx536f&quot;,
-            &quot;number&quot;: 24,
-            &quot;name&quot;: &quot;Modi deserunt perferendis libero.&quot;,
-            &quot;slug&quot;: &quot;modi-deserunt-perferendis-libero-xeeoz7&quot;,
-            &quot;full_name&quot;: &quot;Episode 24: Modi deserunt perferendis libero.&quot;,
-            &quot;description&quot;: &quot;Voluptas tempora perferendis quis alias. Magnam fuga aspernatur asperiores nesciunt officiis quaerat non. Consequatur omnis nesciunt ut rerum quia.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-12-12&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzxrjdm1jqvnqtga5bw0&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;number&quot;: 6,
-            &quot;name&quot;: &quot;Repellat a neque molestiae.&quot;,
-            &quot;slug&quot;: &quot;repellat-a-neque-molestiae-go0cm2&quot;,
-            &quot;full_name&quot;: &quot;Episode 6: Repellat a neque molestiae.&quot;,
-            &quot;description&quot;: &quot;Tenetur provident animi explicabo aut est. Est eos eligendi soluta dicta beatae quo accusamus. Quis ut incidunt non enim possimus quidem.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-12-12&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynztj7ee7xkx9ynpj6m7g&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;number&quot;: 1,
-            &quot;name&quot;: &quot;Eum consequatur in repudiandae nam.&quot;,
-            &quot;slug&quot;: &quot;eum-consequatur-in-repudiandae-nam-77dlr8&quot;,
-            &quot;full_name&quot;: &quot;Episode 1: Eum consequatur in repudiandae nam.&quot;,
-            &quot;description&quot;: &quot;Harum earum saepe aut alias odio molestiae fugit. Facere ex quam accusamus quam vero delectus quo.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-09-29&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzwtqnpf4xh0qmmagxav&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;number&quot;: 21,
-            &quot;name&quot;: &quot;Accusantium libero aliquid doloremque.&quot;,
-            &quot;slug&quot;: &quot;accusantium-libero-aliquid-doloremque-wkyb0q&quot;,
-            &quot;full_name&quot;: &quot;Episode 21: Accusantium libero aliquid doloremque.&quot;,
-            &quot;description&quot;: &quot;Cumque cum tempora ut enim suscipit ipsam qui qui. In ducimus autem quam necessitatibus provident. Aspernatur ipsum possimus voluptas maiores aliquid. Incidunt explicabo accusantium quasi ut quis.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-09-24&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzv7pzmj0c1pr7z8pr2t&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzas24nvkvsq0ne1vzbh&quot;,
-            &quot;number&quot;: 24,
-            &quot;name&quot;: &quot;Perspiciatis earum culpa.&quot;,
-            &quot;slug&quot;: &quot;perspiciatis-earum-culpa-qhybka&quot;,
-            &quot;full_name&quot;: &quot;Episode 24: Perspiciatis earum culpa.&quot;,
-            &quot;description&quot;: &quot;Est amet explicabo aut expedita sit. Et quasi ut magni nobis ad quo dolor. Ipsam et et a dolorum et iure velit sed. Repellat eum rem veniam.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-09-03&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzzyvcs34wvv3rt4t9e5&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb3hmppzaw7errx536f&quot;,
-            &quot;number&quot;: 4,
-            &quot;name&quot;: &quot;Consequatur voluptate.&quot;,
-            &quot;slug&quot;: &quot;consequatur-voluptate-zqneqy&quot;,
-            &quot;full_name&quot;: &quot;Episode 4: Consequatur voluptate.&quot;,
-            &quot;description&quot;: &quot;Rerum ipsam adipisci quia non aut eaque. Doloribus id minus explicabo tenetur molestias ut. Suscipit ad minus quo omnis voluptas. Iste dignissimos architecto consequuntur eos dolore.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-05-17&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzsjpk3dfzsvxqsqxmf9&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzae4rh5y6zxx8m92qt3&quot;,
-            &quot;number&quot;: 1,
-            &quot;name&quot;: &quot;Non ducimus sequi.&quot;,
-            &quot;slug&quot;: &quot;non-ducimus-sequi-hiycpu&quot;,
-            &quot;full_name&quot;: &quot;Episode 1: Non ducimus sequi.&quot;,
-            &quot;description&quot;: &quot;Fuga iste ea nulla odio nisi. Quas sed esse reiciendis vitae. Aut voluptatibus enim fugiat ut voluptatem inventore facilis.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-05-05&quot;,
-            &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzzkpk3qv32s4mc9vf7f&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb3hmppzaw7errx536f&quot;,
+            &quot;id&quot;: &quot;01jven461wqsf2zze69v47kh1y&quot;,
+            &quot;movie_id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
             &quot;number&quot;: 12,
-            &quot;name&quot;: &quot;Harum ut nulla.&quot;,
-            &quot;slug&quot;: &quot;harum-ut-nulla-fffs6j&quot;,
-            &quot;full_name&quot;: &quot;Episode 12: Harum ut nulla.&quot;,
-            &quot;description&quot;: &quot;Quae tenetur error ratione possimus. Aperiam in repudiandae qui sint magni sit. Neque dolores aperiam est quisquam est voluptate quia.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2025-03-09&quot;,
+            &quot;name&quot;: &quot;Епізод 12: Voluptatibus dolorem culpa.&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24-episode-12&quot;,
+            &quot;full_name&quot;: &quot;Episode 12: Епізод 12: Voluptatibus dolorem culpa.&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Доктор Стоун 24 глядачі дізнаються більше про минуле головних героїв. Commodi error dolores odit aut vero. Rerum quos et eum natus qui. Est omnis id aut expedita maiores consequatur ut.&quot;,
+            &quot;duration&quot;: 21,
+            &quot;formatted_duration&quot;: &quot;21 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-12-12&quot;,
             &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/IHw68olq&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/1ULyToBm/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/xtMbkbk6&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/SSwOnUWV/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 12: Voluptatibus dolorem culpa. | Доктор Стоун 24 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 12: Voluptatibus dolorem culpa. серіалу Доктор Стоун 24 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzyp01qmjb1a34peehe5p3r&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb4kh4cfxxrzmk5pkyy&quot;,
-            &quot;number&quot;: 23,
-            &quot;name&quot;: &quot;Est et.&quot;,
-            &quot;slug&quot;: &quot;est-et-wqymwl&quot;,
-            &quot;full_name&quot;: &quot;Episode 23: Est et.&quot;,
-            &quot;description&quot;: &quot;Doloribus id occaecati in quod fugit accusamus praesentium. Nobis eum temporibus unde rerum. Quae tempora quaerat libero sint et.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2024-10-17&quot;,
+            &quot;id&quot;: &quot;01jven461prq50zk33np2q34ja&quot;,
+            &quot;movie_id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
+            &quot;number&quot;: 3,
+            &quot;name&quot;: &quot;Епізод 3: Molestiae labore blanditiis debitis.&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24-episode-3&quot;,
+            &quot;full_name&quot;: &quot;Episode 3: Епізод 3: Molestiae labore blanditiis debitis.&quot;,
+            &quot;description&quot;: &quot;У цій серії Доктор Стоун 24 відбуваються ключові події, які змінюють хід всього сюжету. Dolorum voluptatem iusto vel amet voluptate impedit unde. Ut dignissimos delectus deleniti qui ut repudiandae aut. Soluta dolorem quos expedita qui est.&quot;,
+            &quot;duration&quot;: 22,
+            &quot;formatted_duration&quot;: &quot;22 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-11-27&quot;,
             &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/OgKfcOxO&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/oOiOAC1y/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/rFtD9bLz&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/dqdDB0Bb/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 3: Molestiae labore blanditiis debitis. | Доктор Стоун 24 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 3: Molestiae labore blanditiis debitis. серіалу Доктор Стоун 24 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven461q7sry8byabh8vr4z9&quot;,
+            &quot;movie_id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
+            &quot;number&quot;: 4,
+            &quot;name&quot;: &quot;Епізод 4: Sit iure ex.&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24-episode-4&quot;,
+            &quot;full_name&quot;: &quot;Episode 4: Епізод 4: Sit iure ex.&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Доктор Стоун 24 глядачі дізнаються більше про минуле головних героїв. Sequi nisi quibusdam architecto possimus at ad autem nam. Voluptas autem nemo eos architecto sint. Velit dolorem qui voluptas et qui repellat.&quot;,
+            &quot;duration&quot;: 59,
+            &quot;formatted_duration&quot;: &quot;59 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-11-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/kLgYn2fQ&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/AeGp4suD/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 4: Sit iure ex. | Доктор Стоун 24 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 4: Sit iure ex. серіалу Доктор Стоун 24 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4615jg0727jq3h8zratr&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p3fd9tb1vmm03qt5bv&quot;,
+            &quot;number&quot;: 3,
+            &quot;name&quot;: &quot;Епізод 3: Officiis in est eum saepe.&quot;,
+            &quot;slug&quot;: &quot;klinok-shho-znishhuje-demoniv-19-episode-3&quot;,
+            &quot;full_name&quot;: &quot;Episode 3: Епізод 3: Officiis in est eum saepe.&quot;,
+            &quot;description&quot;: &quot;У цій серії Клинок, що знищує демонів 19 відбуваються ключові події, які змінюють хід всього сюжету. Eum magnam aut similique nulla laboriosam mollitia commodi optio. Ut dolores quidem aut. Voluptatum nobis natus et est saepe praesentium. Repellat magni at doloribus laborum.&quot;,
+            &quot;duration&quot;: 27,
+            &quot;formatted_duration&quot;: &quot;27 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-11-08&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;/storage/test_files/images/episodes_pictures/4.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/5.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/5.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/5.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/4.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/dBYHavPo&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/4vkfrMGf/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/3QMuFl84&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/RHpIDEXP/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 3: Officiis in est eum saepe. | Клинок, що знищує демонів 19 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 3: Officiis in est eum saepe. серіалу Клинок, що знищує демонів 19 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven46437vnvy5jvqe598vgs&quot;,
+            &quot;movie_id&quot;: &quot;01jven45qqt6k24g7hgmkgqxy8&quot;,
+            &quot;number&quot;: 6,
+            &quot;name&quot;: &quot;Епізод 6: Fuga et omnis veniam.&quot;,
+            &quot;slug&quot;: &quot;van-pis-41-episode-6&quot;,
+            &quot;full_name&quot;: &quot;Episode 6: Епізод 6: Fuga et omnis veniam.&quot;,
+            &quot;description&quot;: &quot;Епізод 6 продовжує захоплюючу історію серіалу Ван Піс 41 новими подіями. Ea et nemo ut vitae aut. Rerum nam et reprehenderit. Tenetur ut eius quia. Est velit nemo eos optio veniam reprehenderit aliquam.&quot;,
+            &quot;duration&quot;: 45,
+            &quot;formatted_duration&quot;: &quot;45 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-09-08&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/D9XkjT9l&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/F0x4fvYT/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/5yKkJeqc&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/mPLo2742/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 6: Fuga et omnis veniam. | Ван Піс 41 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 6: Fuga et omnis veniam. серіалу Ван Піс 41 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven461631tegh7k3erqckqk&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p3fd9tb1vmm03qt5bv&quot;,
+            &quot;number&quot;: 5,
+            &quot;name&quot;: &quot;Епізод 5: Cum similique.&quot;,
+            &quot;slug&quot;: &quot;klinok-shho-znishhuje-demoniv-19-episode-5&quot;,
+            &quot;full_name&quot;: &quot;Episode 5: Епізод 5: Cum similique.&quot;,
+            &quot;description&quot;: &quot;У 5-му епізоді серіалу Клинок, що знищує демонів 19 головні герої стикаються з новими викликами. Nobis quae ipsum nam animi et itaque. Omnis iste aut rerum quia natus error. Eveniet architecto voluptas vel sit et earum. Voluptatem laborum repudiandae minus quidem voluptates aut facilis quia.&quot;,
+            &quot;duration&quot;: 43,
+            &quot;formatted_duration&quot;: &quot;43 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-08-10&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/1.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/1.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/zQWEVdDN&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/OXdroW0m/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 5: Cum similique. | Клинок, що знищує демонів 19 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 5: Cum similique. серіалу Клинок, що знищує демонів 19 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807xwqagx8y9dnrmz0mf&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;number&quot;: 18,
+            &quot;name&quot;: &quot;Епізод 18: Сповідь&quot;,
+            &quot;slug&quot;: &quot;vikingi-18-episode-18&quot;,
+            &quot;full_name&quot;: &quot;Episode 18: Епізод 18: Сповідь&quot;,
+            &quot;description&quot;: &quot;Минуле наздоганяє героя, змушуючи його відповідати за свої вчинки.\n\nНапружений епізод, який не залишить байдужим жодного глядача серіалу Вікінги 18.&quot;,
+            &quot;duration&quot;: 37,
+            &quot;formatted_duration&quot;: &quot;37 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-08-08&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=w1Sp0x2XOzG&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/GE0kjTYC.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Tretyakoff Production&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 18: Сповідь | Вікінги 18 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 18: Сповідь серіалу Вікінги 18 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807vjbab0bwzwrt0qbrs&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;number&quot;: 16,
+            &quot;name&quot;: &quot;Епізод 16: Сповідь&quot;,
+            &quot;slug&quot;: &quot;vikingi-18-episode-16&quot;,
+            &quot;full_name&quot;: &quot;Episode 16: Епізод 16: Сповідь&quot;,
+            &quot;description&quot;: &quot;Таємниці минулого починають розкриватися, змінюючи уявлення героїв про себе та оточуючих.\n\nЕпізод 16 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 32,
+            &quot;formatted_duration&quot;: &quot;32 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-08-01&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=dyeOvxTjIW2&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/McriUbQ7.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий закадровий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=xrHSqyBs2j6&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/C4vzACx9.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Postmodern&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=LmhXXdwFYRB&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/DU0Ux4kc.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 16: Сповідь | Вікінги 18 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 16: Сповідь серіалу Вікінги 18 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807t75rqc0jbvs2j08gs&quot;,
+            &quot;movie_id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;number&quot;: 15,
+            &quot;name&quot;: &quot;Епізод 15: Втрачені спогади&quot;,
+            &quot;slug&quot;: &quot;vikingi-18-episode-15&quot;,
+            &quot;full_name&quot;: &quot;Episode 15: Епізод 15: Втрачені спогади&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЦей епізод серіалу Вікінги 18 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 51,
+            &quot;formatted_duration&quot;: &quot;51 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-07-20&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=0rgb9JQ3ncp&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/ATHBcQDy.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=ukDjmi3VwkE&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/pZVnAZ6J.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Postmodern&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=QxYxtejbcTE&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/yJmKXEfG.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дводубляж&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 15: Втрачені спогади | Вікінги 18 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 15: Втрачені спогади серіалу Вікінги 18 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep809gpp7jmz1m8g5t0hxe&quot;,
+            &quot;movie_id&quot;: &quot;01jven45qnq5hb18mqy9xn3qng&quot;,
+            &quot;number&quot;: 15,
+            &quot;name&quot;: &quot;Епізод 15: Тренувальний табір&quot;,
+            &quot;slug&quot;: &quot;naruto-40-episode-15&quot;,
+            &quot;full_name&quot;: &quot;Episode 15: Епізод 15: Тренувальний табір&quot;,
+            &quot;description&quot;: &quot;Новий трансфер-учень з&#039;являється в школі, приносячи з собою таємниці та проблеми.\n\nЦей епізод серіалу Наруто 40 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 37,
+            &quot;formatted_duration&quot;: &quot;37 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-07-11&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=tkQ52grSd42&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/95OKzAL1.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Pie Post Production&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=cGBAZVaX6FE&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/ue9uw0g3.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=cHwG0E2geRu&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/Ue5Nl0eD.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Postmodern&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 15: Тренувальний табір | Наруто 40 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 15: Тренувальний табір серіалу Наруто 40 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep809f6db214a17zypm05y&quot;,
+            &quot;movie_id&quot;: &quot;01jven45qnq5hb18mqy9xn3qng&quot;,
+            &quot;number&quot;: 14,
+            &quot;name&quot;: &quot;Епізод 14: Культурний фестиваль&quot;,
+            &quot;slug&quot;: &quot;naruto-40-episode-14&quot;,
+            &quot;full_name&quot;: &quot;Episode 14: Епізод 14: Культурний фестиваль&quot;,
+            &quot;description&quot;: &quot;Починається турнір, де герої змагаються, демонструючи свої навички.\n\nНапружений епізод, який не залишить байдужим жодного глядача серіалу Наруто 40.&quot;,
+            &quot;duration&quot;: 22,
+            &quot;formatted_duration&quot;: &quot;22 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-06-28&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=v024BoZFqaT&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/ngMZsFWz.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=NyqU7m3Bnrt&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/jsJNMJTu.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Postmodern&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 14: Культурний фестиваль | Наруто 40 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 14: Культурний фестиваль серіалу Наруто 40 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven461q7sry8byabh8vr4za&quot;,
+            &quot;movie_id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
+            &quot;number&quot;: 5,
+            &quot;name&quot;: &quot;Епізод 5: Assumenda voluptatum veniam.&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24-episode-5&quot;,
+            &quot;full_name&quot;: &quot;Episode 5: Епізод 5: Assumenda voluptatum veniam.&quot;,
+            &quot;description&quot;: &quot;У цій серії Доктор Стоун 24 відбуваються ключові події, які змінюють хід всього сюжету. Laudantium assumenda et labore. Est sint voluptatem rerum labore qui et nihil. Modi accusantium possimus ut voluptatem culpa.&quot;,
+            &quot;duration&quot;: 51,
+            &quot;formatted_duration&quot;: &quot;51 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-05-13&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/SrWAJNeq&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/kkbavSFL/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/ZcoZpCWF&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/CtkbivVj/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 5: Assumenda voluptatum veniam. | Доктор Стоун 24 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 5: Assumenda voluptatum veniam. серіалу Доктор Стоун 24 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven460ey446syg15zbjxztf&quot;,
+            &quot;movie_id&quot;: &quot;01jven45nae6s22kh5m015c2an&quot;,
+            &quot;number&quot;: 11,
+            &quot;name&quot;: &quot;Епізод 11: Qui repellat neque dolor.&quot;,
+            &quot;slug&quot;: &quot;ofis-8-episode-11&quot;,
+            &quot;full_name&quot;: &quot;Episode 11: Епізод 11: Qui repellat neque dolor.&quot;,
+            &quot;description&quot;: &quot;Епізод 11 продовжує захоплюючу історію серіалу Офіс 8 новими подіями. Enim ipsum ut sit consequatur expedita id. Aut vero ut occaecati repellendus ut in. Doloribus sint quis voluptas autem sit alias magni. Illo et error quidem inventore omnis eos amet.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2025-05-03&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;/storage/test_files/images/episodes_pictures/1.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;/storage/test_files/images/episodes_pictures/2.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/2.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_pictures/1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/IenWKuEL&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/ZQR6EvNC/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/bZnhtWri&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/u5QtuuPV/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 11: Qui repellat neque dolor. | Офіс 8 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 11: Qui repellat neque dolor. серіалу Офіс 8 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven461ntk2dpk228k9rxwv3&quot;,
+            &quot;movie_id&quot;: &quot;01jven45petwdbhw3gm9bv2h8k&quot;,
+            &quot;number&quot;: 2,
+            &quot;name&quot;: &quot;Епізод 2&quot;,
+            &quot;slug&quot;: &quot;doktor-stoun-24-episode-2&quot;,
+            &quot;full_name&quot;: &quot;Episode 2: Епізод 2&quot;,
+            &quot;description&quot;: &quot;У цій серії Доктор Стоун 24 відбуваються ключові події, які змінюють хід всього сюжету. Non voluptatem autem voluptatem id. Eveniet ut autem nostrum rerum voluptatem. Possimus quod dolorum laboriosam itaque pariatur nesciunt.&quot;,
+            &quot;duration&quot;: 60,
+            &quot;formatted_duration&quot;: &quot;1 год&quot;,
+            &quot;air_date&quot;: &quot;2025-04-23&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/f28IAobt&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/Q9EuM6hK/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/A1C9nLt8&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/rdR6Om9q/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 2 | Доктор Стоун 24 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 2 серіалу Доктор Стоун 24 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=2&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=7&quot;,
         &quot;prev&quot;: null,
-        &quot;next&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=2&quot;
+        &quot;next&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=2&quot;
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
         &quot;from&quot;: 1,
-        &quot;last_page&quot;: 2,
+        &quot;last_page&quot;: 7,
         &quot;links&quot;: [
             {
                 &quot;url&quot;: null,
@@ -5732,25 +7426,50 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=2&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=2&quot;,
                 &quot;label&quot;: &quot;2&quot;,
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01?page=2&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=3&quot;,
+                &quot;label&quot;: &quot;3&quot;,
+                &quot;active&quot;: false
+            },
+            {
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=4&quot;,
+                &quot;label&quot;: &quot;4&quot;,
+                &quot;active&quot;: false
+            },
+            {
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=5&quot;,
+                &quot;label&quot;: &quot;5&quot;,
+                &quot;active&quot;: false
+            },
+            {
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=6&quot;,
+                &quot;label&quot;: &quot;6&quot;,
+                &quot;active&quot;: false
+            },
+            {
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=7&quot;,
+                &quot;label&quot;: &quot;7&quot;,
+                &quot;active&quot;: false
+            },
+            {
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01?page=2&quot;,
                 &quot;label&quot;: &quot;Далі &amp;raquo;&quot;,
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/episodes/aired-after/2024-01-01&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/aired-after/2024-01-01&quot;,
         &quot;per_page&quot;: 15,
         &quot;to&quot;: 15,
-        &quot;total&quot;: 22
+        &quot;total&quot;: 98
     }
 }</code>
  </pre>
@@ -5921,14 +7640,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/episodes/quidem-sunt-aliquam-id-hgwstn" \
+    --get "http://127.0.0.1:8000/api/v1/episodes/ofis-1-episode-2" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/episodes/quidem-sunt-aliquam-id-hgwstn"
+    "http://127.0.0.1:8000/api/v1/episodes/ofis-1-episode-2"
 );
 
 const headers = {
@@ -5953,69 +7672,69 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzynzsc08ena0qm8ttv3vcb&quot;,
-        &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
+        &quot;id&quot;: &quot;01jven45zmbrp5f8zhmvsmd6wg&quot;,
+        &quot;movie_id&quot;: &quot;01jven45mjpy9kdnzt361mwv7m&quot;,
         &quot;movie&quot;: {
-            &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-            &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-            &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;anons&quot;,
-            &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 4.64,
+            &quot;id&quot;: &quot;01jven45mjpy9kdnzt361mwv7m&quot;,
+            &quot;name&quot;: &quot;Офіс 1&quot;,
+            &quot;slug&quot;: &quot;ofis-1&quot;,
+            &quot;description&quot;: &quot;У серіалі Офіс 1 глядачі побачать неймовірні пригоди головних героїв у різних ситуаціях. Laboriosam esse laboriosam iure quo ullam ea ipsa. Rerum facilis illum nesciunt vel architecto. Ab cum illum exercitationem perspiciatis dolor voluptatum laudantium.\n\nDelectus quod nam earum doloribus et harum ut. Amet dolor quas laudantium autem. Voluptas aut deleniti iusto deserunt itaque reprehenderit. Voluptatum magnam vero assumenda et amet.\n\nCum quisquam ut quod quisquam et. Est modi enim libero qui quam. Rerum perspiciatis sed iusto vel aperiam voluptatibus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
             &quot;aliases&quot;: [
-                &quot;laborum&quot;,
-                &quot;aut&quot;,
-                &quot;libero&quot;
+                &quot;Et aut.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;
+                &quot;Канада&quot;,
+                &quot;Японія&quot;,
+                &quot;Франція&quot;
             ],
-            &quot;average_rating&quot;: 5.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 15,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Романтика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
-        &quot;number&quot;: 1,
-        &quot;name&quot;: &quot;Quidem sunt aliquam id.&quot;,
-        &quot;slug&quot;: &quot;quidem-sunt-aliquam-id-hgwstn&quot;,
-        &quot;full_name&quot;: &quot;Episode 1: Quidem sunt aliquam id.&quot;,
-        &quot;description&quot;: &quot;Enim ipsa expedita quas sunt placeat voluptas libero. Aut voluptatem porro sequi voluptas ex. Et consectetur molestiae autem et architecto provident nisi.&quot;,
-        &quot;duration&quot;: null,
-        &quot;formatted_duration&quot;: null,
-        &quot;air_date&quot;: &quot;2022-06-09&quot;,
+        &quot;number&quot;: 2,
+        &quot;name&quot;: &quot;Епізод 2: Itaque ut quasi aperiam.&quot;,
+        &quot;slug&quot;: &quot;ofis-1-episode-2&quot;,
+        &quot;full_name&quot;: &quot;Episode 2: Епізод 2: Itaque ut quasi aperiam.&quot;,
+        &quot;description&quot;: &quot;У 2-му епізоді серіалу Офіс 1 головні герої стикаються з новими викликами. Magnam optio hic hic aliquid numquam harum blanditiis. Numquam ut earum laborum non autem eum itaque. Ad vel rerum nobis perferendis sunt.&quot;,
+        &quot;duration&quot;: 52,
+        &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+        &quot;air_date&quot;: &quot;2022-03-28&quot;,
         &quot;is_filler&quot;: false,
         &quot;pictures_url&quot;: [
-            &quot;/storage/https://via.placeholder.com/1280x720.png/00aadd?text=episode+Episode+Screenshot+vel&quot;,
-            &quot;/storage/https://via.placeholder.com/1280x720.png/00dd66?text=episode+Episode+Screenshot+perferendis&quot;,
-            &quot;/storage/https://via.placeholder.com/1280x720.png/001100?text=episode+Episode+Screenshot+repellat&quot;
+            &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;
         ],
         &quot;video_players&quot;: [
             {
                 &quot;name&quot;: &quot;kodik&quot;,
-                &quot;url&quot;: &quot;http://www.romancenko.net.ua/&quot;,
-                &quot;file_url&quot;: &quot;https://pavluk.org/dolor-a-vero-quo-dolorum-dolorem-adipisci.html/video.mp4&quot;,
-                &quot;dubbing&quot;: &quot;Субтитри&quot;,
-                &quot;quality&quot;: &quot;full_hd&quot;,
-                &quot;locale_code&quot;: &quot;pl&quot;
+                &quot;url&quot;: &quot;https://kodik.info/video/SQxKqQNq&quot;,
+                &quot;file_url&quot;: &quot;https://kodik.info/video/DwfKklrQ/720p.mp4&quot;,
+                &quot;dubbing&quot;: &quot;Українська&quot;,
+                &quot;quality&quot;: &quot;hd&quot;,
+                &quot;locale_code&quot;: &quot;uk&quot;
             }
         ],
-        &quot;comments_count&quot;: 5,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
+        &quot;comments_count&quot;: 0,
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;,
         &quot;seo&quot;: {
-            &quot;meta_title&quot;: &quot;E1: Quidem sunt aliquam id. | Id nostrum et non.&quot;,
-            &quot;meta_description&quot;: &quot;Labore sit quasi dolorum in molestiae quis. Dolorum id eius et sit magni accusantium corrupti. Consequatur ipsa consequatur nulla deleniti.&quot;,
-            &quot;meta_image&quot;: &quot;https://via.placeholder.com/1200x630.png/000011?text=episode+Episode+Image+pariatur&quot;
+            &quot;meta_title&quot;: &quot;Епізод 2: Itaque ut quasi aperiam. | Офіс 1 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 2: Itaque ut quasi aperiam. серіалу Офіс 1 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/5.jpg&quot;
         }
     }
 }</code>
@@ -6097,10 +7816,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="episode_slug"                data-endpoint="GETapi-v1-episodes--episode_slug-"
-               value="quidem-sunt-aliquam-id-hgwstn"
+               value="ofis-1-episode-2"
                data-component="url">
     <br>
-<p>The slug of the episode. Example: <code>quidem-sunt-aliquam-id-hgwstn</code></p>
+<p>The slug of the episode. Example: <code>ofis-1-episode-2</code></p>
             </div>
                     </form>
 
@@ -6117,14 +7836,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow?movie_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;aired_after=2001-01-01&amp;include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
+    --get "http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3?movie_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;aired_after=2001-01-01&amp;include_filler=&amp;sort=air_date&amp;direction=desc&amp;page=1&amp;per_page=15" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3"
 );
 
 const params = {
@@ -6161,32 +7880,672 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzsc08ena0qm8ttv3vcb&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
+            &quot;id&quot;: &quot;01jven46051jqabcpxh0b4be3f&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
             &quot;number&quot;: 1,
-            &quot;name&quot;: &quot;Quidem sunt aliquam id.&quot;,
-            &quot;slug&quot;: &quot;quidem-sunt-aliquam-id-hgwstn&quot;,
-            &quot;full_name&quot;: &quot;Episode 1: Quidem sunt aliquam id.&quot;,
-            &quot;description&quot;: &quot;Enim ipsa expedita quas sunt placeat voluptas libero. Aut voluptatem porro sequi voluptas ex. Et consectetur molestiae autem et architecto provident nisi.&quot;,
-            &quot;duration&quot;: null,
-            &quot;formatted_duration&quot;: null,
-            &quot;air_date&quot;: &quot;2022-06-09&quot;,
+            &quot;name&quot;: &quot;Епізод 1&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-1&quot;,
+            &quot;full_name&quot;: &quot;Episode 1: Епізод 1&quot;,
+            &quot;description&quot;: &quot;Епізод 1 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Veritatis ea quisquam blanditiis voluptates aliquid. Distinctio fugit enim similique est ut recusandae. Magni ad quia accusantium enim rerum at aut. Nobis et eveniet quis architecto.&quot;,
+            &quot;duration&quot;: 50,
+            &quot;formatted_duration&quot;: &quot;50 хв&quot;,
+            &quot;air_date&quot;: &quot;2019-09-05&quot;,
             &quot;is_filler&quot;: false,
-            &quot;picture_url&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/4jTrIN9V&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/phBi7c5E/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/WLcTzzSM&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/Umahy242/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 1 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 1 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4608wvdj0ne5pqq9wknd&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 6,
+            &quot;name&quot;: &quot;Епізод 6: Et quidem.&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-6&quot;,
+            &quot;full_name&quot;: &quot;Episode 6: Епізод 6: Et quidem.&quot;,
+            &quot;description&quot;: &quot;У 6-му епізоді серіалу Офіс 3 головні герої стикаються з новими викликами. Voluptate itaque vitae occaecati numquam neque repellendus. Odio nam cumque neque. Suscipit ratione commodi ea magni facere error nobis. Repellendus animi aut recusandae tenetur perspiciatis omnis. Aspernatur optio veritatis ut laboriosam recusandae.&quot;,
+            &quot;duration&quot;: 59,
+            &quot;formatted_duration&quot;: &quot;59 хв&quot;,
+            &quot;air_date&quot;: &quot;2018-07-23&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/XI9fK4S2&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/hybDBcDA/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/qmpKX77E&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/rSFxfeEF/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 6: Et quidem. | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 6: Et quidem. серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4608wvdj0ne5pqq9wkne&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 7,
+            &quot;name&quot;: &quot;Епізод 7&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-7&quot;,
+            &quot;full_name&quot;: &quot;Episode 7: Епізод 7&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Офіс 3 глядачі дізнаються більше про минуле головних героїв. Reprehenderit aut accusamus dolor hic repellendus exercitationem odio. Ut corrupti consectetur aspernatur voluptas est vitae. Sed quia commodi placeat et cum.&quot;,
+            &quot;duration&quot;: 23,
+            &quot;formatted_duration&quot;: &quot;23 хв&quot;,
+            &quot;air_date&quot;: &quot;2017-07-05&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/ucoH4uqM&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/gLMFaj46/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/EOMi9f1r&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/79m6UQtX/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 7 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 7 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/5.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4607wx5f4qf3txbk2r4e&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 5,
+            &quot;name&quot;: &quot;Епізод 5&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-5&quot;,
+            &quot;full_name&quot;: &quot;Episode 5: Епізод 5&quot;,
+            &quot;description&quot;: &quot;У цій серії Офіс 3 відбуваються ключові події, які змінюють хід всього сюжету. Sint iure est veritatis. Aperiam incidunt consequuntur dolor in voluptatem cum. Ea dolorum doloremque vero magnam dolor.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2017-06-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_8.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_8.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/BglPFkAY&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/zC6W0EyE/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 5 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 5 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/1.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jveq52e6stpjjks8cajwyqq4&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 13,
+            &quot;name&quot;: &quot;Епізод 13: Початок кінця&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-13&quot;,
+            &quot;full_name&quot;: &quot;Episode 13: Епізод 13: Початок кінця&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЕпізод 13 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-04-24&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=jcxRCwRfsqW&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/p49d1Oo7.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=wNzREVPiyrm&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/Lc5E9PgF.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=b7JrdIlRxwb&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/fFLT9tzA.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Так Треба Продакшн&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 13: Початок кінця | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 13: Початок кінця серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:53:13.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jveq52e5dyh76cxct7vg63xy&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 12,
+            &quot;name&quot;: &quot;Епізод 12: Сповідь&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-12&quot;,
+            &quot;full_name&quot;: &quot;Episode 12: Епізод 12: Сповідь&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nНапружений епізод, який не залишить байдужим жодного глядача серіалу Офіс 3.&quot;,
+            &quot;duration&quot;: 52,
+            &quot;formatted_duration&quot;: &quot;52 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-03-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=Ym2AJqfFTAh&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/bhQTjiqw.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 12: Сповідь | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 12: Сповідь серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:53:13.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven46051jqabcpxh0b4be3g&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 2,
+            &quot;name&quot;: &quot;Епізод 2&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-2&quot;,
+            &quot;full_name&quot;: &quot;Episode 2: Епізод 2&quot;,
+            &quot;description&quot;: &quot;Епізод 2 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Id explicabo impedit expedita vel perferendis est. Ut saepe dolorum voluptas inventore sapiente. Iusto magni voluptate et aperiam voluptate beatae. Amet repudiandae repudiandae dolorem veniam.&quot;,
+            &quot;duration&quot;: 58,
+            &quot;formatted_duration&quot;: &quot;58 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-03-03&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_6.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_6.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/F2r0lf3u&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/OKFoW86n/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/ggDPs0aG&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/xHlL6q3r/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 2 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 2 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/3.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807d3gqcsxt1yxpjr7ft&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 8,
+            &quot;name&quot;: &quot;Епізод 8: Повернення додому&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-8&quot;,
+            &quot;full_name&quot;: &quot;Episode 8: Епізод 8: Повернення додому&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЦей епізод серіалу Офіс 3 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 45,
+            &quot;formatted_duration&quot;: &quot;45 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-14&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=OAOHDtd8zmY&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/m0U1kXDi.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Так Треба Продакшн&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=z8GGpoKCwo1&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/vOVyDkQo.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=tqckeeJ4GbZ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/h134Ju5v.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 8: Повернення додому | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 8: Повернення додому серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807r5pyhf2d11jj8sbye&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 11,
+            &quot;name&quot;: &quot;Епізод 11: Спокута&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-11&quot;,
+            &quot;full_name&quot;: &quot;Episode 11: Епізод 11: Спокута&quot;,
+            &quot;description&quot;: &quot;Таємниці минулого починають розкриватися, змінюючи уявлення героїв про себе та оточуючих.\n\nЕпізод 11 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 46,
+            &quot;formatted_duration&quot;: &quot;46 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-06&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_5.jpg&quot;,
+                &quot;episodes/episode_7.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_5.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=15OA2WutvB1&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/1GPGak5t.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії LeDoyen&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=YGvi6moHDTQ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/XaXrdafY.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=neELhry9rm0&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/SUxEinHH.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії 1+1&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 11: Спокута | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 11: Спокута серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807pmvn5thg65tx6h5nt&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 9,
+            &quot;name&quot;: &quot;Епізод 9: Таємниця минулого&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-9&quot;,
+            &quot;full_name&quot;: &quot;Episode 9: Епізод 9: Таємниця минулого&quot;,
+            &quot;description&quot;: &quot;Герой змушений зіткнутися зі своїми найбільшими страхами, щоб захистити тих, кого любить.\n\nЦей епізод серіалу Офіс 3 є одним з ключових у сезоні, розкриваючи важливі деталі історії головних героїв.&quot;,
+            &quot;duration&quot;: 50,
+            &quot;formatted_duration&quot;: &quot;50 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-02-04&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_7.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_7.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=Nl4XZD3wvYD&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/73myRkRt.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=nnQJ13frf8B&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/08R5dJ7I.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=kYNwdgUeXpS&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/cvOcF5dJ.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 9: Таємниця минулого | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 9: Таємниця минулого серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jvep807q81kc22ew50k51tmy&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 10,
+            &quot;name&quot;: &quot;Епізод 10: Нове життя&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-10&quot;,
+            &quot;full_name&quot;: &quot;Episode 10: Епізод 10: Нове життя&quot;,
+            &quot;description&quot;: &quot;Несподіване зізнання змінює динаміку стосунків між головними героями.\n\nЕпізод 10 розкриває нові таємниці та повороти сюжету, які тримають глядачів у напрузі до самого кінця.&quot;,
+            &quot;duration&quot;: 59,
+            &quot;formatted_duration&quot;: &quot;59 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-01-19&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_10.jpg&quot;,
+                &quot;episodes/episode_2.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_10.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_2.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=52tHE3Xq0D8&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/YNYHuxY1.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська студія дубляжу&quot;,
+                    &quot;quality&quot;: &quot;full_hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=NloFH4GMoQC&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/EpH0PUcY.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Tretyakoff Production&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://example.com/watch?v=IPmAr8K1ONZ&quot;,
+                    &quot;file_url&quot;: &quot;https://example.com/videos/GTaNOPln.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Дубляж студії Tretyakoff Production&quot;,
+                    &quot;quality&quot;: &quot;uhd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 10: Нове життя | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 10: Нове життя серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: null,
+            &quot;meta_image_url&quot;: null,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:37:20.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4607wx5f4qf3txbk2r4d&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 4,
+            &quot;name&quot;: &quot;Епізод 4&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-4&quot;,
+            &quot;full_name&quot;: &quot;Episode 4: Епізод 4&quot;,
+            &quot;description&quot;: &quot;У цьому епізоді серіалу Офіс 3 глядачі дізнаються більше про минуле головних героїв. Aliquam dignissimos molestiae ducimus ipsam placeat nostrum autem. Et et reprehenderit facere. Culpa voluptatem sunt facere illum eum consequuntur quia.&quot;,
+            &quot;duration&quot;: 56,
+            &quot;formatted_duration&quot;: &quot;56 хв&quot;,
+            &quot;air_date&quot;: &quot;2016-01-16&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_1.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;,
+                &quot;episodes/episode_9.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_9.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_1.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/hR4KdHyg&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/APL3gPid/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Багатоголосий&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 4 | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 4 серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/2.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven4606yhx86aaq1cfe9ssp&quot;,
+            &quot;movie_id&quot;: &quot;01jven45my15nks41ymrdhas26&quot;,
+            &quot;number&quot;: 3,
+            &quot;name&quot;: &quot;Епізод 3: Quis nobis voluptas natus.&quot;,
+            &quot;slug&quot;: &quot;ofis-3-episode-3&quot;,
+            &quot;full_name&quot;: &quot;Episode 3: Епізод 3: Quis nobis voluptas natus.&quot;,
+            &quot;description&quot;: &quot;Епізод 3 серіалу Офіс 3 розкриває нові таємниці та повороти сюжету. Rerum vel nisi tempore quisquam dolorem delectus saepe corporis. Qui dolorum quam ab iure. Occaecati debitis voluptatem sint unde vel impedit quia accusamus. Beatae qui amet aut repellat similique commodi quam.&quot;,
+            &quot;duration&quot;: 46,
+            &quot;formatted_duration&quot;: &quot;46 хв&quot;,
+            &quot;air_date&quot;: &quot;2015-11-09&quot;,
+            &quot;is_filler&quot;: false,
+            &quot;pictures&quot;: [
+                &quot;episodes/episode_3.jpg&quot;,
+                &quot;episodes/episode_4.jpg&quot;
+            ],
+            &quot;pictures_url&quot;: [
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+                &quot;http://127.0.0.1:8000/storage/episodes/episode_4.jpg&quot;
+            ],
+            &quot;picture_url&quot;: &quot;http://127.0.0.1:8000/storage/episodes/episode_3.jpg&quot;,
+            &quot;video_players&quot;: [
+                {
+                    &quot;name&quot;: &quot;kodik&quot;,
+                    &quot;url&quot;: &quot;https://kodik.info/video/MvPJQ4w7&quot;,
+                    &quot;file_url&quot;: &quot;https://kodik.info/video/Ej6oEhjR/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Українська&quot;,
+                    &quot;quality&quot;: &quot;sd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;aloha&quot;,
+                    &quot;url&quot;: &quot;https://aloha.com/video/DlzU7H4j&quot;,
+                    &quot;file_url&quot;: &quot;https://aloha.com/video/MbrLTpvw/720p.mp4&quot;,
+                    &quot;dubbing&quot;: &quot;Оригінал&quot;,
+                    &quot;quality&quot;: &quot;hd&quot;,
+                    &quot;locale_code&quot;: &quot;uk&quot;
+                }
+            ],
+            &quot;meta_title&quot;: &quot;Епізод 3: Quis nobis voluptas natus. | Офіс 3 | Netflix&quot;,
+            &quot;meta_description&quot;: &quot;Дивіться Епізод 3: Quis nobis voluptas natus. серіалу Офіс 3 онлайн на Netflix.&quot;,
+            &quot;meta_image&quot;: &quot;/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;meta_image_url&quot;: &quot;http://127.0.0.1:8000/storage/storage/test_files/images/episodes_meta/4.jpg&quot;,
+            &quot;comments_count&quot;: 0,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T10:26:40.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -6201,7 +8560,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -6211,10 +8570,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/episodes/movie/omnis-id-quaerat-soluta-oiduow&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/episodes/movie/ofis-3&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 1,
-        &quot;total&quot;: 1
+        &quot;to&quot;: 13,
+        &quot;total&quot;: 13
     }
 }</code>
  </pre>
@@ -6295,10 +8654,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-episodes-movie--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -6407,14 +8766,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/people?q=&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;types[]=makeup_artist&amp;genders[]=female&amp;movie_ids[]=architecto&amp;min_age=16&amp;max_age=60" \
+    --get "http://127.0.0.1:8000/api/v1/people?q=&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;types[]=voice_actor&amp;genders[]=male&amp;movie_ids[]=architecto&amp;min_age=16&amp;max_age=60" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/people"
+    "http://127.0.0.1:8000/api/v1/people"
 );
 
 const params = {
@@ -6423,8 +8782,8 @@ const params = {
     "per_page": "15",
     "sort": "name",
     "direction": "asc",
-    "types[0]": "makeup_artist",
-    "genders[0]": "female",
+    "types[0]": "voice_actor",
+    "genders[0]": "male",
     "movie_ids[0]": "architecto",
     "min_age": "16",
     "max_age": "60",
@@ -6454,8 +8813,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -6680,14 +9038,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve" \
+    --get "http://127.0.0.1:8000/api/v1/people/tom-kruz" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve"
+    "http://127.0.0.1:8000/api/v1/people/tom-kruz"
 );
 
 const headers = {
@@ -6712,21 +9070,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzynz3f612vhkascjgej15x&quot;,
-        &quot;name&quot;: &quot;Денис Євгенович Броваренко&quot;,
-        &quot;slug&quot;: &quot;denis-jevgenovic-brovarenko-0u81ve&quot;,
-        &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/002255?text=people+unde&quot;,
-        &quot;birth_date&quot;: &quot;1980-07-27&quot;,
+        &quot;id&quot;: &quot;01jven45hgab2bm1k3398myq7x&quot;,
+        &quot;name&quot;: &quot;Том Круз&quot;,
+        &quot;slug&quot;: &quot;tom-kruz&quot;,
+        &quot;image&quot;: &quot;/storage/test_files/images/actors/3.jpg&quot;,
+        &quot;birth_date&quot;: &quot;1963-12-05&quot;,
         &quot;death_date&quot;: null,
-        &quot;biography&quot;: &quot;Cum non voluptatem magnam iste suscipit quis soluta et esse ea explicabo aut aspernatur vel voluptates consequuntur.&quot;,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+        &quot;biography&quot;: &quot;Актор Том Круз відомий своєю різноманітністю ролей та глибоким підходом до кожного персонажа. Dolorum consequatur cumque dolorem occaecati. Praesentium laboriosam ut aut sapiente aut. Eius minus rem suscipit nisi nihil.&quot;,
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
     }
 }</code>
  </pre>
@@ -6807,10 +9164,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="person_slug"                data-endpoint="GETapi-v1-people--person_slug-"
-               value="denis-jevgenovic-brovarenko-0u81ve"
+               value="tom-kruz"
                data-component="url">
     <br>
-<p>The slug of the person. Example: <code>denis-jevgenovic-brovarenko-0u81ve</code></p>
+<p>The slug of the person. Example: <code>tom-kruz</code></p>
             </div>
                     </form>
 
@@ -6827,14 +9184,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies" \
+    --get "http://127.0.0.1:8000/api/v1/people/tom-kruz/movies" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies"
+    "http://127.0.0.1:8000/api/v1/people/tom-kruz/movies"
 );
 
 const headers = {
@@ -6859,21 +9216,165 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [],
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;name&quot;: &quot;Вікінги 18&quot;,
+            &quot;slug&quot;: &quot;vikingi-18&quot;,
+            &quot;description&quot;: &quot;Серіал Вікінги 18 розкриває глибокі філософські питання через захоплюючий сюжет та яскравих персонажів. Aut omnis optio laudantium vitae. Nulla quae incidunt ut et laboriosam aspernatur. Sint voluptatem sit facilis saepe quia accusamus similique. Blanditiis sed dolore temporibus.\n\nRerum et officia sit nobis aperiam est veniam harum. Laboriosam quam est quas ut quae saepe ipsa. Fugit reiciendis dicta voluptas cumque quibusdam. Doloremque quaerat expedita ipsum sunt facilis.\n\nEnim qui quo dolores quaerat sit labore. Autem quam minus sapiente culpa totam illum culpa. Voluptas illo dolores et cupiditate eius maxime. Consectetur sapiente totam sequi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2025&quot;,
+            &quot;imdb_score&quot;: 9.5,
+            &quot;aliases&quot;: [
+                &quot;Aut id cupiditate delectus velit.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;США&quot;,
+                &quot;Бразилія&quot;,
+                &quot;Велика Британія&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45q62evfdfh57ydgce8v&quot;,
+            &quot;name&quot;: &quot;Дуже дивні справи 34&quot;,
+            &quot;slug&quot;: &quot;duze-divni-spravi-34&quot;,
+            &quot;description&quot;: &quot;Серіал Дуже дивні справи 34 розкриває глибокі філософські питання через захоплюючий сюжет та яскравих персонажів. Architecto tenetur nisi tempora similique delectus. Enim quam doloribus eum itaque et ab sed. Voluptatem enim necessitatibus et inventore suscipit expedita quisquam.\n\nCupiditate libero voluptatibus ut doloremque nesciunt. Voluptas modi et assumenda quaerat ipsam alias. Natus consequuntur dolore laboriosam error totam doloribus repudiandae. Laboriosam vitae fugit enim ab numquam ipsa vero itaque.\n\nTempora vel laudantium eius cupiditate qui rerum. Rerum porro eius minus voluptatibus accusantium sit corporis. Explicabo itaque cum molestiae alias voluptatem nesciunt odit.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/1.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 7.6,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Південна Корея&quot;,
+                &quot;Канада&quot;
+            ],
+            &quot;episodes_count&quot;: 5,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qxwg76cce6f5ca3aww&quot;,
+            &quot;name&quot;: &quot;Початок 43&quot;,
+            &quot;slug&quot;: &quot;pocatok-43&quot;,
+            &quot;description&quot;: &quot;Фільм Початок 43 розповідає захоплюючу історію, яка не залишить байдужим жодного глядача. Repellendus qui pariatur dolore modi fugit. Eaque facilis harum ea omnis libero quis exercitationem. Accusantium quaerat fugit occaecati cumque. Omnis fuga qui velit id.\n\nSunt rerum aspernatur perferendis esse consectetur quia voluptatem. In pariatur quia est nostrum voluptas.\n\nExpedita rerum aliquid sunt et. Deserunt placeat vel eligendi dolore ut. Fugit beatae saepe necessitatibus nulla et.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2021&quot;,
+            &quot;imdb_score&quot;: 8.7,
+            &quot;aliases&quot;: [
+                &quot;Et libero consectetur et nostrum.&quot;,
+                &quot;Початок 43: vel ut ut&quot;
+            ],
+            &quot;countries&quot;: {
+                &quot;0&quot;: &quot;Індія&quot;,
+                &quot;2&quot;: &quot;Канада&quot;
+            },
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45n39340g61ns17tx1j1&quot;,
+            &quot;name&quot;: &quot;Список Шиндлера 5&quot;,
+            &quot;slug&quot;: &quot;spisok-sindlera-5&quot;,
+            &quot;description&quot;: &quot;Список Шиндлера 5 - це історія про звичайну людину, яка опиняється в надзвичайних обставинах. Quibusdam velit minus est dolores error repellat omnis ea. Aut enim totam veniam commodi voluptatem consequatur. Voluptas et eaque expedita quidem sunt consectetur doloremque. Est accusantium voluptatum reprehenderit non qui aut repudiandae.\n\nAsperiores neque sint dignissimos illo minima soluta reprehenderit impedit. Quasi voluptas hic cupiditate accusamus culpa. Incidunt perspiciatis quis sunt quia alias. Velit cumque officiis omnis.\n\nVeritatis nobis doloribus est voluptatem enim. Velit nostrum consequatur odit consequatur assumenda. Rerum sed qui modi omnis. Nam ut et sit dolor voluptate. Non maxime numquam sint cum eos quo rem.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/1.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 8.1,
+            &quot;aliases&quot;: [
+                &quot;Accusantium expedita dignissimos.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Німеччина&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Романтика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45mwqrjv3w6dztptnk9q&quot;,
+            &quot;name&quot;: &quot;Хлопаки 2&quot;,
+            &quot;slug&quot;: &quot;xlopaki-2&quot;,
+            &quot;description&quot;: &quot;Хлопаки 2 - це історія про звичайних людей, які опиняються в надзвичайних обставинах. Neque recusandae aliquam blanditiis sit et dolor. Fuga sapiente dicta consectetur sit maxime libero. Similique voluptatem est in voluptatem laborum nobis.\n\nSint unde laboriosam sint rerum eos. Minus ut ut laboriosam tempora. Minima qui sit beatae corporis.\n\nAut sequi dolorum autem aut qui. Ea autem qui repellat non quam perferendis vel et. Esse facilis atque est velit quos.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2017&quot;,
+            &quot;imdb_score&quot;: 6.7,
+            &quot;aliases&quot;: [
+                &quot;Sed sed nostrum ut.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Мексика&quot;,
+                &quot;Канада&quot;,
+                &quot;Китай&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nr73mfw2x202p6cypv&quot;,
+            &quot;name&quot;: &quot;Гра престолів 14&quot;,
+            &quot;slug&quot;: &quot;gra-prestoliv-14&quot;,
+            &quot;description&quot;: &quot;Гра престолів 14 - це історія про звичайних людей, які опиняються в надзвичайних обставинах. Autem rerum ut laborum. Repellat rerum molestias consequuntur delectus dolor dolorem. Rerum dolores ut rerum aperiam ducimus autem. Aliquid dolor repudiandae minus officia neque modi quae.\n\nIpsum autem suscipit voluptatem modi id. Incidunt omnis quibusdam nam quia totam. Dignissimos ducimus earum et atque recusandae quod. Sunt et neque aperiam suscipit. Fugiat sit ullam atque.\n\nVoluptate dolores natus eius laboriosam dolore. Nesciunt iste quidem debitis assumenda aut. Distinctio molestiae et non est. Qui excepturi minus voluptatem fugiat labore quis. Quos sit error magnam qui.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 8.8,
+            &quot;aliases&quot;: [
+                &quot;Culpa cumque cupiditate tenetur.&quot;,
+                &quot;Гра престолів 14: pariatur officia aperiam&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;США&quot;,
+                &quot;Велика Британія&quot;,
+                &quot;Китай&quot;
+            ],
+            &quot;episodes_count&quot;: 9,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        }
+    ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/people/tom-kruz/movies?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/people/tom-kruz/movies?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
-        &quot;from&quot;: null,
+        &quot;from&quot;: 1,
         &quot;last_page&quot;: 1,
         &quot;links&quot;: [
             {
@@ -6882,7 +9383,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/people/tom-kruz/movies?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -6892,10 +9393,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/people/denis-jevgenovic-brovarenko-0u81ve/movies&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/people/tom-kruz/movies&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: null,
-        &quot;total&quot;: 0
+        &quot;to&quot;: 6,
+        &quot;total&quot;: 6
     }
 }</code>
  </pre>
@@ -6976,10 +9477,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="person_slug"                data-endpoint="GETapi-v1-people--person_slug--movies"
-               value="denis-jevgenovic-brovarenko-0u81ve"
+               value="tom-kruz"
                data-component="url">
     <br>
-<p>The slug of the person. Example: <code>denis-jevgenovic-brovarenko-0u81ve</code></p>
+<p>The slug of the person. Example: <code>tom-kruz</code></p>
             </div>
                     </form>
 
@@ -6996,14 +9497,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/studios?q=Warner+Bros&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;has_movies=&amp;movie_ids[]=architecto" \
+    --get "http://127.0.0.1:8000/api/v1/studios?q=Warner+Bros&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;has_movies=&amp;movie_ids[]=architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/studios"
+    "http://127.0.0.1:8000/api/v1/studios"
 );
 
 const params = {
@@ -7040,8 +9541,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7232,14 +9732,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/studios/laika-1649-ahsumy" \
+    --get "http://127.0.0.1:8000/api/v1/studios/sony-pictures" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/studios/laika-1649-ahsumy"
+    "http://127.0.0.1:8000/api/v1/studios/sony-pictures"
 );
 
 const headers = {
@@ -7264,21 +9764,23 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyny56th5nzpqf339a5hsa&quot;,
-        &quot;name&quot;: &quot;Laika 1649&quot;,
-        &quot;slug&quot;: &quot;laika-1649-ahsumy&quot;,
-        &quot;description&quot;: &quot;Dolor natus blanditiis necessitatibus quod consequatur facilis. Quia quidem fugit et. Similique hic a et consequuntur. Expedita minus autem aut dolorem.&quot;,
-        &quot;image&quot;: &quot;https://via.placeholder.com/400x400.png/00ffdd?text=studio+quasi&quot;,
-        &quot;aliases&quot;: [],
-        &quot;movies_count&quot;: 0,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+        &quot;id&quot;: &quot;01jven45508bvssx5jfknvf6cz&quot;,
+        &quot;name&quot;: &quot;Sony Pictures&quot;,
+        &quot;slug&quot;: &quot;sony-pictures&quot;,
+        &quot;description&quot;: &quot;Sony Pictures спеціалізується на створенні блокбастерів та фільмів, які отримують визнання критиків. Necessitatibus eum qui in at rerum recusandae. Placeat rerum sit id sed id. Cumque quo eos omnis odio magni accusantium.&quot;,
+        &quot;image&quot;: &quot;/storage/test_files/images/studios/5.jpg&quot;,
+        &quot;aliases&quot;: [
+            &quot;SP&quot;,
+            &quot;Sony Pictures Studios&quot;
+        ],
+        &quot;movies_count&quot;: 1,
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
     }
 }</code>
  </pre>
@@ -7359,10 +9861,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="studio_slug"                data-endpoint="GETapi-v1-studios--studio_slug-"
-               value="laika-1649-ahsumy"
+               value="sony-pictures"
                data-component="url">
     <br>
-<p>The slug of the studio. Example: <code>laika-1649-ahsumy</code></p>
+<p>The slug of the studio. Example: <code>sony-pictures</code></p>
             </div>
                     </form>
 
@@ -7379,14 +9881,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/tags?q=%D0%94%D1%80%D0%B0%D0%BC%D0%B0&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;is_genre=&amp;has_movies=&amp;movie_ids[]=architecto" \
+    --get "http://127.0.0.1:8000/api/v1/tags?q=%D0%94%D1%80%D0%B0%D0%BC%D0%B0&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;is_genre=&amp;has_movies=&amp;movie_ids[]=architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/tags"
+    "http://127.0.0.1:8000/api/v1/tags"
 );
 
 const params = {
@@ -7424,8 +9926,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7637,14 +10138,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/tags/parody-197-rwdbt3" \
+    --get "http://127.0.0.1:8000/api/v1/tags/boiovik" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/tags/parody-197-rwdbt3"
+    "http://127.0.0.1:8000/api/v1/tags/boiovik"
 );
 
 const headers = {
@@ -7669,22 +10170,24 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyny101400wyg7m7nr09bh&quot;,
-        &quot;name&quot;: &quot;Parody 197&quot;,
-        &quot;slug&quot;: &quot;parody-197-rwdbt3&quot;,
-        &quot;description&quot;: &quot;Est eveniet laudantium quibusdam tempore necessitatibus facilis sint.&quot;,
-        &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/006622?text=tags+placeat&quot;,
-        &quot;is_genre&quot;: false,
-        &quot;aliases&quot;: [],
-        &quot;movies_count&quot;: 1,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:09.000000Z&quot;
+        &quot;id&quot;: &quot;01jven45fvhgr75y9gqgzn9ym1&quot;,
+        &quot;name&quot;: &quot;Бойовик&quot;,
+        &quot;slug&quot;: &quot;boiovik&quot;,
+        &quot;description&quot;: &quot;Жанр Бойовик характеризується особливою атмосферою та стилем оповіді. Accusantium blanditiis quaerat error iste expedita ea quos. Et autem voluptatem dolorem sunt velit et.&quot;,
+        &quot;image&quot;: &quot;/storage/test_files/images/genres/4.jpg&quot;,
+        &quot;is_genre&quot;: true,
+        &quot;aliases&quot;: [
+            &quot;Екшн&quot;,
+            &quot;Action&quot;
+        ],
+        &quot;movies_count&quot;: 5,
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
     }
 }</code>
  </pre>
@@ -7765,10 +10268,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tag_slug"                data-endpoint="GETapi-v1-tags--tag_slug-"
-               value="parody-197-rwdbt3"
+               value="boiovik"
                data-component="url">
     <br>
-<p>The slug of the tag. Example: <code>parody-197-rwdbt3</code></p>
+<p>The slug of the tag. Example: <code>boiovik</code></p>
             </div>
                     </form>
 
@@ -7785,14 +10288,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies" \
+    --get "http://127.0.0.1:8000/api/v1/tags/boiovik/movies" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies"
+    "http://127.0.0.1:8000/api/v1/tags/boiovik/movies"
 );
 
 const headers = {
@@ -7817,43 +10320,137 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;name&quot;: &quot;Excepturi ad ut iste.&quot;,
-            &quot;slug&quot;: &quot;excepturi-ad-ut-iste-4ffa7m&quot;,
-            &quot;description&quot;: &quot;Et molestias at aut repudiandae. Et autem neque modi et aut beatae rem vero. Qui aut occaecati rem doloribus. Aspernatur et corrupti ut explicabo quia enim repudiandae.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00ee22?text=movies+Movie+Poster+voluptas&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb44?text=movies+Poster+maiores&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2015&quot;,
-            &quot;imdb_score&quot;: 9.06,
+            &quot;id&quot;: &quot;01jven45nhvn839z0s4nj69gde&quot;,
+            &quot;name&quot;: &quot;Душа 11&quot;,
+            &quot;slug&quot;: &quot;dusa-11&quot;,
+            &quot;description&quot;: &quot;Душа 11 - це історія про дружбу, відвагу та самопізнання, розказана через анімацію. Tenetur quia quia non reiciendis quia ut modi. Nam odit modi sint voluptatum soluta quia amet. Hic aliquid consequuntur dignissimos ducimus consequuntur qui.\n\nReprehenderit itaque magnam voluptate quae reprehenderit officia. Voluptate placeat sit magni praesentium et. Rem quia est et est provident atque.\n\nVoluptatum sit assumenda ut veniam harum aut consequuntur. Laboriosam omnis adipisci praesentium et. Sit blanditiis dolores sint corrupti illo.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
             &quot;aliases&quot;: [
-                &quot;cumque&quot;,
-                &quot;nemo&quot;,
-                &quot;nostrum&quot;
+                &quot;Voluptatem quaerat nesciunt.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;KR&quot;,
-                &quot;UA&quot;,
-                &quot;GB&quot;
+                &quot;Україна&quot;,
+                &quot;США&quot;,
+                &quot;Австралія&quot;
             ],
-            &quot;episodes_count&quot;: 3,
-            &quot;average_rating&quot;: 2.3,
-            &quot;main_genre&quot;: &quot;Documentary&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45pt8abcsbx6vnmbpd7y&quot;,
+            &quot;name&quot;: &quot;Клинок, що знищує демонів 29&quot;,
+            &quot;slug&quot;: &quot;klinok-shho-znishhuje-demoniv-29&quot;,
+            &quot;description&quot;: &quot;Аніме Клинок, що знищує демонів 29 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокі філософські питання. Voluptates dolorem et ut. Numquam fugiat hic nam.\n\nAliquid iste nulla impedit. Fuga quia architecto magni reiciendis officiis voluptatem eveniet. Voluptatem impedit eius fuga dolorum aut nam eaque. Harum assumenda itaque ut animi cum sequi.\n\nExpedita et dolorem eveniet possimus et esse ex placeat. Impedit nemo ab neque itaque. Distinctio enim pariatur voluptas et reprehenderit tempore ut.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2024&quot;,
+            &quot;imdb_score&quot;: 9.5,
+            &quot;aliases&quot;: [
+                &quot;Molestias voluptatem nihil.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Канада&quot;,
+                &quot;Іспанія&quot;,
+                &quot;Японія&quot;
+            ],
+            &quot;episodes_count&quot;: 10,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nknr4n82mhd6cngavk&quot;,
+            &quot;name&quot;: &quot;Як приборкати дракона 12&quot;,
+            &quot;slug&quot;: &quot;iak-priborkati-drakona-12&quot;,
+            &quot;description&quot;: &quot;Мультфільм Як приборкати дракона 12 розповідає захоплюючу історію, яка сподобається глядачам будь-якого віку. Dolor accusantium facilis praesentium incidunt vero expedita eum. Et aut eos veritatis eligendi facere. Sed nostrum rem aliquid eveniet laudantium doloremque deleniti.\n\nCommodi dolorem voluptas modi quia et. Fuga et facilis aspernatur. Vel iusto molestiae sapiente non.\n\nAperiam expedita consequuntur recusandae laudantium. Est in voluptas saepe tempora est explicabo. Quae sunt minus et quae. Porro vel sequi rerum voluptates.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 7.1,
+            &quot;aliases&quot;: [
+                &quot;Як приборкати дракона 12: soluta quis exercitationem&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45mwqrjv3w6dztptnk9q&quot;,
+            &quot;name&quot;: &quot;Хлопаки 2&quot;,
+            &quot;slug&quot;: &quot;xlopaki-2&quot;,
+            &quot;description&quot;: &quot;Хлопаки 2 - це історія про звичайних людей, які опиняються в надзвичайних обставинах. Neque recusandae aliquam blanditiis sit et dolor. Fuga sapiente dicta consectetur sit maxime libero. Similique voluptatem est in voluptatem laborum nobis.\n\nSint unde laboriosam sint rerum eos. Minus ut ut laboriosam tempora. Minima qui sit beatae corporis.\n\nAut sequi dolorum autem aut qui. Ea autem qui repellat non quam perferendis vel et. Esse facilis atque est velit quos.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2017&quot;,
+            &quot;imdb_score&quot;: 6.7,
+            &quot;aliases&quot;: [
+                &quot;Sed sed nostrum ut.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Мексика&quot;,
+                &quot;Канада&quot;,
+                &quot;Китай&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45q9y2s3qckwkv71yqf3&quot;,
+            &quot;name&quot;: &quot;Ковбой Бібоп 35&quot;,
+            &quot;slug&quot;: &quot;kovboi-bibop-35&quot;,
+            &quot;description&quot;: &quot;Аніме Ковбой Бібоп 35 розповідає захоплюючу історію, яка розгортається протягом кількох сезонів. Adipisci adipisci voluptates nihil voluptate. Nam enim earum a earum earum. Animi voluptatum aliquam voluptatem veniam et. Earum nobis dolor voluptatem labore id molestiae et facilis.\n\nAtque ut autem alias. Magnam expedita officiis quia vero iusto. Rem doloremque quos qui in est qui.\n\nTotam est aut suscipit delectus quia. Nostrum blanditiis eveniet et cupiditate vel sequi. Dolores laborum at commodi nesciunt deleniti. Et labore adipisci hic rerum quibusdam qui nihil repudiandae.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/1.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 5.5,
+            &quot;aliases&quot;: [
+                &quot;Ratione sint ut unde.&quot;,
+                &quot;Ковбой Бібоп 35: qui suscipit illum&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Україна&quot;,
+                &quot;Австралія&quot;,
+                &quot;Іспанія&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/tags/boiovik/movies?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/tags/boiovik/movies?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -7868,7 +10465,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/tags/boiovik/movies?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -7878,10 +10475,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/tags/parody-197-rwdbt3/movies&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/tags/boiovik/movies&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 1,
-        &quot;total&quot;: 1
+        &quot;to&quot;: 5,
+        &quot;total&quot;: 5
     }
 }</code>
  </pre>
@@ -7962,10 +10559,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tag_slug"                data-endpoint="GETapi-v1-tags--tag_slug--movies"
-               value="parody-197-rwdbt3"
+               value="boiovik"
                data-component="url">
     <br>
-<p>The slug of the tag. Example: <code>parody-197-rwdbt3</code></p>
+<p>The slug of the tag. Example: <code>boiovik</code></p>
             </div>
                     </form>
 
@@ -7982,14 +10579,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/selections?q=&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;is_published=&amp;user_id=&amp;has_movies=&amp;has_persons=&amp;movie_ids[]=architecto&amp;person_ids[]=architecto" \
+    --get "http://127.0.0.1:8000/api/v1/selections?q=&amp;page=1&amp;per_page=15&amp;sort=name&amp;direction=asc&amp;is_published=&amp;user_id=&amp;has_movies=&amp;has_persons=&amp;movie_ids[]=architecto&amp;person_ids[]=architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/selections"
+    "http://127.0.0.1:8000/api/v1/selections"
 );
 
 const params = {
@@ -8030,8 +10627,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8297,14 +10893,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu" \
+    --get "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu"
+    "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu"
 );
 
 const headers = {
@@ -8329,28 +10925,27 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyp058hk75dmsdxrkadkb9&quot;,
-        &quot;name&quot;: &quot;Tempore voluptates dolorem ut.&quot;,
-        &quot;slug&quot;: &quot;tempore-voluptates-dolorem-ut-waobdu&quot;,
-        &quot;description&quot;: &quot;Aut quibusdam rerum esse exercitationem aliquid modi nostrum. Nobis est accusantium provident eaque amet ipsa. Consequatur sed in et tempora ipsa voluptas odio aut. Consequatur laudantium in id magnam.&quot;,
-        &quot;meta_title&quot;: &quot;Tempore voluptates dolorem ut. | Netflix&quot;,
-        &quot;meta_description&quot;: &quot;Facilis sint rem soluta assumenda rerum sit ut aut.&quot;,
-        &quot;meta_image&quot;: &quot;https://via.placeholder.com/1200x630.png/005555?text=selection+inventore&quot;,
-        &quot;is_published&quot;: false,
+        &quot;id&quot;: &quot;01jven464snknrzm4bp78vmh8m&quot;,
+        &quot;name&quot;: &quot;Фільми про війну&quot;,
+        &quot;slug&quot;: &quot;filmi-pro-viinu&quot;,
+        &quot;description&quot;: &quot;У цій підбірці \&quot;Фільми про війну\&quot; ви знайдете фільми та серіали, які не залишать вас байдужими. Voluptates accusamus adipisci mollitia aliquam. Qui mollitia sed aut quaerat. Vel ut itaque facere tempore nobis. Atque placeat et incidunt rerum libero error doloribus.\n\nNihil et nemo id hic et ea fugit. Odit at iusto quo maiores. Perspiciatis ex qui neque dolorum doloremque ut a.&quot;,
+        &quot;meta_title&quot;: &quot;Фільми про війну | Netflix&quot;,
+        &quot;meta_description&quot;: &quot;Підбірка Фільми про війну. Дивіться онлайн на Netflix.&quot;,
+        &quot;meta_image&quot;: &quot;/storage/test_files/images/selections_meta/2.jpg&quot;,
+        &quot;is_published&quot;: true,
         &quot;user&quot;: {
-            &quot;id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;name&quot;: &quot;kravcuk.anna&quot;
+            &quot;id&quot;: &quot;01jvde9n700fbrzvbd4b4aznmj&quot;,
+            &quot;name&quot;: &quot;admin1&quot;
         },
-        &quot;movies_count&quot;: 10,
+        &quot;movies_count&quot;: 13,
         &quot;user_lists_count&quot;: 0,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
+        &quot;created_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
     }
 }</code>
  </pre>
@@ -8431,10 +11026,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="selection_slug"                data-endpoint="GETapi-v1-selections--selection_slug-"
-               value="tempore-voluptates-dolorem-ut-waobdu"
+               value="filmi-pro-viinu"
                data-component="url">
     <br>
-<p>The slug of the selection. Example: <code>tempore-voluptates-dolorem-ut-waobdu</code></p>
+<p>The slug of the selection. Example: <code>filmi-pro-viinu</code></p>
             </div>
                     </form>
 
@@ -8451,14 +11046,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies" \
+    --get "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies"
+    "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies"
 );
 
 const headers = {
@@ -8483,271 +11078,318 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynzabjy961y5xgr1dyemr&quot;,
-            &quot;name&quot;: &quot;Voluptatem inventore officiis.&quot;,
-            &quot;slug&quot;: &quot;voluptatem-inventore-officiis-hpru4d&quot;,
-            &quot;description&quot;: &quot;Ea dolorum est sapiente qui et velit iste. Est vel ipsa ea quaerat quisquam sit accusantium. Nemo numquam ad est vitae. Sed fugiat impedit unde et. In delectus quis fugiat libero.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0022ff?text=movies+Movie+Poster+maiores&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ddcc?text=movies+Poster+eos&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 5.47,
+            &quot;id&quot;: &quot;01jven45p1fctn87eygdem0gm8&quot;,
+            &quot;name&quot;: &quot;Вікінги 18&quot;,
+            &quot;slug&quot;: &quot;vikingi-18&quot;,
+            &quot;description&quot;: &quot;Серіал Вікінги 18 розкриває глибокі філософські питання через захоплюючий сюжет та яскравих персонажів. Aut omnis optio laudantium vitae. Nulla quae incidunt ut et laboriosam aspernatur. Sint voluptatem sit facilis saepe quia accusamus similique. Blanditiis sed dolore temporibus.\n\nRerum et officia sit nobis aperiam est veniam harum. Laboriosam quam est quas ut quae saepe ipsa. Fugit reiciendis dicta voluptas cumque quibusdam. Doloremque quaerat expedita ipsum sunt facilis.\n\nEnim qui quo dolores quaerat sit labore. Autem quam minus sapiente culpa totam illum culpa. Voluptas illo dolores et cupiditate eius maxime. Consectetur sapiente totam sequi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;tv_series&quot;,
+            &quot;status&quot;: &quot;rumored&quot;,
+            &quot;release_year&quot;: &quot;2025&quot;,
+            &quot;imdb_score&quot;: 9.5,
             &quot;aliases&quot;: [
-                &quot;iste&quot;,
-                &quot;ducimus&quot;,
-                &quot;voluptatem&quot;
+                &quot;Aut id cupiditate delectus velit.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;US&quot;
+                &quot;США&quot;,
+                &quot;Бразилія&quot;,
+                &quot;Велика Британія&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 4.5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzaghapb996wyrpdq1pj&quot;,
-            &quot;name&quot;: &quot;Omnis provident mollitia.&quot;,
-            &quot;slug&quot;: &quot;omnis-provident-mollitia-znx52p&quot;,
-            &quot;description&quot;: &quot;In rerum tenetur sunt id ducimus. At fuga nostrum ipsa maxime consequuntur natus repudiandae. Quam corporis qui itaque unde adipisci ipsam nam aperiam.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0055ee?text=movies+Movie+Poster+rem&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/004488?text=movies+Poster+omnis&quot;,
+            &quot;id&quot;: &quot;01jven45n8qd8a1jacqezdnn62&quot;,
+            &quot;name&quot;: &quot;Мулан 7&quot;,
+            &quot;slug&quot;: &quot;mulan-7&quot;,
+            &quot;description&quot;: &quot;Мулан 7 - це анімаційна пригода з яскравими персонажами та важливими життєвими уроками. Molestiae ut voluptatem ex. Maxime delectus et quia debitis optio deserunt. Natus a hic nobis vel dolorum sed blanditiis.\n\nAliquam molestiae hic aut quis eos eos. Cumque fugit distinctio cupiditate impedit quidem. Et distinctio id nihil assumenda quisquam.\n\nEnim natus neque repellendus cupiditate. Neque provident corrupti eaque mollitia. Quis sed excepturi fuga veniam est sequi suscipit ut. Tempore nihil ut dolores.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
             &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 8.27,
-            &quot;aliases&quot;: [
-                &quot;expedita&quot;,
-                &quot;at&quot;,
-                &quot;expedita&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;
-            ],
-            &quot;average_rating&quot;: 2.3,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzah5e99w7wf3qk5vx2m&quot;,
-            &quot;name&quot;: &quot;Voluptatem deleniti laudantium commodi.&quot;,
-            &quot;slug&quot;: &quot;voluptatem-deleniti-laudantium-commodi-gc15c2&quot;,
-            &quot;description&quot;: &quot;Est architecto praesentium omnis alias. Fugiat dolores voluptatem nisi iure corrupti. Voluptatibus est repellat quaerat deserunt natus. Saepe autem dolorum placeat incidunt culpa.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/003311?text=movies+Movie+Poster+sit&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0000bb?text=movies+Poster+aliquam&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;ongoing&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 3.52,
-            &quot;aliases&quot;: [
-                &quot;quisquam&quot;,
-                &quot;distinctio&quot;,
-                &quot;et&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;JP&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 5.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;name&quot;: &quot;Commodi exercitationem sed.&quot;,
-            &quot;slug&quot;: &quot;commodi-exercitationem-sed-mq0ndl&quot;,
-            &quot;description&quot;: &quot;Ut sed consequatur fugiat natus occaecati. Ex eaque repudiandae repellat sit sint laboriosam maxime. Ullam quasi magnam dolorum nobis doloremque sit. Quam provident ad quo quis exercitationem quis modi.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/009944?text=movies+Movie+Poster+culpa&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ccdd?text=movies+Poster+adipisci&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 9.41,
-            &quot;aliases&quot;: [
-                &quot;animi&quot;,
-                &quot;aut&quot;,
-                &quot;distinctio&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzap5bzc16f8enx5mvw3&quot;,
-            &quot;name&quot;: &quot;Modi modi quo perspiciatis.&quot;,
-            &quot;slug&quot;: &quot;modi-modi-quo-perspiciatis-wuuins&quot;,
-            &quot;description&quot;: &quot;Totam laboriosam soluta maiores. Voluptas ipsam autem laboriosam eum unde nam animi reiciendis. Repudiandae eos aut odio ipsum. Temporibus labore deserunt vel repudiandae corporis molestiae praesentium delectus.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00aaff?text=movies+Movie+Poster+exercitationem&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/000088?text=movies+Poster+consequatur&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;ongoing&quot;,
-            &quot;release_year&quot;: &quot;2018&quot;,
-            &quot;imdb_score&quot;: 8.51,
-            &quot;aliases&quot;: [
-                &quot;dolor&quot;,
-                &quot;est&quot;,
-                &quot;quos&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: 41,
-            &quot;average_rating&quot;: 4.4,
-            &quot;main_genre&quot;: &quot;Martial Arts&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzarrzfzm4mfrjmkvt76&quot;,
-            &quot;name&quot;: &quot;Nostrum sed quia dignissimos.&quot;,
-            &quot;slug&quot;: &quot;nostrum-sed-quia-dignissimos-0hnfzs&quot;,
-            &quot;description&quot;: &quot;Tempora molestias enim quisquam at. Et a est aut qui consequatur. Asperiores a qui earum quos sapiente incidunt numquam eaque.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0022aa?text=movies+Movie+Poster+est&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/008800?text=movies+Poster+perferendis&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 4.19,
-            &quot;aliases&quot;: [
-                &quot;quibusdam&quot;,
-                &quot;ex&quot;,
-                &quot;nihil&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;,
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 3.5,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzaxme15bfwcrev71nae&quot;,
-            &quot;name&quot;: &quot;Excepturi ad ut iste.&quot;,
-            &quot;slug&quot;: &quot;excepturi-ad-ut-iste-4ffa7m&quot;,
-            &quot;description&quot;: &quot;Et molestias at aut repudiandae. Et autem neque modi et aut beatae rem vero. Qui aut occaecati rem doloribus. Aspernatur et corrupti ut explicabo quia enim repudiandae.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00ee22?text=movies+Movie+Poster+voluptas&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb44?text=movies+Poster+maiores&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2015&quot;,
-            &quot;imdb_score&quot;: 9.06,
-            &quot;aliases&quot;: [
-                &quot;cumque&quot;,
-                &quot;nemo&quot;,
-                &quot;nostrum&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;KR&quot;,
-                &quot;UA&quot;,
-                &quot;GB&quot;
-            ],
-            &quot;episodes_count&quot;: 3,
-            &quot;average_rating&quot;: 2.3,
-            &quot;main_genre&quot;: &quot;Documentary&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzb8xkhqg40xp9gt01p2&quot;,
-            &quot;name&quot;: &quot;Animi blanditiis fuga.&quot;,
-            &quot;slug&quot;: &quot;animi-blanditiis-fuga-nwkpeq&quot;,
-            &quot;description&quot;: &quot;Et unde laudantium et et. Voluptates voluptatem nisi eveniet qui et omnis. Atque quis consequatur aperiam cumque voluptatem et.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/001100?text=movies+Movie+Poster+eligendi&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ff33?text=movies+Poster+consectetur&quot;,
-            &quot;kind&quot;: &quot;animated_series&quot;,
             &quot;status&quot;: &quot;released&quot;,
             &quot;release_year&quot;: &quot;2021&quot;,
-            &quot;imdb_score&quot;: 9.13,
-            &quot;aliases&quot;: [
-                &quot;quae&quot;,
-                &quot;odit&quot;,
-                &quot;aut&quot;
-            ],
+            &quot;imdb_score&quot;: 7.1,
+            &quot;aliases&quot;: [],
             &quot;countries&quot;: [
-                &quot;UA&quot;
+                &quot;Канада&quot;,
+                &quot;Австралія&quot;
             ],
-            &quot;episodes_count&quot;: 5,
-            &quot;average_rating&quot;: 5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Біографія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzbats2y6dhrrmyq0g4p&quot;,
-            &quot;name&quot;: &quot;Id animi qui.&quot;,
-            &quot;slug&quot;: &quot;id-animi-qui-8kvkka&quot;,
-            &quot;description&quot;: &quot;Nam quibusdam iste eos asperiores. Maiores in et quia qui modi animi. Incidunt quia blanditiis at omnis.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/00aa77?text=movies+Movie+Poster+deleniti&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/001133?text=movies+Poster+aut&quot;,
+            &quot;id&quot;: &quot;01jven45nhvn839z0s4nj69gde&quot;,
+            &quot;name&quot;: &quot;Душа 11&quot;,
+            &quot;slug&quot;: &quot;dusa-11&quot;,
+            &quot;description&quot;: &quot;Душа 11 - це історія про дружбу, відвагу та самопізнання, розказана через анімацію. Tenetur quia quia non reiciendis quia ut modi. Nam odit modi sint voluptatum soluta quia amet. Hic aliquid consequuntur dignissimos ducimus consequuntur qui.\n\nReprehenderit itaque magnam voluptate quae reprehenderit officia. Voluptate placeat sit magni praesentium et. Rem quia est et est provident atque.\n\nVoluptatum sit assumenda ut veniam harum aut consequuntur. Laboriosam omnis adipisci praesentium et. Sit blanditiis dolores sint corrupti illo.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
+            &quot;aliases&quot;: [
+                &quot;Voluptatem quaerat nesciunt.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Україна&quot;,
+                &quot;США&quot;,
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45qxwg76cce6f5ca3aww&quot;,
+            &quot;name&quot;: &quot;Початок 43&quot;,
+            &quot;slug&quot;: &quot;pocatok-43&quot;,
+            &quot;description&quot;: &quot;Фільм Початок 43 розповідає захоплюючу історію, яка не залишить байдужим жодного глядача. Repellendus qui pariatur dolore modi fugit. Eaque facilis harum ea omnis libero quis exercitationem. Accusantium quaerat fugit occaecati cumque. Omnis fuga qui velit id.\n\nSunt rerum aspernatur perferendis esse consectetur quia voluptatem. In pariatur quia est nostrum voluptas.\n\nExpedita rerum aliquid sunt et. Deserunt placeat vel eligendi dolore ut. Fugit beatae saepe necessitatibus nulla et.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/5.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2021&quot;,
+            &quot;imdb_score&quot;: 8.7,
+            &quot;aliases&quot;: [
+                &quot;Et libero consectetur et nostrum.&quot;,
+                &quot;Початок 43: vel ut ut&quot;
+            ],
+            &quot;countries&quot;: {
+                &quot;0&quot;: &quot;Індія&quot;,
+                &quot;2&quot;: &quot;Канада&quot;
+            },
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45mjpy9kdnzt361mwv7m&quot;,
+            &quot;name&quot;: &quot;Офіс 1&quot;,
+            &quot;slug&quot;: &quot;ofis-1&quot;,
+            &quot;description&quot;: &quot;У серіалі Офіс 1 глядачі побачать неймовірні пригоди головних героїв у різних ситуаціях. Laboriosam esse laboriosam iure quo ullam ea ipsa. Rerum facilis illum nesciunt vel architecto. Ab cum illum exercitationem perspiciatis dolor voluptatum laudantium.\n\nDelectus quod nam earum doloribus et harum ut. Amet dolor quas laudantium autem. Voluptas aut deleniti iusto deserunt itaque reprehenderit. Voluptatum magnam vero assumenda et amet.\n\nCum quisquam ut quod quisquam et. Est modi enim libero qui quam. Rerum perspiciatis sed iusto vel aperiam voluptatibus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
             &quot;kind&quot;: &quot;tv_series&quot;,
             &quot;status&quot;: &quot;released&quot;,
-            &quot;release_year&quot;: &quot;2019&quot;,
-            &quot;imdb_score&quot;: 7.55,
+            &quot;release_year&quot;: &quot;2022&quot;,
+            &quot;imdb_score&quot;: 9.3,
             &quot;aliases&quot;: [
-                &quot;velit&quot;,
-                &quot;nisi&quot;,
-                &quot;adipisci&quot;
+                &quot;Et aut.&quot;
             ],
             &quot;countries&quot;: [
-                &quot;GB&quot;,
-                &quot;US&quot;
+                &quot;Канада&quot;,
+                &quot;Японія&quot;,
+                &quot;Франція&quot;
             ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 6.3,
-            &quot;main_genre&quot;: &quot;Based on Book&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 15,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Романтика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynzbb5dcz0zmj6y7mqg94&quot;,
-            &quot;name&quot;: &quot;Voluptatibus est facilis.&quot;,
-            &quot;slug&quot;: &quot;voluptatibus-est-facilis-t4uybl&quot;,
-            &quot;description&quot;: &quot;Facilis dolor repellendus exercitationem eos consequuntur. Placeat quia ut aspernatur sit porro aut. Aperiam occaecati quo qui cumque ipsum. Eius impedit ut a illum qui.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/000044?text=movies+Movie+Poster+dignissimos&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ccee?text=movies+Poster+qui&quot;,
-            &quot;kind&quot;: &quot;animated_movie&quot;,
-            &quot;status&quot;: &quot;rumored&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 8.09,
+            &quot;id&quot;: &quot;01jven45nc2mgj4q6kr6vwj495&quot;,
+            &quot;name&quot;: &quot;Код Гіас 9&quot;,
+            &quot;slug&quot;: &quot;kod-gias-9&quot;,
+            &quot;description&quot;: &quot;Аніме Код Гіас 9 розповідає захоплюючу історію, яка розгортається протягом кількох сезонів. Quia officia ut qui sed consequatur ea aspernatur. Eos amet maiores facilis neque molestiae. Soluta ut culpa non et voluptates. Sapiente rem repudiandae ut sint.\n\nTotam libero eius recusandae animi distinctio porro hic qui. Corrupti repudiandae voluptate suscipit recusandae sint quo. Et ad saepe blanditiis repudiandae nihil tempora reprehenderit. Praesentium vel at maiores eos.\n\nId fugiat officiis provident autem et est cumque. Odio in et qui minus.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;anons&quot;,
+            &quot;release_year&quot;: &quot;2015&quot;,
+            &quot;imdb_score&quot;: 6.9,
             &quot;aliases&quot;: [
-                &quot;sit&quot;,
-                &quot;accusamus&quot;,
-                &quot;qui&quot;
+                &quot;In eius accusantium velit.&quot;,
+                &quot;Код Гіас 9: aliquid nesciunt sapiente&quot;
             ],
             &quot;countries&quot;: [
-                &quot;UA&quot;,
-                &quot;DE&quot;,
-                &quot;GB&quot;
+                &quot;Південна Корея&quot;,
+                &quot;Велика Британія&quot;
             ],
-            &quot;average_rating&quot;: 10,
-            &quot;main_genre&quot;: &quot;Horror&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;episodes_count&quot;: 7,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Комедія&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nf2vwgdp207twyr0bm&quot;,
+            &quot;name&quot;: &quot;Аладдін 10&quot;,
+            &quot;slug&quot;: &quot;aladdin-10&quot;,
+            &quot;description&quot;: &quot;Аладдін 10 - це анімаційна пригода з яскравими персонажами та важливими життєвими уроками. Alias et repellendus aut minus unde. Qui commodi omnis sint recusandae. Nisi amet repudiandae nulla facere qui et consequatur enim. Magni dolore dolorum laborum dolores.\n\nId sit expedita ipsam nam dolorum. Ut aliquam et amet excepturi. Consequuntur esse sapiente inventore est numquam vel. Et hic in voluptas ratione sit velit.\n\nSuscipit dolores enim voluptatem similique quos. Dolor natus similique perferendis.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/2.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2018&quot;,
+            &quot;imdb_score&quot;: 7.6,
+            &quot;aliases&quot;: [
+                &quot;Nobis nihil tenetur.&quot;,
+                &quot;Аладдін 10: sit odio nam&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Китай&quot;,
+                &quot;Південна Корея&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Фантастика&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45nknr4n82mhd6cngavk&quot;,
+            &quot;name&quot;: &quot;Як приборкати дракона 12&quot;,
+            &quot;slug&quot;: &quot;iak-priborkati-drakona-12&quot;,
+            &quot;description&quot;: &quot;Мультфільм Як приборкати дракона 12 розповідає захоплюючу історію, яка сподобається глядачам будь-якого віку. Dolor accusantium facilis praesentium incidunt vero expedita eum. Et aut eos veritatis eligendi facere. Sed nostrum rem aliquid eveniet laudantium doloremque deleniti.\n\nCommodi dolorem voluptas modi quia et. Fuga et facilis aspernatur. Vel iusto molestiae sapiente non.\n\nAperiam expedita consequuntur recusandae laudantium. Est in voluptas saepe tempora est explicabo. Quae sunt minus et quae. Porro vel sequi rerum voluptates.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/2.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;released&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 7.1,
+            &quot;aliases&quot;: [
+                &quot;Як приборкати дракона 12: soluta quis exercitationem&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Австралія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45ntjcqjpqgygd9czp66&quot;,
+            &quot;name&quot;: &quot;Престиж 15&quot;,
+            &quot;slug&quot;: &quot;prestiz-15&quot;,
+            &quot;description&quot;: &quot;Престиж 15 - це історія про звичайну людину, яка опиняється в надзвичайних обставинах. Magnam molestiae esse dolorum aspernatur. Perferendis fugit incidunt inventore harum voluptas. Sequi magnam aut qui omnis maxime. Officia enim eius optio veniam quis.\n\nTenetur nisi dolor inventore ratione. Fuga repellendus iure nesciunt voluptas quia in. Et laudantium eum vero tenetur minima sed ut rerum. Aspernatur consequatur debitis placeat culpa rerum cumque quidem.\n\nRepellat veritatis et exercitationem error aut. Ut debitis aut accusantium magni dignissimos est. Iusto soluta voluptas qui et. Qui animi deserunt minima ea id similique.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/5.jpg&quot;,
+            &quot;kind&quot;: &quot;movie&quot;,
+            &quot;status&quot;: &quot;ongoing&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 9.2,
+            &quot;aliases&quot;: [],
+            &quot;countries&quot;: [
+                &quot;Німеччина&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Пригоди&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45p5b942xxj78cenxnar&quot;,
+            &quot;name&quot;: &quot;У пошуках Немо 20&quot;,
+            &quot;slug&quot;: &quot;u-posukax-nemo-20&quot;,
+            &quot;description&quot;: &quot;Мультфільм У пошуках Немо 20 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокий сенс. Aut velit officia non adipisci. Earum accusantium repellendus ipsa tempore et.\n\nQuisquam quae ut omnis sunt aliquam atque accusamus et. Nihil iste eaque enim est voluptatem. Aut molestiae voluptatem quis placeat voluptatem at suscipit. Quam ut sequi deleniti sit distinctio autem debitis.\n\nConsequatur exercitationem dolorem recusandae doloribus. Consectetur sit fugit molestiae quibusdam. Id iste laudantium fuga repellat. Fugiat aut explicabo non magni.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/3.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2024&quot;,
+            &quot;imdb_score&quot;: 5.1,
+            &quot;aliases&quot;: [
+                &quot;Aut dicta nisi.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Німеччина&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45pwgsr2wack24jswzgh&quot;,
+            &quot;name&quot;: &quot;Суперсімейка 30&quot;,
+            &quot;slug&quot;: &quot;supersimeika-30&quot;,
+            &quot;description&quot;: &quot;У мультфільмі Суперсімейка 30 глядачі побачать неймовірні пригоди головних героїв у фантастичному світі. Eligendi eveniet qui accusamus voluptatem. Non totam illo aliquid dolore sed. Iste repellendus quas repudiandae. Exercitationem distinctio eaque sapiente quis praesentium autem ipsum. Et accusantium sit magni sed et reiciendis unde.\n\nUnde consectetur molestias est in sed ut. Quo nisi ut unde est atque. Asperiores perspiciatis aut neque. Sed eum odit temporibus omnis rerum nam magnam.\n\nIusto quibusdam ipsam quos pariatur facilis doloribus debitis. Sit facere ut molestias error et eos. Sed delectus sapiente enim qui ipsum. Sit vitae soluta qui. Voluptas quia libero aut dolor repellendus sequi.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/1.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2016&quot;,
+            &quot;imdb_score&quot;: 5.5,
+            &quot;aliases&quot;: [
+                &quot;Et ducimus amet reprehenderit sint.&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Іспанія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Анімація&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45r6x78eg4hdsayy3m7w&quot;,
+            &quot;name&quot;: &quot;Аладдін 47&quot;,
+            &quot;slug&quot;: &quot;aladdin-47&quot;,
+            &quot;description&quot;: &quot;Мультфільм Аладдін 47 поєднує в собі захоплюючий сюжет, яскраву анімацію та глибокий сенс. Optio culpa in labore corporis. Deleniti explicabo cupiditate repudiandae vel aut enim. Omnis nesciunt rerum et reprehenderit et vero. Ab quasi iusto aut doloremque harum distinctio. Veritatis qui error dolorem quo.\n\nEaque iusto itaque voluptas. Sit ad expedita beatae facere aut aut amet et. Eaque quod quidem quo quod praesentium at delectus iste.\n\nNecessitatibus mollitia beatae excepturi et esse fugit cumque. Quia dolore harum aut ea. Fugiat eum molestiae rerum quis beatae.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/4.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/4.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_movie&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2021&quot;,
+            &quot;imdb_score&quot;: 9.6,
+            &quot;aliases&quot;: [
+                &quot;Omnis dicta vitae.&quot;,
+                &quot;Аладдін 47: in nostrum sunt&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Бразилія&quot;
+            ],
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Драма&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45q9y2s3qckwkv71yqf3&quot;,
+            &quot;name&quot;: &quot;Ковбой Бібоп 35&quot;,
+            &quot;slug&quot;: &quot;kovboi-bibop-35&quot;,
+            &quot;description&quot;: &quot;Аніме Ковбой Бібоп 35 розповідає захоплюючу історію, яка розгортається протягом кількох сезонів. Adipisci adipisci voluptates nihil voluptate. Nam enim earum a earum earum. Animi voluptatum aliquam voluptatem veniam et. Earum nobis dolor voluptatem labore id molestiae et facilis.\n\nAtque ut autem alias. Magnam expedita officiis quia vero iusto. Rem doloremque quos qui in est qui.\n\nTotam est aut suscipit delectus quia. Nostrum blanditiis eveniet et cupiditate vel sequi. Dolores laborum at commodi nesciunt deleniti. Et labore adipisci hic rerum quibusdam qui nihil repudiandae.&quot;,
+            &quot;image_name&quot;: &quot;/storage/test_files/images/movies/3.jpg&quot;,
+            &quot;poster&quot;: &quot;/storage/test_files/images/posters/1.jpg&quot;,
+            &quot;kind&quot;: &quot;animated_series&quot;,
+            &quot;status&quot;: &quot;canceled&quot;,
+            &quot;release_year&quot;: &quot;2023&quot;,
+            &quot;imdb_score&quot;: 5.5,
+            &quot;aliases&quot;: [
+                &quot;Ratione sint ut unde.&quot;,
+                &quot;Ковбой Бібоп 35: qui suscipit illum&quot;
+            ],
+            &quot;countries&quot;: [
+                &quot;Україна&quot;,
+                &quot;Австралія&quot;,
+                &quot;Іспанія&quot;
+            ],
+            &quot;episodes_count&quot;: 14,
+            &quot;average_rating&quot;: 0,
+            &quot;main_genre&quot;: &quot;Бойовик&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:47.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -8762,7 +11404,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -8772,10 +11414,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/movies&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/movies&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 10,
-        &quot;total&quot;: 10
+        &quot;to&quot;: 13,
+        &quot;total&quot;: 13
     }
 }</code>
  </pre>
@@ -8856,10 +11498,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="selection_slug"                data-endpoint="GETapi-v1-selections--selection_slug--movies"
-               value="tempore-voluptates-dolorem-ut-waobdu"
+               value="filmi-pro-viinu"
                data-component="url">
     <br>
-<p>The slug of the selection. Example: <code>tempore-voluptates-dolorem-ut-waobdu</code></p>
+<p>The slug of the selection. Example: <code>filmi-pro-viinu</code></p>
             </div>
                     </form>
 
@@ -8876,14 +11518,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons" \
+    --get "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons"
+    "http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons"
 );
 
 const headers = {
@@ -8908,82 +11550,103 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: &quot;01jtzynz4c1fjrnzvjt21p4xgx&quot;,
-            &quot;name&quot;: &quot;Дмитро Романович Васильєв&quot;,
-            &quot;slug&quot;: &quot;dmitro-romanovic-vasiljev-9na6gr&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/002244?text=people+et&quot;,
-            &quot;birth_date&quot;: &quot;1993-07-06&quot;,
+            &quot;id&quot;: &quot;01jven45hp8zxcbzkz8frz4z0v&quot;,
+            &quot;name&quot;: &quot;Леонардо Ді Капріо&quot;,
+            &quot;slug&quot;: &quot;leonardo-di-kaprio&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1992-08-23&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Magni porro provident modi enim qui blanditiis culpa cupiditate consequatur velit qui.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Актор Леонардо Ді Капріо відомий своєю різноманітністю ролей та глибоким підходом до кожного персонажа. Ullam quaerat quidem dolores atque veniam dicta consequatur dolorem. Voluptas qui est qui eligendi.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz4m7wqkvfx7z74ts2b3&quot;,
-            &quot;name&quot;: &quot;Дмитро Миколайович Романченко&quot;,
-            &quot;slug&quot;: &quot;dmitro-mikolaiovic-romancenko-fqyojh&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00ddaa?text=people+sit&quot;,
-            &quot;birth_date&quot;: &quot;1961-09-28&quot;,
+            &quot;id&quot;: &quot;01jven45j0gt80gt5ckcmkprkh&quot;,
+            &quot;name&quot;: &quot;Марго Роббі&quot;,
+            &quot;slug&quot;: &quot;margo-robbi&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1973-09-12&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Reprehenderit qui asperiores aut est laboriosam ducimus rem sunt repudiandae assumenda delectus aut placeat id delectus voluptatem similique omnis odio.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Актор Марго Роббі відомий своєю різноманітністю ролей та глибоким підходом до кожного персонажа. Aliquid dolore sint et neque molestias. A omnis reprehenderit sunt enim voluptatem aut iure eos. Atque magnam sit quisquam similique quibusdam magnam.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz5mrp1kcykrnb6eqcrx&quot;,
-            &quot;name&quot;: &quot;Лисенко Лариса Федорівна&quot;,
-            &quot;slug&quot;: &quot;lisenko-larisa-fedorivna-hggsue&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0077ff?text=people+fuga&quot;,
-            &quot;birth_date&quot;: &quot;1980-04-03&quot;,
+            &quot;id&quot;: &quot;01jven45j41f01zfbf1f6r9kgy&quot;,
+            &quot;name&quot;: &quot;Наталі Портман&quot;,
+            &quot;slug&quot;: &quot;natali-portman&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/actors/1.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1981-10-29&quot;,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Ipsam et a dolorum sunt id non itaque quos ipsam quod veritatis quia quia a dolor ut aut.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Наталі Портман - актор, який отримав визнання критиків та глядачів за свої ролі у кіно та на телебаченні. Ducimus totam dolorem molestias ut reiciendis. Quia sapiente enim nam cumque aut delectus. Iusto eos velit labore eaque at dolorem.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         },
         {
-            &quot;id&quot;: &quot;01jtzynz5nav5g5pc6jx0tmtgj&quot;,
-            &quot;name&quot;: &quot;Борис Борисович Микитюк&quot;,
-            &quot;slug&quot;: &quot;boris-borisovic-mikitiuk-fuer4i&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/0088aa?text=people+qui&quot;,
-            &quot;birth_date&quot;: &quot;1984-06-28&quot;,
-            &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Sit beatae architecto molestiae minima at tempora tempore et unde molestiae quas vel itaque.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz5v8nwmxts2z32dawcq&quot;,
-            &quot;name&quot;: &quot;Пономарчук Антон Володимирович&quot;,
-            &quot;slug&quot;: &quot;ponomarcuk-anton-volodimirovic-grfcei&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/002255?text=people+architecto&quot;,
-            &quot;birth_date&quot;: &quot;1971-12-29&quot;,
-            &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;At vel quis laborum consectetur illo quaerat nostrum commodi qui suscipit at omnis non voluptas inventore.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynz655ket9z525y9n0nx0&quot;,
-            &quot;name&quot;: &quot;Крамарчук Євгеній Васильович&quot;,
-            &quot;slug&quot;: &quot;kramarcuk-jevgenii-vasilyovic-yhvble&quot;,
-            &quot;image&quot;: &quot;https://via.placeholder.com/640x480.png/00aa22?text=people+facere&quot;,
+            &quot;id&quot;: &quot;01jven45jm7cv3ygshsrz0sj6n&quot;,
+            &quot;name&quot;: &quot;Асука Ленглі&quot;,
+            &quot;slug&quot;: &quot;asuka-lengli&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/characters/3.jpg&quot;,
             &quot;birth_date&quot;: null,
             &quot;death_date&quot;: null,
-            &quot;biography&quot;: &quot;Tenetur vitae expedita velit rerum corrupti tempore rerum deleniti quae.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
+            &quot;biography&quot;: &quot;Асука Ленглі - один з найбільш впізнаваних аніме-персонажів, який має мільйони шанувальників. Aut vel qui eligendi. Dolore harum ipsam et qui et ut ut.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45kbyfxw7xxtnpbenpma&quot;,
+            &quot;name&quot;: &quot;Руслан Пономаренко&quot;,
+            &quot;slug&quot;: &quot;ruslan-ponomarenko&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/2.jpg&quot;,
+            &quot;birth_date&quot;: &quot;2004-07-16&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Актор озвучення Руслан Пономаренко відомий своїм професіоналізмом та творчим підходом до роботи. Deserunt dignissimos occaecati dolor porro voluptas laborum voluptas. Amet ducimus tempore magni aliquam. Aspernatur eum nobis a sunt.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45kc2x7ax7fsht0s5dea&quot;,
+            &quot;name&quot;: &quot;Станіслав Дмитренко&quot;,
+            &quot;slug&quot;: &quot;stanislav-dmitrenko&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/2.jpg&quot;,
+            &quot;birth_date&quot;: &quot;2000-09-11&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Станіслав Дмитренко - один з найкращих спеціалістів у своїй галузі, чиї роботи отримали визнання. Explicabo aut cumque dignissimos voluptatibus in cumque. Ut odio deleniti et et. Similique quae qui et aperiam.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45khasxdv00w5cjg5z41&quot;,
+            &quot;name&quot;: &quot;Антон Боднаренко&quot;,
+            &quot;slug&quot;: &quot;anton-bodnarenko&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/3.jpg&quot;,
+            &quot;birth_date&quot;: &quot;2000-12-26&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Антон Боднаренко - один з найкращих спеціалістів у своїй галузі, чиї роботи отримали визнання. Saepe odio et suscipit accusamus. Sint voluptatem labore quidem dolorem.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: &quot;01jven45kmq61z3c8y3w1h354n&quot;,
+            &quot;name&quot;: &quot;Кирил Романченко&quot;,
+            &quot;slug&quot;: &quot;kiril-romancenko&quot;,
+            &quot;image&quot;: &quot;/storage/test_files/images/people/5.jpg&quot;,
+            &quot;birth_date&quot;: &quot;1968-11-27&quot;,
+            &quot;death_date&quot;: null,
+            &quot;biography&quot;: &quot;Талановитий Сценарист Кирил Романченко зробив значний внесок у розвиток кіноіндустрії. Error quae quod iste ut. Eos quasi corrupti natus ducimus eveniet nemo. Natus quo est repellat eius numquam.&quot;,
+            &quot;created_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;,
+            &quot;updated_at&quot;: &quot;2025-05-17T08:17:46.000000Z&quot;
         }
     ],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -8998,7 +11661,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -9008,10 +11671,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/selections/tempore-voluptates-dolorem-ut-waobdu/persons&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/selections/filmi-pro-viinu/persons&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 6,
-        &quot;total&quot;: 6
+        &quot;to&quot;: 8,
+        &quot;total&quot;: 8
     }
 }</code>
  </pre>
@@ -9092,10 +11755,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="selection_slug"                data-endpoint="GETapi-v1-selections--selection_slug--persons"
-               value="tempore-voluptates-dolorem-ut-waobdu"
+               value="filmi-pro-viinu"
                data-component="url">
     <br>
-<p>The slug of the selection. Example: <code>tempore-voluptates-dolorem-ut-waobdu</code></p>
+<p>The slug of the selection. Example: <code>filmi-pro-viinu</code></p>
             </div>
                     </form>
 
@@ -9112,14 +11775,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc" \
+    --get "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const headers = {
@@ -9144,34 +11807,30 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-        &quot;name&quot;: &quot;kravcuk.anna&quot;,
-        &quot;email&quot;: &quot;maksim55@example.net&quot;,
+        &quot;id&quot;: &quot;01jvde9n700fbrzvbd4b4aznmj&quot;,
+        &quot;name&quot;: &quot;admin1&quot;,
+        &quot;email&quot;: &quot;admin1@gmail.com&quot;,
         &quot;role&quot;: &quot;user&quot;,
-        &quot;gender&quot;: &quot;other&quot;,
-        &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/006611?text=people+dolores&quot;,
+        &quot;gender&quot;: null,
+        &quot;avatar&quot;: null,
         &quot;backdrop&quot;: null,
-        &quot;description&quot;: &quot;Consectetur sint tempore cupiditate ipsa in doloribus. Nobis quas nulla et modi numquam.&quot;,
-        &quot;birthday&quot;: &quot;2006-03-22&quot;,
+        &quot;description&quot;: null,
+        &quot;birthday&quot;: null,
         &quot;allow_adult&quot;: false,
-        &quot;is_auto_next&quot;: true,
-        &quot;is_auto_play&quot;: true,
+        &quot;is_auto_next&quot;: false,
+        &quot;is_auto_play&quot;: false,
         &quot;is_auto_skip_intro&quot;: false,
         &quot;is_private_favorites&quot;: false,
         &quot;is_banned&quot;: false,
-        &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-        &quot;last_seen_at&quot;: &quot;2025-04-28T05:54:52.000000Z&quot;,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-        &quot;age&quot;: 19,
-        &quot;is_online&quot;: false,
-        &quot;formatted_last_seen&quot;: &quot;28.04.2025 05:54&quot;
+        &quot;email_verified_at&quot;: null,
+        &quot;last_seen_at&quot;: null,
+        &quot;created_at&quot;: &quot;2025-05-16T20:59:11.000000Z&quot;,
+        &quot;updated_at&quot;: &quot;2025-05-16T20:59:11.000000Z&quot;
     }
 }</code>
  </pre>
@@ -9252,10 +11911,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-users--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                     </form>
 
@@ -9272,14 +11931,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/user-lists?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=watching&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
+    --get "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/user-lists?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=favorite&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/user-lists"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/user-lists"
 );
 
 const params = {
@@ -9289,7 +11948,7 @@ const params = {
     "sort": "created_at",
     "direction": "desc",
     "user_id": "",
-    "types[0]": "watching",
+    "types[0]": "favorite",
     "listable_type": "App\Models\Movie",
     "listable_id": "",
 };
@@ -9318,8 +11977,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -9414,10 +12072,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-users--user_id--user-lists"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -9544,14 +12202,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings" \
+    --get "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings"
 );
 
 const headers = {
@@ -9576,49 +12234,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: &quot;01jtzynzj80s0jm8zvq8wqw41z&quot;,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzbe90kx3jrtn85fem5c&quot;,
-            &quot;number&quot;: 3,
-            &quot;review&quot;: &quot;&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzmjpj7xv1psfq6sjrx0&quot;,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzb9rcepv6zw6d78qbcb&quot;,
-            &quot;number&quot;: 7,
-            &quot;review&quot;: &quot;Quod aut inventore in tempora. Ut nihil nobis esse in mollitia optio voluptas velit.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzynzr14h3bweqce24sphxd&quot;,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;movie_id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;number&quot;: 6,
-            &quot;review&quot;: &quot;Voluptatem omnis voluptatem necessitatibus blanditiis harum dolores modi vitae. Quaerat numquam nesciunt eos dolore maiores enim aut. Illum sequi et et dignissimos consequatur possimus.&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;
-        }
-    ],
+    &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
-        &quot;from&quot;: 1,
+        &quot;from&quot;: null,
         &quot;last_page&quot;: 1,
         &quot;links&quot;: [
             {
@@ -9627,7 +12256,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -9637,10 +12266,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/ratings&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/ratings&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 3,
-        &quot;total&quot;: 3
+        &quot;to&quot;: null,
+        &quot;total&quot;: 0
     }
 }</code>
  </pre>
@@ -9721,10 +12350,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-users--user_id--ratings"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                     </form>
 
@@ -9741,14 +12370,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments" \
+    --get "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments"
 );
 
 const headers = {
@@ -9773,165 +12402,20 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: &quot;01jtzyp15zywtk5jdqnzrcsexw&quot;,
-            &quot;body&quot;: &quot;Aliquid molestiae vitae et omnis corporis. Itaque laudantium ut recusandae sequi dolor sed. Velit modi possimus ut consequuntur.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzay6rvtkg6akrwycmx4&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp160jxkb9x8xe26q89gj&quot;,
-            &quot;body&quot;: &quot;Dolor quia voluptas velit est. Suscipit aut quaerat culpa. Voluptas quidem facere expedita autem aut autem ut.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzay6rvtkg6akrwycmx4&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp160jxkb9x8xe26q89gk&quot;,
-            &quot;body&quot;: &quot;Perspiciatis est autem voluptatibus natus. Rerum laudantium iusto non rerum enim animi. Eos distinctio excepturi dicta.&quot;,
-            &quot;is_spoiler&quot;: true,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzay6rvtkg6akrwycmx4&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp161djr3tgyehxq3r3wm&quot;,
-            &quot;body&quot;: &quot;Ex laborum sint et quis voluptas ratione praesentium officia. Impedit corrupti dicta qui. Atque illo quaerat aut eos et eum modi. Quo blanditiis cupiditate sit.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzay6rvtkg6akrwycmx4&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp16y7yv0hg92grfepyrw&quot;,
-            &quot;body&quot;: &quot;Ullam et et quo. Recusandae est placeat esse molestiae aperiam. Ut omnis repudiandae ea ut earum perferendis quia illum. Ab quos molestiae aspernatur. Molestias consequatur tenetur officia corrupti doloribus ullam.&quot;,
-            &quot;is_spoiler&quot;: true,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzb5cfq6gv1sg8dz8kf5&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp179r8zyga5pgdf43raw&quot;,
-            &quot;body&quot;: &quot;Doloremque nostrum asperiores ut rerum corrupti voluptatem repellat. Rerum et tempore ut ea nobis.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzb8xkhqg40xp9gt01p2&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp19f19m8325cpffhpkcy&quot;,
-            &quot;body&quot;: &quot;Aspernatur ab rerum nostrum sint doloribus ratione reiciendis. Delectus sed error nam quo voluptatem a. Consequatur velit ipsam maxime. Consectetur nulla delectus quia perspiciatis hic.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzttfpm79kddtg3pkw5c&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp19gct0wp1rrk0hw9tcm&quot;,
-            &quot;body&quot;: &quot;Beatae incidunt rerum in enim distinctio consequatur quidem. Quasi ex reprehenderit voluptatibus. Minus eos fugit veritatis rerum.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzttfpm79kddtg3pkw5c&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1mem63h74s5sfdwhtgr&quot;,
-            &quot;body&quot;: &quot;Voluptas magnam perferendis nihil aliquam architecto consectetur eligendi laboriosam. Vero iure est animi modi sit molestiae.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Selection&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp05g2sjea4j4f9kfsypg&quot;,
-            &quot;commentable_type_label&quot;: &quot;Підбірка&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1mghka2zfqwef9q3cbr&quot;,
-            &quot;body&quot;: &quot;Animi ab atque praesentium consectetur earum dicta. Deserunt qui quo ut quae neque asperiores pariatur sit.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Selection&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp05g2sjea4j4f9kfsypg&quot;,
-            &quot;commentable_type_label&quot;: &quot;Підбірка&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1r5x1wtchb3z2a9yh14&quot;,
-            &quot;body&quot;: &quot;Nihil ex odio ullam excepturi fugit. Laboriosam tempora tempora sunt repellendus. Ex qui qui non aperiam sint id a. Quia saepe magni dolor enim dolorem ea est.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: true,
-            &quot;parent_id&quot;: &quot;01jtzyp16g5y0cg2e64r7kj8bx&quot;,
-            &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzb3hmppzaw7errx536f&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        }
-    ],
+    &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
     &quot;meta&quot;: {
         &quot;current_page&quot;: 1,
-        &quot;from&quot;: 1,
+        &quot;from&quot;: null,
         &quot;last_page&quot;: 1,
         &quot;links&quot;: [
             {
@@ -9940,7 +12424,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -9950,10 +12434,10 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/comments&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/comments&quot;,
         &quot;per_page&quot;: 15,
-        &quot;to&quot;: 11,
-        &quot;total&quot;: 11
+        &quot;to&quot;: null,
+        &quot;total&quot;: 0
     }
 }</code>
  </pre>
@@ -10034,10 +12518,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-users--user_id--comments"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                     </form>
 
@@ -10054,14 +12538,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-lists?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=not_watching&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
+    --get "http://127.0.0.1:8000/api/v1/user-lists?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=planned&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-lists"
+    "http://127.0.0.1:8000/api/v1/user-lists"
 );
 
 const params = {
@@ -10071,7 +12555,7 @@ const params = {
     "sort": "created_at",
     "direction": "desc",
     "user_id": "",
-    "types[0]": "not_watching",
+    "types[0]": "planned",
     "listable_type": "App\Models\Movie",
     "listable_id": "",
 };
@@ -10100,8 +12584,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10314,14 +12797,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-lists/01jtzyp0cwct50984sxvzeagjr" \
+    --get "http://127.0.0.1:8000/api/v1/user-lists/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-lists/01jtzyp0cwct50984sxvzeagjr"
+    "http://127.0.0.1:8000/api/v1/user-lists/architecto"
 );
 
 const headers = {
@@ -10338,7 +12821,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-user-lists--userList_id-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -10346,69 +12829,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyp0cwct50984sxvzeagjr&quot;,
-        &quot;user_id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-        &quot;type&quot;: &quot;favorite&quot;,
-        &quot;listable_type&quot;: &quot;App\\Models\\Movie&quot;,
-        &quot;listable_id&quot;: &quot;01jtzynzbcg2sbaqsqb7mpsgsf&quot;,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:11.000000Z&quot;,
-        &quot;user&quot;: {
-            &quot;id&quot;: &quot;01jtzynww0da7ybsp8m063acmc&quot;,
-            &quot;name&quot;: &quot;kravcuk.anna&quot;,
-            &quot;email&quot;: &quot;maksim55@example.net&quot;,
-            &quot;role&quot;: &quot;user&quot;,
-            &quot;gender&quot;: &quot;other&quot;,
-            &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/006611?text=people+dolores&quot;,
-            &quot;backdrop&quot;: null,
-            &quot;description&quot;: &quot;Consectetur sint tempore cupiditate ipsa in doloribus. Nobis quas nulla et modi numquam.&quot;,
-            &quot;birthday&quot;: &quot;2006-03-22&quot;,
-            &quot;allow_adult&quot;: false,
-            &quot;is_auto_next&quot;: true,
-            &quot;is_auto_play&quot;: true,
-            &quot;is_auto_skip_intro&quot;: false,
-            &quot;is_private_favorites&quot;: false,
-            &quot;is_banned&quot;: false,
-            &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-            &quot;last_seen_at&quot;: &quot;2025-04-28T05:54:52.000000Z&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;age&quot;: 19,
-            &quot;is_online&quot;: false,
-            &quot;formatted_last_seen&quot;: &quot;28.04.2025 05:54&quot;
-        },
-        &quot;listable&quot;: {
-            &quot;id&quot;: &quot;01jtzynzbcg2sbaqsqb7mpsgsf&quot;,
-            &quot;name&quot;: &quot;Accusamus vero beatae veniam.&quot;,
-            &quot;slug&quot;: &quot;accusamus-vero-beatae-veniam-ypuvcq&quot;,
-            &quot;description&quot;: &quot;Aliquam id ut in. Laborum rerum doloremque eos suscipit tenetur. Aliquid fuga placeat quasi alias saepe perferendis omnis. Omnis ipsa doloribus officia ipsa modi enim id.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/003300?text=movies+Movie+Poster+quos&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/0022ee?text=movies+Poster+nihil&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;anons&quot;,
-            &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 9,
-            &quot;aliases&quot;: [
-                &quot;aut&quot;,
-                &quot;qui&quot;,
-                &quot;id&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;FR&quot;,
-                &quot;US&quot;
-            ],
-            &quot;average_rating&quot;: 5.8,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        }
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\UserList] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -10488,10 +12913,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="userList_id"                data-endpoint="GETapi-v1-user-lists--userList_id-"
-               value="01jtzyp0cwct50984sxvzeagjr"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the userList. Example: <code>01jtzyp0cwct50984sxvzeagjr</code></p>
+<p>The ID of the userList. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -10508,14 +12933,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-lists/type/favorite, watching?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=stopped&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
+    --get "http://127.0.0.1:8000/api/v1/user-lists/type/favorite, watching?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;user_id=&amp;types[]=not_watching&amp;listable_type=App%5CModels%5CMovie&amp;listable_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-lists/type/favorite, watching"
+    "http://127.0.0.1:8000/api/v1/user-lists/type/favorite, watching"
 );
 
 const params = {
@@ -10525,7 +12950,7 @@ const params = {
     "sort": "created_at",
     "direction": "desc",
     "user_id": "",
-    "types[0]": "stopped",
+    "types[0]": "not_watching",
     "listable_type": "App\Models\Movie",
     "listable_id": "",
 };
@@ -10554,8 +12979,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10780,14 +13204,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/ratings?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
+    --get "http://127.0.0.1:8000/api/v1/ratings?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings"
+    "http://127.0.0.1:8000/api/v1/ratings"
 );
 
 const params = {
@@ -10827,8 +13251,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -11053,14 +13476,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x" \
+    --get "http://127.0.0.1:8000/api/v1/ratings/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x"
+    "http://127.0.0.1:8000/api/v1/ratings/architecto"
 );
 
 const headers = {
@@ -11077,7 +13500,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-ratings--rating_id-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -11085,69 +13508,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzynzhj72x1a5wzkwctfz1x&quot;,
-        &quot;user_id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-        &quot;movie_id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-        &quot;number&quot;: 6,
-        &quot;review&quot;: &quot;Maxime ut vitae reiciendis non aut quia. Voluptas illo explicabo consequatur.&quot;,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-        &quot;user&quot;: {
-            &quot;id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-            &quot;name&quot;: &quot;oleg.sevcenko&quot;,
-            &quot;email&quot;: &quot;vasilenko.viktor@example.com&quot;,
-            &quot;role&quot;: &quot;user&quot;,
-            &quot;gender&quot;: null,
-            &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/007700?text=people+neque&quot;,
-            &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/00eecc?text=abstract+suscipit&quot;,
-            &quot;description&quot;: null,
-            &quot;birthday&quot;: &quot;1986-11-27&quot;,
-            &quot;allow_adult&quot;: false,
-            &quot;is_auto_next&quot;: true,
-            &quot;is_auto_play&quot;: true,
-            &quot;is_auto_skip_intro&quot;: true,
-            &quot;is_private_favorites&quot;: false,
-            &quot;is_banned&quot;: false,
-            &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-            &quot;last_seen_at&quot;: &quot;2025-05-03T09:20:28.000000Z&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;age&quot;: 38,
-            &quot;is_online&quot;: false,
-            &quot;formatted_last_seen&quot;: &quot;03.05.2025 09:20&quot;
-        },
-        &quot;movie&quot;: {
-            &quot;id&quot;: &quot;01jtzynzakqg2qc0zhqkafvzb5&quot;,
-            &quot;name&quot;: &quot;Commodi exercitationem sed.&quot;,
-            &quot;slug&quot;: &quot;commodi-exercitationem-sed-mq0ndl&quot;,
-            &quot;description&quot;: &quot;Ut sed consequatur fugiat natus occaecati. Ex eaque repudiandae repellat sit sint laboriosam maxime. Ullam quasi magnam dolorum nobis doloremque sit. Quam provident ad quo quis exercitationem quis modi.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/009944?text=movies+Movie+Poster+culpa&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00ccdd?text=movies+Poster+adipisci&quot;,
-            &quot;kind&quot;: &quot;tv_series&quot;,
-            &quot;status&quot;: &quot;canceled&quot;,
-            &quot;release_year&quot;: &quot;2016&quot;,
-            &quot;imdb_score&quot;: 9.41,
-            &quot;aliases&quot;: [
-                &quot;animi&quot;,
-                &quot;aut&quot;,
-                &quot;distinctio&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;DE&quot;
-            ],
-            &quot;episodes_count&quot;: null,
-            &quot;average_rating&quot;: 5,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        }
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\Rating] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -11227,10 +13592,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="rating_id"                data-endpoint="GETapi-v1-ratings--rating_id-"
-               value="01jtzynzhj72x1a5wzkwctfz1x"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the rating. Example: <code>01jtzynzhj72x1a5wzkwctfz1x</code></p>
+<p>The ID of the rating. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -11247,14 +13612,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/ratings/user/01jtzynww0da7ybsp8m063acmc?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
+    --get "http://127.0.0.1:8000/api/v1/ratings/user/01jvde9n700fbrzvbd4b4aznmj?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings/user/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/ratings/user/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const params = {
@@ -11294,8 +13659,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -11387,10 +13751,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-ratings-user--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -11532,14 +13896,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/ratings/movie/omnis-id-quaerat-soluta-oiduow?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
+    --get "http://127.0.0.1:8000/api/v1/ratings/movie/ofis-3?q=%D0%A7%D1%83%D0%B4%D0%BE%D0%B2%D0%B8%D0%B9+%D1%84%D1%96%D0%BB%D1%8C%D0%BC&amp;page=1&amp;per_page=15&amp;sort=number&amp;direction=desc&amp;user_id=&amp;movie_id=&amp;min_rating=1&amp;max_rating=10&amp;has_review=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings/movie/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/ratings/movie/ofis-3"
 );
 
 const params = {
@@ -11579,8 +13943,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -11672,10 +14035,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-ratings-movie--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -11817,14 +14180,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comment-likes?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/comment-likes?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes"
+    "http://127.0.0.1:8000/api/v1/comment-likes"
 );
 
 const params = {
@@ -11861,8 +14224,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -12054,14 +14416,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj" \
+    --get "http://127.0.0.1:8000/api/v1/comment-likes/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj"
+    "http://127.0.0.1:8000/api/v1/comment-likes/architecto"
 );
 
 const headers = {
@@ -12078,7 +14440,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-comment-likes--commentLike_id-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -12086,56 +14448,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyp1s8bwhfx5p2fzsyymmj&quot;,
-        &quot;user_id&quot;: &quot;01jtzynwxvtkwx1z28pfvf04vj&quot;,
-        &quot;comment_id&quot;: &quot;01jtzyp12fb2k0by6vv4j1dh1e&quot;,
-        &quot;is_liked&quot;: true,
-        &quot;user&quot;: {
-            &quot;id&quot;: &quot;01jtzynwxvtkwx1z28pfvf04vj&quot;,
-            &quot;name&quot;: &quot;anna80&quot;,
-            &quot;email&quot;: &quot;larisa.bodnarenko@example.org&quot;,
-            &quot;role&quot;: &quot;user&quot;,
-            &quot;gender&quot;: &quot;female&quot;,
-            &quot;avatar&quot;: null,
-            &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/004411?text=abstract+autem&quot;,
-            &quot;description&quot;: null,
-            &quot;birthday&quot;: &quot;2002-08-20&quot;,
-            &quot;allow_adult&quot;: false,
-            &quot;is_auto_next&quot;: true,
-            &quot;is_auto_play&quot;: false,
-            &quot;is_auto_skip_intro&quot;: true,
-            &quot;is_private_favorites&quot;: false,
-            &quot;is_banned&quot;: false,
-            &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-            &quot;last_seen_at&quot;: &quot;2025-04-17T08:21:49.000000Z&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;age&quot;: 22,
-            &quot;is_online&quot;: false,
-            &quot;formatted_last_seen&quot;: &quot;17.04.2025 08:21&quot;
-        },
-        &quot;comment&quot;: {
-            &quot;id&quot;: &quot;01jtzyp12fb2k0by6vv4j1dh1e&quot;,
-            &quot;body&quot;: &quot;Praesentium qui hic possimus doloribus sint voluptate aut. Aut sed distinctio soluta at.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-        },
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\CommentLike] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -12215,10 +14532,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentLike_id"                data-endpoint="GETapi-v1-comment-likes--commentLike_id-"
-               value="01jtzyp1s8bwhfx5p2fzsyymmj"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentLike. Example: <code>01jtzyp1s8bwhfx5p2fzsyymmj</code></p>
+<p>The ID of the commentLike. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -12235,14 +14552,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comment-likes/comment/01jtzyp12fb2k0by6vv4j1dh1e?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/comment-likes/comment/architecto?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes/comment/01jtzyp12fb2k0by6vv4j1dh1e"
+    "http://127.0.0.1:8000/api/v1/comment-likes/comment/architecto"
 );
 
 const params = {
@@ -12271,7 +14588,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-comment-likes-comment--comment_id-">
             <blockquote>
-            <p>Example response (422):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -12279,20 +14596,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Поле comment id повинне містити текст. (та ще 1 помилка)&quot;,
-    &quot;errors&quot;: {
-        &quot;comment_id&quot;: [
-            &quot;Поле comment id повинне містити текст.&quot;
-        ],
-        &quot;user_id&quot;: [
-            &quot;Поле user id повинне містити текст.&quot;
-        ]
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\Comment] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -12372,10 +14680,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="GETapi-v1-comment-likes-comment--comment_id-"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -12484,14 +14792,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/tariffs?q=%D0%9F%D1%80%D0%B5%D0%BC%D1%96%D1%83%D0%BC&amp;is_active=&amp;currency=UAH&amp;min_price=100&amp;max_price=500&amp;duration_days=30&amp;page=1&amp;per_page=15&amp;sort=price&amp;direction=asc" \
+    --get "http://127.0.0.1:8000/api/v1/tariffs?q=%D0%9F%D1%80%D0%B5%D0%BC%D1%96%D1%83%D0%BC&amp;is_active=&amp;currency=UAH&amp;min_price=100&amp;max_price=500&amp;duration_days=30&amp;page=1&amp;per_page=15&amp;sort=price&amp;direction=asc" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/tariffs"
+    "http://127.0.0.1:8000/api/v1/tariffs"
 );
 
 const params = {
@@ -12531,15 +14839,14 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [],
     &quot;links&quot;: {
-        &quot;first&quot;: &quot;https://netflix-api.test/api/v1/tariffs?page=1&quot;,
-        &quot;last&quot;: &quot;https://netflix-api.test/api/v1/tariffs?page=1&quot;,
+        &quot;first&quot;: &quot;http://127.0.0.1:8000/api/v1/tariffs?page=1&quot;,
+        &quot;last&quot;: &quot;http://127.0.0.1:8000/api/v1/tariffs?page=1&quot;,
         &quot;prev&quot;: null,
         &quot;next&quot;: null
     },
@@ -12554,7 +14861,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             },
             {
-                &quot;url&quot;: &quot;https://netflix-api.test/api/v1/tariffs?page=1&quot;,
+                &quot;url&quot;: &quot;http://127.0.0.1:8000/api/v1/tariffs?page=1&quot;,
                 &quot;label&quot;: &quot;1&quot;,
                 &quot;active&quot;: true
             },
@@ -12564,7 +14871,7 @@ access-control-allow-credentials: true
                 &quot;active&quot;: false
             }
         ],
-        &quot;path&quot;: &quot;https://netflix-api.test/api/v1/tariffs&quot;,
+        &quot;path&quot;: &quot;http://127.0.0.1:8000/api/v1/tariffs&quot;,
         &quot;per_page&quot;: 15,
         &quot;to&quot;: null,
         &quot;total&quot;: 0
@@ -12781,14 +15088,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/tariffs/basic" \
+    --get "http://127.0.0.1:8000/api/v1/tariffs/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/tariffs/basic"
+    "http://127.0.0.1:8000/api/v1/tariffs/architecto"
 );
 
 const headers = {
@@ -12805,7 +15112,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-tariffs--tariff_slug-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -12813,32 +15120,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyp57xq538fqmm6bg1p00m&quot;,
-        &quot;name&quot;: &quot;Базовий&quot;,
-        &quot;description&quot;: &quot;Базовий тариф з доступом до основного контенту в HD якості.&quot;,
-        &quot;price&quot;: &quot;99.00&quot;,
-        &quot;currency&quot;: &quot;UAH&quot;,
-        &quot;duration_days&quot;: 30,
-        &quot;features&quot;: [
-            &quot;HD якість&quot;,
-            &quot;Доступ до основного контенту&quot;,
-            &quot;Перегляд на одному пристрої&quot;
-        ],
-        &quot;is_active&quot;: true,
-        &quot;slug&quot;: &quot;basic&quot;,
-        &quot;meta_title&quot;: &quot;Базовий тариф | Netflix&quot;,
-        &quot;meta_description&quot;: &quot;Базовий тариф з доступом до основного контенту в HD якості.&quot;,
-        &quot;meta_image&quot;: &quot;https://via.placeholder.com/1200x630.png/006600?text=tempora&quot;,
-        &quot;user_subscriptions_count&quot;: 4,
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:16.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:16.000000Z&quot;
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\Tariff] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -12918,10 +15204,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tariff_slug"                data-endpoint="GETapi-v1-tariffs--tariff_slug-"
-               value="basic"
+               value="architecto"
                data-component="url">
     <br>
-<p>The slug of the tariff. Example: <code>basic</code></p>
+<p>The slug of the tariff. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -12938,14 +15224,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments/recent" \
+    --get "http://127.0.0.1:8000/api/v1/comments/recent" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/recent"
+    "http://127.0.0.1:8000/api/v1/comments/recent"
 );
 
 const headers = {
@@ -12970,390 +15256,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: &quot;01jv04wft1px9jdwh76hcmtvzr&quot;,
-            &quot;body&quot;: &quot;Оновлений коментар: фільм дійсно чудовий, рекомендую всім!&quot;,
-            &quot;is_spoiler&quot;: true,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynxhgbynqvpjkxhffg3ag&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzynzas24nvkvsq0ne1vzbh&quot;,
-            &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-            &quot;likes_count&quot;: 0,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynxhgbynqvpjkxhffg3ag&quot;,
-                &quot;name&quot;: &quot;admin&quot;,
-                &quot;email&quot;: &quot;admin@gmail.com&quot;,
-                &quot;role&quot;: &quot;admin&quot;,
-                &quot;gender&quot;: &quot;male&quot;,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/002200?text=people+occaecati&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/00dd99?text=abstract+odit&quot;,
-                &quot;description&quot;: &quot;Eos expedita eos et eaque. Recusandae eum rem aut animi necessitatibus exercitationem. Quibusdam non nihil ut perspiciatis aut.&quot;,
-                &quot;birthday&quot;: null,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: true,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-03T22:39:29.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;03.05.2025 22:39&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T17:04:35.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T17:05:23.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jxg2p3e33vb1v3r0e3&quot;,
-            &quot;body&quot;: &quot;Iusto numquam sit omnis est aut ullam unde. Atque labore ullam nulla.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03ps5enm87dzq9h3med&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 19,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-                &quot;name&quot;: &quot;panasuk.svitlana&quot;,
-                &quot;email&quot;: &quot;sbrovarcuk@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/00ddaa?text=people+dignissimos&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/005500?text=abstract+odio&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1976-06-17&quot;,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-01T16:48:16.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 48,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;01.05.2025 16:48&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1j8k37dyaneka1vmx3p&quot;,
-            &quot;body&quot;: &quot;Vero autem incidunt veniam nam deserunt. Illum magni aut ut at iste ut deserunt. Repellendus est libero quo et officia laborum est.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp032fzqe5d7kfz2gxc4b&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 19,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-                &quot;name&quot;: &quot;oleg.sevcenko&quot;,
-                &quot;email&quot;: &quot;vasilenko.viktor@example.com&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/007700?text=people+neque&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/00eecc?text=abstract+suscipit&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1986-11-27&quot;,
-                &quot;allow_adult&quot;: false,
-                &quot;is_auto_next&quot;: true,
-                &quot;is_auto_play&quot;: true,
-                &quot;is_auto_skip_intro&quot;: true,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-03T09:20:28.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 38,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;03.05.2025 09:20&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jswq2nqjcvg4r4ymts&quot;,
-            &quot;body&quot;: &quot;Minus quam soluta assumenda consequatur odio. Nostrum reiciendis quia non voluptatem.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03ps5enm87dzq9h3med&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 18,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-                &quot;name&quot;: &quot;panasuk.svitlana&quot;,
-                &quot;email&quot;: &quot;sbrovarcuk@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/00ddaa?text=people+dignissimos&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/005500?text=abstract+odio&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1976-06-17&quot;,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-01T16:48:16.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 48,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;01.05.2025 16:48&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jvf2xxkwyk3p3y3gtw&quot;,
-            &quot;body&quot;: &quot;Maxime voluptatem aspernatur reiciendis eum quas. Voluptatum atque debitis corporis aperiam qui est neque.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03ps5enm87dzq9h3med&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 8,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-                &quot;name&quot;: &quot;panasuk.svitlana&quot;,
-                &quot;email&quot;: &quot;sbrovarcuk@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/00ddaa?text=people+dignissimos&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/005500?text=abstract+odio&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1976-06-17&quot;,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-01T16:48:16.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 48,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;01.05.2025 16:48&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jw77t1n0g5b6shm9kt&quot;,
-            &quot;body&quot;: &quot;Consequuntur sint blanditiis modi quia eaque tempore tempore. Incidunt ut quia aperiam sit non excepturi dolore.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03ps5enm87dzq9h3med&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 15,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-                &quot;name&quot;: &quot;panasuk.svitlana&quot;,
-                &quot;email&quot;: &quot;sbrovarcuk@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/00ddaa?text=people+dignissimos&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/005500?text=abstract+odio&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1976-06-17&quot;,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-01T16:48:16.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 48,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;01.05.2025 16:48&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jfzd4g512hd8v82cnc&quot;,
-            &quot;body&quot;: &quot;Sit ea perspiciatis accusamus magni deserunt veritatis ducimus. Suscipit libero quibusdam eum cum tempora. Occaecati amet qui provident vel est. Ipsum voluptatem omnis autem voluptatem porro officiis.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03fzf577att4q93tsjv&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 13,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-                &quot;name&quot;: &quot;oleg.sevcenko&quot;,
-                &quot;email&quot;: &quot;vasilenko.viktor@example.com&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/007700?text=people+neque&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/00eecc?text=abstract+suscipit&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1986-11-27&quot;,
-                &quot;allow_adult&quot;: false,
-                &quot;is_auto_next&quot;: true,
-                &quot;is_auto_play&quot;: true,
-                &quot;is_auto_skip_intro&quot;: true,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-03T09:20:28.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 38,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;03.05.2025 09:20&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jb0xywrn0g0wdt53v2&quot;,
-            &quot;body&quot;: &quot;Placeat quasi voluptas quia illo. Illum nobis repellat autem consequatur omnis dignissimos perspiciatis voluptas. Rerum voluptatem id odio sit deserunt qui ut. Amet assumenda dolorum deserunt.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwwym68b7n5d1td1venq&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp0389bncdr90846yaw9x&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 19,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwwym68b7n5d1td1venq&quot;,
-                &quot;name&quot;: &quot;sinkarenko.lev&quot;,
-                &quot;email&quot;: &quot;alla77@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: &quot;other&quot;,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/007788?text=people+sunt&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/004466?text=abstract+voluptatibus&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1991-02-10&quot;,
-                &quot;allow_adult&quot;: false,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: true,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:06.000000Z&quot;,
-                &quot;last_seen_at&quot;: null,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 34
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jgy4d5zfgdzxrdv4sv&quot;,
-            &quot;body&quot;: &quot;Est magni voluptatem illo doloremque aut harum dolorem. Ut eum sit voluptas modi veritatis ad.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03fzf577att4q93tsjv&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 14,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynww8kpwpcv52yhje5r5j&quot;,
-                &quot;name&quot;: &quot;oleg.sevcenko&quot;,
-                &quot;email&quot;: &quot;vasilenko.viktor@example.com&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/007700?text=people+neque&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/00eecc?text=abstract+suscipit&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1986-11-27&quot;,
-                &quot;allow_adult&quot;: false,
-                &quot;is_auto_next&quot;: true,
-                &quot;is_auto_play&quot;: true,
-                &quot;is_auto_skip_intro&quot;: true,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-03T09:20:28.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 38,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;03.05.2025 09:20&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: &quot;01jtzyp1jtyjee9vn9b9m53arj&quot;,
-            &quot;body&quot;: &quot;Accusamus sint fugit fuga laboriosam totam. Alias quam est molestiae enim velit minima eaque.&quot;,
-            &quot;is_spoiler&quot;: false,
-            &quot;is_reply&quot;: false,
-            &quot;parent_id&quot;: null,
-            &quot;user_id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-            &quot;commentable_type&quot;: &quot;App\\Models\\Episode&quot;,
-            &quot;commentable_id&quot;: &quot;01jtzyp03ps5enm87dzq9h3med&quot;,
-            &quot;commentable_type_label&quot;: &quot;Епізод&quot;,
-            &quot;likes_count&quot;: 16,
-            &quot;user&quot;: {
-                &quot;id&quot;: &quot;01jtzynwxgbskzj6h3q72qmdsg&quot;,
-                &quot;name&quot;: &quot;panasuk.svitlana&quot;,
-                &quot;email&quot;: &quot;sbrovarcuk@example.net&quot;,
-                &quot;role&quot;: &quot;user&quot;,
-                &quot;gender&quot;: null,
-                &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/00ddaa?text=people+dignissimos&quot;,
-                &quot;backdrop&quot;: &quot;https://via.placeholder.com/1920x1080.png/005500?text=abstract+odio&quot;,
-                &quot;description&quot;: null,
-                &quot;birthday&quot;: &quot;1976-06-17&quot;,
-                &quot;allow_adult&quot;: true,
-                &quot;is_auto_next&quot;: false,
-                &quot;is_auto_play&quot;: false,
-                &quot;is_auto_skip_intro&quot;: false,
-                &quot;is_private_favorites&quot;: false,
-                &quot;is_banned&quot;: false,
-                &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:07.000000Z&quot;,
-                &quot;last_seen_at&quot;: &quot;2025-05-01T16:48:16.000000Z&quot;,
-                &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-                &quot;age&quot;: 48,
-                &quot;is_online&quot;: false,
-                &quot;formatted_last_seen&quot;: &quot;01.05.2025 16:48&quot;
-            },
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:13.000000Z&quot;
-        }
-    ]
+    &quot;data&quot;: []
 }</code>
  </pre>
     </span>
@@ -13441,14 +15348,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments/roots/movie, episode, selection/01HN5PXMEH6SDMF0KAVSW1DYTY?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
+    --get "http://127.0.0.1:8000/api/v1/comments/roots/movie, episode, selection/01HN5PXMEH6SDMF0KAVSW1DYTY?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/roots/movie, episode, selection/01HN5PXMEH6SDMF0KAVSW1DYTY"
+    "http://127.0.0.1:8000/api/v1/comments/roots/movie, episode, selection/01HN5PXMEH6SDMF0KAVSW1DYTY"
 );
 
 const params = {
@@ -13489,8 +15396,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -13767,14 +15673,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
+    --get "http://127.0.0.1:8000/api/v1/comments?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments"
+    "http://127.0.0.1:8000/api/v1/comments"
 );
 
 const params = {
@@ -13815,8 +15721,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -14070,14 +15975,14 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e" \
+    --get "http://127.0.0.1:8000/api/v1/comments/architecto" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e"
+    "http://127.0.0.1:8000/api/v1/comments/architecto"
 );
 
 const headers = {
@@ -14094,7 +15999,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-comments--comment_id-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -14102,75 +16007,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: &quot;01jtzyp12fb2k0by6vv4j1dh1e&quot;,
-        &quot;body&quot;: &quot;Praesentium qui hic possimus doloribus sint voluptate aut. Aut sed distinctio soluta at.&quot;,
-        &quot;is_spoiler&quot;: false,
-        &quot;is_reply&quot;: false,
-        &quot;parent_id&quot;: null,
-        &quot;user_id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-        &quot;commentable_type&quot;: &quot;App\\Models\\Movie&quot;,
-        &quot;commentable_id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-        &quot;commentable_type_label&quot;: &quot;Фільм&quot;,
-        &quot;likes_count&quot;: 11,
-        &quot;replies_count&quot;: 0,
-        &quot;user&quot;: {
-            &quot;id&quot;: &quot;01jtzynww5k8wqjz5jd13jn6eh&quot;,
-            &quot;name&quot;: &quot;pavluk.anastasia&quot;,
-            &quot;email&quot;: &quot;wkravcenko@example.org&quot;,
-            &quot;role&quot;: &quot;user&quot;,
-            &quot;gender&quot;: &quot;other&quot;,
-            &quot;avatar&quot;: &quot;https://via.placeholder.com/300x300.png/0022ee?text=people+non&quot;,
-            &quot;backdrop&quot;: null,
-            &quot;description&quot;: null,
-            &quot;birthday&quot;: &quot;1989-04-01&quot;,
-            &quot;allow_adult&quot;: false,
-            &quot;is_auto_next&quot;: true,
-            &quot;is_auto_play&quot;: true,
-            &quot;is_auto_skip_intro&quot;: false,
-            &quot;is_private_favorites&quot;: false,
-            &quot;is_banned&quot;: false,
-            &quot;email_verified_at&quot;: &quot;2025-05-11T15:16:04.000000Z&quot;,
-            &quot;last_seen_at&quot;: &quot;2025-04-22T13:53:16.000000Z&quot;,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:08.000000Z&quot;,
-            &quot;age&quot;: 36,
-            &quot;is_online&quot;: false,
-            &quot;formatted_last_seen&quot;: &quot;22.04.2025 13:53&quot;
-        },
-        &quot;parent&quot;: null,
-        &quot;commentable&quot;: {
-            &quot;id&quot;: &quot;01jtzynza8g6wpnaddm53y3wyy&quot;,
-            &quot;name&quot;: &quot;Omnis id quaerat soluta.&quot;,
-            &quot;slug&quot;: &quot;omnis-id-quaerat-soluta-oiduow&quot;,
-            &quot;description&quot;: &quot;Modi fugit quidem nisi qui. Quis alias sunt magnam qui ea. Facere veritatis eos natus eos dolor sint eveniet. Consequatur est eaque quod quo dolor ab magnam dolor. Numquam porro ut sed et architecto praesentium in.&quot;,
-            &quot;image_name&quot;: &quot;https://via.placeholder.com/640x480.png/0099bb?text=movies+Movie+Poster+id&quot;,
-            &quot;poster&quot;: &quot;https://via.placeholder.com/300x450.png/00bb66?text=movies+Poster+sed&quot;,
-            &quot;kind&quot;: &quot;movie&quot;,
-            &quot;status&quot;: &quot;anons&quot;,
-            &quot;release_year&quot;: &quot;2023&quot;,
-            &quot;imdb_score&quot;: 4.64,
-            &quot;aliases&quot;: [
-                &quot;laborum&quot;,
-                &quot;aut&quot;,
-                &quot;libero&quot;
-            ],
-            &quot;countries&quot;: [
-                &quot;UA&quot;
-            ],
-            &quot;average_rating&quot;: 5.7,
-            &quot;main_genre&quot;: null,
-            &quot;created_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;,
-            &quot;updated_at&quot;: &quot;2025-05-11T15:16:10.000000Z&quot;
-        },
-        &quot;created_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-05-11T15:16:12.000000Z&quot;
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\Comment] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -14250,10 +16091,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="GETapi-v1-comments--comment_id-"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -14270,14 +16111,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e/replies?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
+    --get "http://127.0.0.1:8000/api/v1/comments/architecto/replies?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e/replies"
+    "http://127.0.0.1:8000/api/v1/comments/architecto/replies"
 );
 
 const params = {
@@ -14310,7 +16151,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v1-comments--comment_id--replies">
             <blockquote>
-            <p>Example response (422):</p>
+            <p>Example response (404):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -14318,26 +16159,11 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Поле q повинне містити текст. (та ще 3 помилки)&quot;,
-    &quot;errors&quot;: {
-        &quot;q&quot;: [
-            &quot;Поле q повинне містити текст.&quot;
-        ],
-        &quot;user_id&quot;: [
-            &quot;Поле user id повинне містити текст.&quot;
-        ],
-        &quot;commentable_id&quot;: [
-            &quot;Поле commentable id повинне містити текст.&quot;
-        ],
-        &quot;parent_id&quot;: [
-            &quot;Поле parent id повинне містити текст.&quot;
-        ]
-    }
+    &quot;message&quot;: &quot;No query results for model [App\\Models\\Comment] architecto&quot;
 }</code>
  </pre>
     </span>
@@ -14417,10 +16243,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="GETapi-v1-comments--comment_id--replies"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -14585,7 +16411,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/kinds" \
+    --get "http://127.0.0.1:8000/api/v1/enums/kinds" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -14596,7 +16422,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/kinds"
+    "http://127.0.0.1:8000/api/v1/enums/kinds"
 );
 
 const headers = {
@@ -14626,8 +16452,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -14776,7 +16601,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/kinds/movie, tv_series, animated_movie, animated_series" \
+    --get "http://127.0.0.1:8000/api/v1/enums/kinds/movie, tv_series, animated_movie, animated_series" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -14787,7 +16612,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/kinds/movie, tv_series, animated_movie, animated_series"
+    "http://127.0.0.1:8000/api/v1/enums/kinds/movie, tv_series, animated_movie, animated_series"
 );
 
 const headers = {
@@ -14817,8 +16642,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -14936,7 +16760,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/statuses" \
+    --get "http://127.0.0.1:8000/api/v1/enums/statuses" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -14947,7 +16771,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/statuses"
+    "http://127.0.0.1:8000/api/v1/enums/statuses"
 );
 
 const headers = {
@@ -14977,8 +16801,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -15138,7 +16961,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/statuses/draft, published, deleted" \
+    --get "http://127.0.0.1:8000/api/v1/enums/statuses/draft, published, deleted" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -15149,7 +16972,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/statuses/draft, published, deleted"
+    "http://127.0.0.1:8000/api/v1/enums/statuses/draft, published, deleted"
 );
 
 const headers = {
@@ -15179,8 +17002,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -15298,7 +17120,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/person-types" \
+    --get "http://127.0.0.1:8000/api/v1/enums/person-types" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -15309,7 +17131,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/person-types"
+    "http://127.0.0.1:8000/api/v1/enums/person-types"
 );
 
 const headers = {
@@ -15339,8 +17161,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -15654,7 +17475,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/person-types/actor, director, writer" \
+    --get "http://127.0.0.1:8000/api/v1/enums/person-types/actor, director, writer" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -15665,7 +17486,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/person-types/actor, director, writer"
+    "http://127.0.0.1:8000/api/v1/enums/person-types/actor, director, writer"
 );
 
 const headers = {
@@ -15695,8 +17516,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -15814,7 +17634,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/user-list-types" \
+    --get "http://127.0.0.1:8000/api/v1/enums/user-list-types" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -15825,7 +17645,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/user-list-types"
+    "http://127.0.0.1:8000/api/v1/enums/user-list-types"
 );
 
 const headers = {
@@ -15855,8 +17675,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -16038,7 +17857,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/user-list-types/favorite, watching" \
+    --get "http://127.0.0.1:8000/api/v1/enums/user-list-types/favorite, watching" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16049,7 +17868,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/user-list-types/favorite, watching"
+    "http://127.0.0.1:8000/api/v1/enums/user-list-types/favorite, watching"
 );
 
 const headers = {
@@ -16079,8 +17898,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -16198,7 +18016,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/video-qualities" \
+    --get "http://127.0.0.1:8000/api/v1/enums/video-qualities" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16209,7 +18027,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/video-qualities"
+    "http://127.0.0.1:8000/api/v1/enums/video-qualities"
 );
 
 const headers = {
@@ -16239,8 +18057,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -16389,7 +18206,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/video-qualities/sd, hd, full_hd, uhd" \
+    --get "http://127.0.0.1:8000/api/v1/enums/video-qualities/sd, hd, full_hd, uhd" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16400,7 +18217,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/video-qualities/sd, hd, full_hd, uhd"
+    "http://127.0.0.1:8000/api/v1/enums/video-qualities/sd, hd, full_hd, uhd"
 );
 
 const headers = {
@@ -16430,8 +18247,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -16549,7 +18365,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/genders" \
+    --get "http://127.0.0.1:8000/api/v1/enums/genders" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16560,7 +18376,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/genders"
+    "http://127.0.0.1:8000/api/v1/enums/genders"
 );
 
 const headers = {
@@ -16590,8 +18406,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -16729,7 +18544,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/genders/male, female, other" \
+    --get "http://127.0.0.1:8000/api/v1/enums/genders/male, female, other" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16740,7 +18555,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/genders/male, female, other"
+    "http://127.0.0.1:8000/api/v1/enums/genders/male, female, other"
 );
 
 const headers = {
@@ -16770,8 +18585,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -16889,7 +18703,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/comment-report-types" \
+    --get "http://127.0.0.1:8000/api/v1/enums/comment-report-types" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -16900,7 +18714,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/comment-report-types"
+    "http://127.0.0.1:8000/api/v1/enums/comment-report-types"
 );
 
 const headers = {
@@ -16930,8 +18744,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -17135,7 +18948,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/comment-report-types/insult, flood_offtop_meaningless, ad_spam, spoiler, provocation_conflict, inappropriate_language, forbidden_unnecessary_content, meaningless_empty_topic, duplicate_topic" \
+    --get "http://127.0.0.1:8000/api/v1/enums/comment-report-types/insult, flood_offtop_meaningless, ad_spam, spoiler, provocation_conflict, inappropriate_language, forbidden_unnecessary_content, meaningless_empty_topic, duplicate_topic" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -17146,7 +18959,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/comment-report-types/insult, flood_offtop_meaningless, ad_spam, spoiler, provocation_conflict, inappropriate_language, forbidden_unnecessary_content, meaningless_empty_topic, duplicate_topic"
+    "http://127.0.0.1:8000/api/v1/enums/comment-report-types/insult, flood_offtop_meaningless, ad_spam, spoiler, provocation_conflict, inappropriate_language, forbidden_unnecessary_content, meaningless_empty_topic, duplicate_topic"
 );
 
 const headers = {
@@ -17176,8 +18989,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -17295,7 +19107,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/movie-relate-types" \
+    --get "http://127.0.0.1:8000/api/v1/enums/movie-relate-types" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -17306,7 +19118,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/movie-relate-types"
+    "http://127.0.0.1:8000/api/v1/enums/movie-relate-types"
 );
 
 const headers = {
@@ -17336,8 +19148,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -17541,7 +19352,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/movie-relate-types/season, source, sequel, side_story, summary, other, adaptation, alternative, prequel" \
+    --get "http://127.0.0.1:8000/api/v1/enums/movie-relate-types/season, source, sequel, side_story, summary, other, adaptation, alternative, prequel" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -17552,7 +19363,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/movie-relate-types/season, source, sequel, side_story, summary, other, adaptation, alternative, prequel"
+    "http://127.0.0.1:8000/api/v1/enums/movie-relate-types/season, source, sequel, side_story, summary, other, adaptation, alternative, prequel"
 );
 
 const headers = {
@@ -17582,8 +19393,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -17701,7 +19511,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/payment-statuses" \
+    --get "http://127.0.0.1:8000/api/v1/enums/payment-statuses" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -17712,7 +19522,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/payment-statuses"
+    "http://127.0.0.1:8000/api/v1/enums/payment-statuses"
 );
 
 const headers = {
@@ -17742,8 +19552,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -17892,7 +19701,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/payment-statuses/pending, success, failed, refunded" \
+    --get "http://127.0.0.1:8000/api/v1/enums/payment-statuses/pending, success, failed, refunded" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -17903,7 +19712,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/payment-statuses/pending, success, failed, refunded"
+    "http://127.0.0.1:8000/api/v1/enums/payment-statuses/pending, success, failed, refunded"
 );
 
 const headers = {
@@ -17933,8 +19742,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -18052,7 +19860,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/api-source-names" \
+    --get "http://127.0.0.1:8000/api/v1/enums/api-source-names" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -18063,7 +19871,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/api-source-names"
+    "http://127.0.0.1:8000/api/v1/enums/api-source-names"
 );
 
 const headers = {
@@ -18093,8 +19901,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -18243,7 +20050,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/api-source-names/tmdb, shiki, imdb, anilist" \
+    --get "http://127.0.0.1:8000/api/v1/enums/api-source-names/tmdb, shiki, imdb, anilist" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -18254,7 +20061,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/api-source-names/tmdb, shiki, imdb, anilist"
+    "http://127.0.0.1:8000/api/v1/enums/api-source-names/tmdb, shiki, imdb, anilist"
 );
 
 const headers = {
@@ -18284,8 +20091,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -18403,7 +20209,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/attachment-types" \
+    --get "http://127.0.0.1:8000/api/v1/enums/attachment-types" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -18414,7 +20220,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/attachment-types"
+    "http://127.0.0.1:8000/api/v1/enums/attachment-types"
 );
 
 const headers = {
@@ -18444,8 +20250,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">[
@@ -18649,7 +20454,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/enums/attachment-types/trailer, teaser, behind_the_scenes, interview, clip, deleted_scene, blooper, featurette, picture" \
+    --get "http://127.0.0.1:8000/api/v1/enums/attachment-types/trailer, teaser, behind_the_scenes, interview, clip, deleted_scene, blooper, featurette, picture" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -18660,7 +20465,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/enums/attachment-types/trailer, teaser, behind_the_scenes, interview, clip, deleted_scene, blooper, featurette, picture"
+    "http://127.0.0.1:8000/api/v1/enums/attachment-types/trailer, teaser, behind_the_scenes, interview, clip, deleted_scene, blooper, featurette, picture"
 );
 
 const headers = {
@@ -18690,8 +20495,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -18796,6 +20600,114 @@ Must be one of:
         </div>
         </form>
 
+                    <h2 id="endpoints-POSTapi-v1-liqpay-callback">Handle LiqPay callback</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-liqpay-callback">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://127.0.0.1:8000/api/v1/liqpay/callback" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/v1/liqpay/callback"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-liqpay-callback">
+</span>
+<span id="execution-results-POSTapi-v1-liqpay-callback" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-liqpay-callback"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-liqpay-callback"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-liqpay-callback" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-liqpay-callback">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-liqpay-callback" data-method="POST"
+      data-path="api/v1/liqpay/callback"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-liqpay-callback', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-liqpay-callback"
+                    onclick="tryItOut('POSTapi-v1-liqpay-callback');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-liqpay-callback"
+                    onclick="cancelTryOut('POSTapi-v1-liqpay-callback');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-liqpay-callback"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/liqpay/callback</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-liqpay-callback"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-liqpay-callback"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v1-verify-email--id---hash-">Mark the authenticated user&#039;s email address as verified.</h2>
 
 <p>
@@ -18810,7 +20722,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/verify-email/architecto/architecto" \
+    --get "http://127.0.0.1:8000/api/v1/verify-email/architecto/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -18818,7 +20730,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/verify-email/architecto/architecto"
+    "http://127.0.0.1:8000/api/v1/verify-email/architecto/architecto"
 );
 
 const headers = {
@@ -18844,8 +20756,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -18972,7 +20883,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/email/verification-notification" \
+    "http://127.0.0.1:8000/api/v1/email/verification-notification" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -18980,7 +20891,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/email/verification-notification"
+    "http://127.0.0.1:8000/api/v1/email/verification-notification"
 );
 
 const headers = {
@@ -19094,7 +21005,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/logout" \
+    "http://127.0.0.1:8000/api/v1/logout" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19102,7 +21013,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/logout"
+    "http://127.0.0.1:8000/api/v1/logout"
 );
 
 const headers = {
@@ -19215,14 +21126,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user" \
+    --get "http://127.0.0.1:8000/api/v1/user" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user"
+    "http://127.0.0.1:8000/api/v1/user"
 );
 
 const headers = {
@@ -19247,8 +21158,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -19341,7 +21251,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19349,7 +21259,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations"
+    "http://127.0.0.1:8000/api/v1/recommendations"
 );
 
 const headers = {
@@ -19375,8 +21285,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -19480,7 +21389,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations/movies" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations/movies" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19488,7 +21397,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations/movies"
+    "http://127.0.0.1:8000/api/v1/recommendations/movies"
 );
 
 const headers = {
@@ -19514,8 +21423,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -19619,7 +21527,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations/series" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations/series" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19627,7 +21535,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations/series"
+    "http://127.0.0.1:8000/api/v1/recommendations/series"
 );
 
 const headers = {
@@ -19653,8 +21561,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -19758,7 +21665,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations/similar/omnis-id-quaerat-soluta-oiduow" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations/similar/ofis-3" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19766,7 +21673,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations/similar/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/recommendations/similar/ofis-3"
 );
 
 const headers = {
@@ -19792,8 +21699,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -19888,10 +21794,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-recommendations-similar--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -19909,7 +21815,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations/because-you-watched/omnis-id-quaerat-soluta-oiduow" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations/because-you-watched/ofis-3" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -19917,7 +21823,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations/because-you-watched/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/recommendations/because-you-watched/ofis-3"
 );
 
 const headers = {
@@ -19943,8 +21849,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -20039,10 +21944,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="GETapi-v1-recommendations-because-you-watched--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -20060,7 +21965,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/recommendations/continue-watching" \
+    --get "http://127.0.0.1:8000/api/v1/recommendations/continue-watching" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -20068,7 +21973,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/recommendations/continue-watching"
+    "http://127.0.0.1:8000/api/v1/recommendations/continue-watching"
 );
 
 const headers = {
@@ -20094,8 +21999,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -20199,7 +22103,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc" \
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -20225,7 +22129,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const headers = {
@@ -20349,10 +22253,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="PUTapi-v1-users--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -20600,7 +22504,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PATCH \
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc" \
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -20626,7 +22530,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const headers = {
@@ -20750,10 +22654,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="PATCHapi-v1-users--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -21001,7 +22905,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/subscriptions" \
+    --get "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/subscriptions" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -21009,7 +22913,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/users/01jtzynww0da7ybsp8m063acmc/subscriptions"
+    "http://127.0.0.1:8000/api/v1/users/01jvde9n700fbrzvbd4b4aznmj/subscriptions"
 );
 
 const headers = {
@@ -21035,8 +22939,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -21131,10 +23034,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-users--user_id--subscriptions"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                     </form>
 
@@ -21152,7 +23055,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/user-lists" \
+    "http://127.0.0.1:8000/api/v1/user-lists" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -21166,7 +23069,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-lists"
+    "http://127.0.0.1:8000/api/v1/user-lists"
 );
 
 const headers = {
@@ -21325,7 +23228,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/user-lists/01jtzyp0cwct50984sxvzeagjr" \
+    "http://127.0.0.1:8000/api/v1/user-lists/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -21333,7 +23236,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-lists/01jtzyp0cwct50984sxvzeagjr"
+    "http://127.0.0.1:8000/api/v1/user-lists/architecto"
 );
 
 const headers = {
@@ -21438,10 +23341,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="userList_id"                data-endpoint="DELETEapi-v1-user-lists--userList_id-"
-               value="01jtzyp0cwct50984sxvzeagjr"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the userList. Example: <code>01jtzyp0cwct50984sxvzeagjr</code></p>
+<p>The ID of the userList. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -21459,7 +23362,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/ratings" \
+    "http://127.0.0.1:8000/api/v1/ratings" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -21473,7 +23376,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings"
+    "http://127.0.0.1:8000/api/v1/ratings"
 );
 
 const headers = {
@@ -21628,7 +23531,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x" \
+    "http://127.0.0.1:8000/api/v1/ratings/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -21641,7 +23544,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x"
+    "http://127.0.0.1:8000/api/v1/ratings/architecto"
 );
 
 const headers = {
@@ -21752,10 +23655,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="rating_id"                data-endpoint="PUTapi-v1-ratings--rating_id-"
-               value="01jtzynzhj72x1a5wzkwctfz1x"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the rating. Example: <code>01jtzynzhj72x1a5wzkwctfz1x</code></p>
+<p>The ID of the rating. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -21796,7 +23699,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x" \
+    "http://127.0.0.1:8000/api/v1/ratings/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -21804,7 +23707,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/ratings/01jtzynzhj72x1a5wzkwctfz1x"
+    "http://127.0.0.1:8000/api/v1/ratings/architecto"
 );
 
 const headers = {
@@ -21909,10 +23812,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="rating_id"                data-endpoint="DELETEapi-v1-ratings--rating_id-"
-               value="01jtzynzhj72x1a5wzkwctfz1x"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the rating. Example: <code>01jtzynzhj72x1a5wzkwctfz1x</code></p>
+<p>The ID of the rating. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -21930,7 +23833,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/comments" \
+    "http://127.0.0.1:8000/api/v1/comments" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -21946,7 +23849,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments"
+    "http://127.0.0.1:8000/api/v1/comments"
 );
 
 const headers = {
@@ -22137,7 +24040,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e" \
+    "http://127.0.0.1:8000/api/v1/comments/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -22150,7 +24053,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e"
+    "http://127.0.0.1:8000/api/v1/comments/architecto"
 );
 
 const headers = {
@@ -22261,10 +24164,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="PUTapi-v1-comments--comment_id-"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -22315,7 +24218,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e" \
+    "http://127.0.0.1:8000/api/v1/comments/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -22323,7 +24226,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/01jtzyp12fb2k0by6vv4j1dh1e"
+    "http://127.0.0.1:8000/api/v1/comments/architecto"
 );
 
 const headers = {
@@ -22428,10 +24331,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="DELETEapi-v1-comments--comment_id-"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -22448,14 +24351,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comments/user/01jtzynww0da7ybsp8m063acmc?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
+    --get "http://127.0.0.1:8000/api/v1/comments/user/01jvde9n700fbrzvbd4b4aznmj?q=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;is_spoiler=&amp;user_id=&amp;commentable_type=App%5CModels%5CMovie&amp;commentable_id=&amp;is_root=&amp;parent_id=" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comments/user/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/comments/user/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const params = {
@@ -22496,8 +24399,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -22581,10 +24483,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-comments-user--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -22750,7 +24652,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/comment-likes" \
+    "http://127.0.0.1:8000/api/v1/comment-likes" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -22763,7 +24665,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes"
+    "http://127.0.0.1:8000/api/v1/comment-likes"
 );
 
 const headers = {
@@ -22916,7 +24818,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comment-likes/user/01jtzynww0da7ybsp8m063acmc?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/comment-likes/user/01jvde9n700fbrzvbd4b4aznmj?comment_id=&amp;user_id=&amp;is_liked=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -22924,7 +24826,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes/user/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/comment-likes/user/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const params = {
@@ -22962,8 +24864,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -23058,10 +24959,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-comment-likes-user--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -23171,7 +25072,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj" \
+    "http://127.0.0.1:8000/api/v1/comment-likes/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -23183,7 +25084,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj"
+    "http://127.0.0.1:8000/api/v1/comment-likes/architecto"
 );
 
 const headers = {
@@ -23293,10 +25194,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentLike_id"                data-endpoint="PUTapi-v1-comment-likes--commentLike_id-"
-               value="01jtzyp1s8bwhfx5p2fzsyymmj"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentLike. Example: <code>01jtzyp1s8bwhfx5p2fzsyymmj</code></p>
+<p>The ID of the commentLike. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -23336,7 +25237,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj" \
+    "http://127.0.0.1:8000/api/v1/comment-likes/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -23344,7 +25245,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-likes/01jtzyp1s8bwhfx5p2fzsyymmj"
+    "http://127.0.0.1:8000/api/v1/comment-likes/architecto"
 );
 
 const headers = {
@@ -23449,10 +25350,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentLike_id"                data-endpoint="DELETEapi-v1-comment-likes--commentLike_id-"
-               value="01jtzyp1s8bwhfx5p2fzsyymmj"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentLike. Example: <code>01jtzyp1s8bwhfx5p2fzsyymmj</code></p>
+<p>The ID of the commentLike. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -23470,7 +25371,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/comment-reports" \
+    "http://127.0.0.1:8000/api/v1/comment-reports" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -23484,7 +25385,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-reports"
+    "http://127.0.0.1:8000/api/v1/comment-reports"
 );
 
 const headers = {
@@ -23641,7 +25542,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/comment-reports/comment/01jtzyp12fb2k0by6vv4j1dh1e?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/comment-reports/comment/architecto?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -23649,7 +25550,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/comment-reports/comment/01jtzyp12fb2k0by6vv4j1dh1e"
+    "http://127.0.0.1:8000/api/v1/comment-reports/comment/architecto"
 );
 
 const params = {
@@ -23688,8 +25589,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -23784,10 +25684,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="comment_id"                data-endpoint="GETapi-v1-comment-reports-comment--comment_id-"
-               value="01jtzyp12fb2k0by6vv4j1dh1e"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>01jtzyp12fb2k0by6vv4j1dh1e</code></p>
+<p>The ID of the comment. Example: <code>architecto</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -23910,7 +25810,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-subscriptions?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/user-subscriptions?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -23918,7 +25818,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-subscriptions"
+    "http://127.0.0.1:8000/api/v1/user-subscriptions"
 );
 
 const params = {
@@ -23961,8 +25861,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -24223,7 +26122,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/user-subscriptions" \
+    "http://127.0.0.1:8000/api/v1/user-subscriptions" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -24240,7 +26139,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-subscriptions"
+    "http://127.0.0.1:8000/api/v1/user-subscriptions"
 );
 
 const headers = {
@@ -24451,7 +26350,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-subscriptions/active?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/user-subscriptions/active?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -24459,7 +26358,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-subscriptions/active"
+    "http://127.0.0.1:8000/api/v1/user-subscriptions/active"
 );
 
 const params = {
@@ -24502,8 +26401,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -24764,7 +26662,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-subscriptions/user/01jtzynww0da7ybsp8m063acmc?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/user-subscriptions/user/01jvde9n700fbrzvbd4b4aznmj?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;is_active=&amp;auto_renew=&amp;start_date_from=2023-01-01&amp;start_date_to=2023-12-31&amp;end_date_from=2023-01-01&amp;end_date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=start_date&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -24772,7 +26670,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-subscriptions/user/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/user-subscriptions/user/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const params = {
@@ -24815,8 +26713,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -24911,10 +26808,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-user-subscriptions-user--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -25089,7 +26986,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/user-subscriptions/01jtzyp59bz1xvmzrk3ap94fyy" \
+    --get "http://127.0.0.1:8000/api/v1/user-subscriptions/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -25097,7 +26994,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/user-subscriptions/01jtzyp59bz1xvmzrk3ap94fyy"
+    "http://127.0.0.1:8000/api/v1/user-subscriptions/architecto"
 );
 
 const headers = {
@@ -25123,8 +27020,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -25219,10 +27115,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="userSubscription_id"                data-endpoint="GETapi-v1-user-subscriptions--userSubscription_id-"
-               value="01jtzyp59bz1xvmzrk3ap94fyy"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the userSubscription. Example: <code>01jtzyp59bz1xvmzrk3ap94fyy</code></p>
+<p>The ID of the userSubscription. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -25240,7 +27136,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/payments?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;status=COMPLETED&amp;payment_method=credit_card&amp;min_amount=100&amp;max_amount=500&amp;currency=UAH&amp;date_from=2023-01-01&amp;date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=amount&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/payments?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;status=COMPLETED&amp;payment_method=credit_card&amp;min_amount=100&amp;max_amount=500&amp;currency=UAH&amp;date_from=2023-01-01&amp;date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=amount&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -25248,7 +27144,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/payments"
+    "http://127.0.0.1:8000/api/v1/payments"
 );
 
 const params = {
@@ -25292,8 +27188,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -25547,7 +27442,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/payments" \
+    "http://127.0.0.1:8000/api/v1/payments" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -25571,7 +27466,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/payments"
+    "http://127.0.0.1:8000/api/v1/payments"
 );
 
 const headers = {
@@ -25793,7 +27688,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/payments/01jtzyp5c2tr0w7dbdexfqptxt" \
+    --get "http://127.0.0.1:8000/api/v1/payments/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -25805,7 +27700,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/payments/01jtzyp5c2tr0w7dbdexfqptxt"
+    "http://127.0.0.1:8000/api/v1/payments/architecto"
 );
 
 const headers = {
@@ -25836,8 +27731,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -25932,10 +27826,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="payment_id"                data-endpoint="GETapi-v1-payments--payment_id-"
-               value="01jtzyp5c2tr0w7dbdexfqptxt"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the payment. Example: <code>01jtzyp5c2tr0w7dbdexfqptxt</code></p>
+<p>The ID of the payment. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -25965,7 +27859,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/payments/user/01jtzynww0da7ybsp8m063acmc?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;status=COMPLETED&amp;payment_method=credit_card&amp;min_amount=100&amp;max_amount=500&amp;currency=UAH&amp;date_from=2023-01-01&amp;date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=amount&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/payments/user/01jvde9n700fbrzvbd4b4aznmj?user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;tariff_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;status=COMPLETED&amp;payment_method=credit_card&amp;min_amount=100&amp;max_amount=500&amp;currency=UAH&amp;date_from=2023-01-01&amp;date_to=2023-12-31&amp;page=1&amp;per_page=15&amp;sort=amount&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -25973,7 +27867,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/payments/user/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/payments/user/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const params = {
@@ -26017,8 +27911,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -26113,10 +28006,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="GETapi-v1-payments-user--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
                                     <div style="padding-left: 28px; clear: unset;">
@@ -26270,6 +28163,259 @@ Must be one of:
             </div>
                 </form>
 
+                    <h2 id="endpoints-POSTapi-v1-liqpay-create-payment">Create a LiqPay payment for a subscription</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-liqpay-create-payment">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://127.0.0.1:8000/api/v1/liqpay/create-payment" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"tariff_id\": \"architecto\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/v1/liqpay/create-payment"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "tariff_id": "architecto"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-liqpay-create-payment">
+</span>
+<span id="execution-results-POSTapi-v1-liqpay-create-payment" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-liqpay-create-payment"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-liqpay-create-payment"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-liqpay-create-payment" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-liqpay-create-payment">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-liqpay-create-payment" data-method="POST"
+      data-path="api/v1/liqpay/create-payment"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-liqpay-create-payment', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-liqpay-create-payment"
+                    onclick="tryItOut('POSTapi-v1-liqpay-create-payment');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-liqpay-create-payment"
+                    onclick="cancelTryOut('POSTapi-v1-liqpay-create-payment');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-liqpay-create-payment"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/liqpay/create-payment</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-liqpay-create-payment"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-liqpay-create-payment"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>tariff_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="tariff_id"                data-endpoint="POSTapi-v1-liqpay-create-payment"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the tariffs table. Example: <code>architecto</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-GETapi-v1-subscriptions-result">Handle successful payment result</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-subscriptions-result">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://127.0.0.1:8000/api/v1/subscriptions/result" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://127.0.0.1:8000/api/v1/subscriptions/result"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-subscriptions-result">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+vary: Origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-subscriptions-result" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-subscriptions-result"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-subscriptions-result"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-subscriptions-result" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-subscriptions-result">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-subscriptions-result" data-method="GET"
+      data-path="api/v1/subscriptions/result"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-subscriptions-result', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-subscriptions-result"
+                    onclick="tryItOut('GETapi-v1-subscriptions-result');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-subscriptions-result"
+                    onclick="cancelTryOut('GETapi-v1-subscriptions-result');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-subscriptions-result"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/subscriptions/result</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-subscriptions-result"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-subscriptions-result"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v1-admin-users">Get paginated list of users with filtering, sorting and pagination</h2>
 
 <p>
@@ -26284,7 +28430,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/users?q=john&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;roles[]=moderator&amp;genders[]=other&amp;is_banned=&amp;is_verified=&amp;last_seen_after=2023-01-01&amp;last_seen_before=2023-12-31&amp;created_after=2023-01-01&amp;created_before=2023-12-31" \
+    --get "http://127.0.0.1:8000/api/v1/admin/users?q=john&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc&amp;roles[]=moderator&amp;genders[]=female&amp;is_banned=&amp;is_verified=&amp;last_seen_after=2023-01-01&amp;last_seen_before=2023-12-31&amp;created_after=2023-01-01&amp;created_before=2023-12-31" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -26292,7 +28438,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/users"
+    "http://127.0.0.1:8000/api/v1/admin/users"
 );
 
 const params = {
@@ -26302,7 +28448,7 @@ const params = {
     "sort": "created_at",
     "direction": "desc",
     "roles[0]": "moderator",
-    "genders[0]": "other",
+    "genders[0]": "female",
     "is_banned": "0",
     "is_verified": "0",
     "last_seen_after": "2023-01-01",
@@ -26336,8 +28482,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -26617,7 +28762,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/users" \
+    "http://127.0.0.1:8000/api/v1/admin/users" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -26643,7 +28788,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/users"
+    "http://127.0.0.1:8000/api/v1/admin/users"
 );
 
 const headers = {
@@ -27006,7 +29151,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc" \
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -27014,7 +29159,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc"
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj"
 );
 
 const headers = {
@@ -27119,10 +29264,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="DELETEapi-v1-admin-users--user_id-"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                     </form>
 
@@ -27140,7 +29285,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PATCH \
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc/ban" \
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj/ban" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -27152,7 +29297,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc/ban"
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj/ban"
 );
 
 const headers = {
@@ -27262,10 +29407,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="user_id"                data-endpoint="PATCHapi-v1-admin-users--user_id--ban"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -27295,7 +29440,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PATCH \
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc/unban" \
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj/unban" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -27307,7 +29452,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/users/01jtzynww0da7ybsp8m063acmc/unban"
+    "http://127.0.0.1:8000/api/v1/admin/users/01jvde9n700fbrzvbd4b4aznmj/unban"
 );
 
 const headers = {
@@ -27417,10 +29562,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="id"                data-endpoint="PATCHapi-v1-admin-users--id--unban"
-               value="01jtzynww0da7ybsp8m063acmc"
+               value="01jvde9n700fbrzvbd4b4aznmj"
                data-component="url">
     <br>
-<p>The ID of the user. Example: <code>01jtzynww0da7ybsp8m063acmc</code></p>
+<p>The ID of the user. Example: <code>01jvde9n700fbrzvbd4b4aznmj</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -27450,7 +29595,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/movies" \
+    "http://127.0.0.1:8000/api/v1/admin/movies" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -27510,7 +29655,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/movies"
+    "http://127.0.0.1:8000/api/v1/admin/movies"
 );
 
 const headers = {
@@ -28071,7 +30216,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow" \
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -28131,7 +30276,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3"
 );
 
 const headers = {
@@ -28289,10 +30434,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="PUTapi-v1-admin-movies--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -28704,7 +30849,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PATCH \
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow" \
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -28764,7 +30909,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3"
 );
 
 const headers = {
@@ -28922,10 +31067,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="PATCHapi-v1-admin-movies--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -29337,7 +31482,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow" \
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -29345,7 +31490,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/movies/omnis-id-quaerat-soluta-oiduow"
+    "http://127.0.0.1:8000/api/v1/admin/movies/ofis-3"
 );
 
 const headers = {
@@ -29450,10 +31595,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="movie_slug"                data-endpoint="DELETEapi-v1-admin-movies--movie_slug-"
-               value="omnis-id-quaerat-soluta-oiduow"
+               value="ofis-3"
                data-component="url">
     <br>
-<p>The slug of the movie. Example: <code>omnis-id-quaerat-soluta-oiduow</code></p>
+<p>The slug of the movie. Example: <code>ofis-3</code></p>
             </div>
                     </form>
 
@@ -29471,7 +31616,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/episodes" \
+    "http://127.0.0.1:8000/api/v1/admin/episodes" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -29503,7 +31648,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/episodes"
+    "http://127.0.0.1:8000/api/v1/admin/episodes"
 );
 
 const headers = {
@@ -29868,7 +32013,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/episodes/quidem-sunt-aliquam-id-hgwstn" \
+    "http://127.0.0.1:8000/api/v1/admin/episodes/ofis-1-episode-2" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -29900,7 +32045,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/episodes/quidem-sunt-aliquam-id-hgwstn"
+    "http://127.0.0.1:8000/api/v1/admin/episodes/ofis-1-episode-2"
 );
 
 const headers = {
@@ -30030,10 +32175,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="episode_slug"                data-endpoint="PUTapi-v1-admin-episodes--episode_slug-"
-               value="quidem-sunt-aliquam-id-hgwstn"
+               value="ofis-1-episode-2"
                data-component="url">
     <br>
-<p>The slug of the episode. Example: <code>quidem-sunt-aliquam-id-hgwstn</code></p>
+<p>The slug of the episode. Example: <code>ofis-1-episode-2</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -30277,7 +32422,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/episodes/quidem-sunt-aliquam-id-hgwstn" \
+    "http://127.0.0.1:8000/api/v1/admin/episodes/ofis-1-episode-2" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -30285,7 +32430,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/episodes/quidem-sunt-aliquam-id-hgwstn"
+    "http://127.0.0.1:8000/api/v1/admin/episodes/ofis-1-episode-2"
 );
 
 const headers = {
@@ -30390,10 +32535,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="episode_slug"                data-endpoint="DELETEapi-v1-admin-episodes--episode_slug-"
-               value="quidem-sunt-aliquam-id-hgwstn"
+               value="ofis-1-episode-2"
                data-component="url">
     <br>
-<p>The slug of the episode. Example: <code>quidem-sunt-aliquam-id-hgwstn</code></p>
+<p>The slug of the episode. Example: <code>ofis-1-episode-2</code></p>
             </div>
                     </form>
 
@@ -30411,7 +32556,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/people" \
+    "http://127.0.0.1:8000/api/v1/admin/people" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -30434,7 +32579,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/people"
+    "http://127.0.0.1:8000/api/v1/admin/people"
 );
 
 const headers = {
@@ -30701,7 +32846,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/people/denis-jevgenovic-brovarenko-0u81ve" \
+    "http://127.0.0.1:8000/api/v1/admin/people/tom-kruz" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -30724,7 +32869,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/people/denis-jevgenovic-brovarenko-0u81ve"
+    "http://127.0.0.1:8000/api/v1/admin/people/tom-kruz"
 );
 
 const headers = {
@@ -30845,10 +32990,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="person_slug"                data-endpoint="PUTapi-v1-admin-people--person_slug-"
-               value="denis-jevgenovic-brovarenko-0u81ve"
+               value="tom-kruz"
                data-component="url">
     <br>
-<p>The slug of the person. Example: <code>denis-jevgenovic-brovarenko-0u81ve</code></p>
+<p>The slug of the person. Example: <code>tom-kruz</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -31003,7 +33148,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/people/denis-jevgenovic-brovarenko-0u81ve" \
+    "http://127.0.0.1:8000/api/v1/admin/people/tom-kruz" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -31011,7 +33156,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/people/denis-jevgenovic-brovarenko-0u81ve"
+    "http://127.0.0.1:8000/api/v1/admin/people/tom-kruz"
 );
 
 const headers = {
@@ -31116,10 +33261,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="person_slug"                data-endpoint="DELETEapi-v1-admin-people--person_slug-"
-               value="denis-jevgenovic-brovarenko-0u81ve"
+               value="tom-kruz"
                data-component="url">
     <br>
-<p>The slug of the person. Example: <code>denis-jevgenovic-brovarenko-0u81ve</code></p>
+<p>The slug of the person. Example: <code>tom-kruz</code></p>
             </div>
                     </form>
 
@@ -31137,7 +33282,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/studios" \
+    "http://127.0.0.1:8000/api/v1/admin/studios" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -31158,7 +33303,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/studios"
+    "http://127.0.0.1:8000/api/v1/admin/studios"
 );
 
 const headers = {
@@ -31377,7 +33522,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/studios/laika-1649-ahsumy" \
+    "http://127.0.0.1:8000/api/v1/admin/studios/sony-pictures" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -31398,7 +33543,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/studios/laika-1649-ahsumy"
+    "http://127.0.0.1:8000/api/v1/admin/studios/sony-pictures"
 );
 
 const headers = {
@@ -31517,10 +33662,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="studio_slug"                data-endpoint="PUTapi-v1-admin-studios--studio_slug-"
-               value="laika-1649-ahsumy"
+               value="sony-pictures"
                data-component="url">
     <br>
-<p>The slug of the studio. Example: <code>laika-1649-ahsumy</code></p>
+<p>The slug of the studio. Example: <code>sony-pictures</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -31629,7 +33774,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/studios/laika-1649-ahsumy" \
+    "http://127.0.0.1:8000/api/v1/admin/studios/sony-pictures" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -31637,7 +33782,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/studios/laika-1649-ahsumy"
+    "http://127.0.0.1:8000/api/v1/admin/studios/sony-pictures"
 );
 
 const headers = {
@@ -31742,10 +33887,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="studio_slug"                data-endpoint="DELETEapi-v1-admin-studios--studio_slug-"
-               value="laika-1649-ahsumy"
+               value="sony-pictures"
                data-component="url">
     <br>
-<p>The slug of the studio. Example: <code>laika-1649-ahsumy</code></p>
+<p>The slug of the studio. Example: <code>sony-pictures</code></p>
             </div>
                     </form>
 
@@ -31763,7 +33908,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/tags" \
+    "http://127.0.0.1:8000/api/v1/admin/tags" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -31785,7 +33930,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tags"
+    "http://127.0.0.1:8000/api/v1/admin/tags"
 );
 
 const headers = {
@@ -32026,7 +34171,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/tags/parody-197-rwdbt3" \
+    "http://127.0.0.1:8000/api/v1/admin/tags/boiovik" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -32048,7 +34193,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tags/parody-197-rwdbt3"
+    "http://127.0.0.1:8000/api/v1/admin/tags/boiovik"
 );
 
 const headers = {
@@ -32168,10 +34313,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tag_slug"                data-endpoint="PUTapi-v1-admin-tags--tag_slug-"
-               value="parody-197-rwdbt3"
+               value="boiovik"
                data-component="url">
     <br>
-<p>The slug of the tag. Example: <code>parody-197-rwdbt3</code></p>
+<p>The slug of the tag. Example: <code>boiovik</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -32301,7 +34446,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/tags/parody-197-rwdbt3" \
+    "http://127.0.0.1:8000/api/v1/admin/tags/boiovik" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -32309,7 +34454,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tags/parody-197-rwdbt3"
+    "http://127.0.0.1:8000/api/v1/admin/tags/boiovik"
 );
 
 const headers = {
@@ -32414,10 +34559,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tag_slug"                data-endpoint="DELETEapi-v1-admin-tags--tag_slug-"
-               value="parody-197-rwdbt3"
+               value="boiovik"
                data-component="url">
     <br>
-<p>The slug of the tag. Example: <code>parody-197-rwdbt3</code></p>
+<p>The slug of the tag. Example: <code>boiovik</code></p>
             </div>
                     </form>
 
@@ -32435,7 +34580,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/selections" \
+    "http://127.0.0.1:8000/api/v1/admin/selections" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -32460,7 +34605,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/selections"
+    "http://127.0.0.1:8000/api/v1/admin/selections"
 );
 
 const headers = {
@@ -32717,7 +34862,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/selections/tempore-voluptates-dolorem-ut-waobdu" \
+    "http://127.0.0.1:8000/api/v1/admin/selections/filmi-pro-viinu" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -32742,7 +34887,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/selections/tempore-voluptates-dolorem-ut-waobdu"
+    "http://127.0.0.1:8000/api/v1/admin/selections/filmi-pro-viinu"
 );
 
 const headers = {
@@ -32865,10 +35010,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="selection_slug"                data-endpoint="PUTapi-v1-admin-selections--selection_slug-"
-               value="tempore-voluptates-dolorem-ut-waobdu"
+               value="filmi-pro-viinu"
                data-component="url">
     <br>
-<p>The slug of the selection. Example: <code>tempore-voluptates-dolorem-ut-waobdu</code></p>
+<p>The slug of the selection. Example: <code>filmi-pro-viinu</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -33011,7 +35156,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/selections/tempore-voluptates-dolorem-ut-waobdu" \
+    "http://127.0.0.1:8000/api/v1/admin/selections/filmi-pro-viinu" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -33019,7 +35164,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/selections/tempore-voluptates-dolorem-ut-waobdu"
+    "http://127.0.0.1:8000/api/v1/admin/selections/filmi-pro-viinu"
 );
 
 const headers = {
@@ -33124,10 +35269,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="selection_slug"                data-endpoint="DELETEapi-v1-admin-selections--selection_slug-"
-               value="tempore-voluptates-dolorem-ut-waobdu"
+               value="filmi-pro-viinu"
                data-component="url">
     <br>
-<p>The slug of the selection. Example: <code>tempore-voluptates-dolorem-ut-waobdu</code></p>
+<p>The slug of the selection. Example: <code>filmi-pro-viinu</code></p>
             </div>
                     </form>
 
@@ -33145,7 +35290,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/comment-reports?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/admin/comment-reports?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -33153,7 +35298,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/comment-reports"
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports"
 );
 
 const params = {
@@ -33192,8 +35337,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -33402,7 +35546,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/comment-reports/unviewed?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
+    --get "http://127.0.0.1:8000/api/v1/admin/comment-reports/unviewed?comment_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;user_id=01HN5PXMEH6SDMF0KAVSW1DYTY&amp;type=SPAM&amp;is_viewed=&amp;page=1&amp;per_page=15&amp;sort=created_at&amp;direction=desc" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -33410,7 +35554,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/comment-reports/unviewed"
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/unviewed"
 );
 
 const params = {
@@ -33449,8 +35593,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -33659,7 +35802,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29" \
+    --get "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -33667,7 +35810,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29"
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto"
 );
 
 const headers = {
@@ -33693,8 +35836,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -33789,10 +35931,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentReport_id"                data-endpoint="GETapi-v1-admin-comment-reports--commentReport_id-"
-               value="01jtzyp51fj7ggxtjba8zkkz29"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentReport. Example: <code>01jtzyp51fj7ggxtjba8zkkz29</code></p>
+<p>The ID of the commentReport. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -33810,7 +35952,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29" \
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -33824,7 +35966,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29"
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto"
 );
 
 const headers = {
@@ -33936,10 +36078,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentReport_id"                data-endpoint="PUTapi-v1-admin-comment-reports--commentReport_id-"
-               value="01jtzyp51fj7ggxtjba8zkkz29"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentReport. Example: <code>01jtzyp51fj7ggxtjba8zkkz29</code></p>
+<p>The ID of the commentReport. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -34003,7 +36145,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29" \
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -34011,7 +36153,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/comment-reports/01jtzyp51fj7ggxtjba8zkkz29"
+    "http://127.0.0.1:8000/api/v1/admin/comment-reports/architecto"
 );
 
 const headers = {
@@ -34116,10 +36258,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="commentReport_id"                data-endpoint="DELETEapi-v1-admin-comment-reports--commentReport_id-"
-               value="01jtzyp51fj7ggxtjba8zkkz29"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the commentReport. Example: <code>01jtzyp51fj7ggxtjba8zkkz29</code></p>
+<p>The ID of the commentReport. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -34137,7 +36279,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://netflix-api.test/api/v1/admin/tariffs" \
+    "http://127.0.0.1:8000/api/v1/admin/tariffs" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -34161,7 +36303,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tariffs"
+    "http://127.0.0.1:8000/api/v1/admin/tariffs"
 );
 
 const headers = {
@@ -34426,7 +36568,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "https://netflix-api.test/api/v1/admin/tariffs/basic" \
+    "http://127.0.0.1:8000/api/v1/admin/tariffs/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -34450,7 +36592,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tariffs/basic"
+    "http://127.0.0.1:8000/api/v1/admin/tariffs/architecto"
 );
 
 const headers = {
@@ -34572,10 +36714,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tariff_slug"                data-endpoint="PUTapi-v1-admin-tariffs--tariff_slug-"
-               value="basic"
+               value="architecto"
                data-component="url">
     <br>
-<p>The slug of the tariff. Example: <code>basic</code></p>
+<p>The slug of the tariff. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -34727,7 +36869,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "https://netflix-api.test/api/v1/admin/tariffs/basic" \
+    "http://127.0.0.1:8000/api/v1/admin/tariffs/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -34735,7 +36877,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/tariffs/basic"
+    "http://127.0.0.1:8000/api/v1/admin/tariffs/architecto"
 );
 
 const headers = {
@@ -34840,10 +36982,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="tariff_slug"                data-endpoint="DELETEapi-v1-admin-tariffs--tariff_slug-"
-               value="basic"
+               value="architecto"
                data-component="url">
     <br>
-<p>The slug of the tariff. Example: <code>basic</code></p>
+<p>The slug of the tariff. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -34861,7 +37003,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/stats/users?days=30" \
+    --get "http://127.0.0.1:8000/api/v1/admin/stats/users?days=30" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -34869,7 +37011,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/stats/users"
+    "http://127.0.0.1:8000/api/v1/admin/stats/users"
 );
 
 const params = {
@@ -34901,8 +37043,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -35018,7 +37159,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/stats/content?days=30" \
+    --get "http://127.0.0.1:8000/api/v1/admin/stats/content?days=30" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -35026,7 +37167,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/stats/content"
+    "http://127.0.0.1:8000/api/v1/admin/stats/content"
 );
 
 const params = {
@@ -35058,8 +37199,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -35175,7 +37315,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/stats/subscriptions?days=30" \
+    --get "http://127.0.0.1:8000/api/v1/admin/stats/subscriptions?days=30" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -35183,7 +37323,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/stats/subscriptions"
+    "http://127.0.0.1:8000/api/v1/admin/stats/subscriptions"
 );
 
 const params = {
@@ -35215,8 +37355,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -35332,7 +37471,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://netflix-api.test/api/v1/admin/stats/payments?days=30" \
+    --get "http://127.0.0.1:8000/api/v1/admin/stats/payments?days=30" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -35340,7 +37479,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://netflix-api.test/api/v1/admin/stats/payments"
+    "http://127.0.0.1:8000/api/v1/admin/stats/payments"
 );
 
 const params = {
@@ -35372,8 +37511,7 @@ fetch(url, {
             </summary>
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
-access-control-allow-origin: http://localhost:3000
-access-control-allow-credentials: true
+vary: Origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{

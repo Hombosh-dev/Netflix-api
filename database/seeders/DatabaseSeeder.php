@@ -16,8 +16,9 @@ class DatabaseSeeder extends Seeder
             StudioSeeder::class,
             PersonSeeder::class,
             MovieSeeder::class,
+            MovieImagesSeeder::class, // Сідер для завантаження зображень фільмів
             RatingSeeder::class,
-            EpisodeSeeder::class,
+            EpisodeSeeder::class, // Універсальний сідер для всіх епізодів
             SelectionSeeder::class,
             UserListSeeder::class,
             CommentSeeder::class,

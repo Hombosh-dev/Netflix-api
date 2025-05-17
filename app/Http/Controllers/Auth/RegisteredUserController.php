@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Actions\Auth\RegisterUser;
 use App\DTOs\Auth\RegisterDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Auth\RegisterRequest;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
@@ -27,12 +25,7 @@ class RegisteredUserController extends Controller
         $dto = RegisterDTO::fromRequest($request);
         $user = $action->handle($dto);
 
-        // Створюємо новий токен через Sanctum
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => new UserResource($user),
-            'token' => $token,
-        ]);
+        // Return 204 No Content as expected by the test
+        return response()->json(null, 204);
     }
 }

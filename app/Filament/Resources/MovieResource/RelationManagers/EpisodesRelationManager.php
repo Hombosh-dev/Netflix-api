@@ -26,6 +26,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class EpisodesRelationManager extends RelationManager
@@ -52,7 +53,7 @@ class EpisodesRelationManager extends RelationManager
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
                         if (!$state) return;
-                        
+
                         // Завжди оновлюємо slug при редагуванні назви
                         $set('slug', Str::slug($state));
                     }),
@@ -140,15 +141,9 @@ class EpisodesRelationManager extends RelationManager
                     ->label(__('№'))
                     ->sortable(),
 
-                ImageColumn::make('pictures')
+                ImageColumn::make('pictureUrl')
                     ->label(__('Зображення'))
-                    ->circular()
-                    ->stacked()
-                    ->limit(3)
-                    ->limitedRemainingText()
-                    ->state(function ($record): array {
-                        return $record->pictures ? $record->pictures->toArray() : [];
-                    }),
+                    ->circular(),
 
                 TextColumn::make('name')
                     ->label(__('Назва'))
@@ -193,15 +188,15 @@ class EpisodesRelationManager extends RelationManager
                     ])
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
-                        
+
                         if ($data['aired_from'] ?? null) {
                             $indicators[] = __('Від') . ': ' . $data['aired_from'];
                         }
-                        
+
                         if ($data['aired_until'] ?? null) {
                             $indicators[] = __('До') . ': ' . $data['aired_until'];
                         }
-                        
+
                         return $indicators;
                     })
                     ->query(function (Builder $query, array $data): Builder {

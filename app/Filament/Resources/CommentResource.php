@@ -71,26 +71,57 @@ class CommentResource extends Resource
                                     ->preload()
                                     ->required(),
 
-                                Select::make('parent_id')
-                                    ->label(__('Відповідь на'))
-                                    ->relationship('parent', 'body', function (Builder $query, ?Model $record) {
-                                        if ($record) {
-                                            // Якщо це редагування, виключаємо поточний коментар та його дочірні коментарі
-                                            $query->where('id', '!=', $record->id)
-                                                ->whereNotIn('id', $record->children()->pluck('id'));
-
-                                            // Додаємо фільтр за типом контенту
-                                            $query->where('commentable_type', $record->commentable_type)
-                                                ->where('commentable_id', $record->commentable_id);
-                                        }
-
-                                        return $query;
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->placeholder(__('Це основний коментар'))
-                                    ->columnSpanFull(),
+                                Select::make('commentable_type')
+                                    ->label(__('Тип контенту'))
+                                    ->options([
+                                        Movie::class => __('Фільм'),
+                                        Episode::class => __('Епізод'),
+                                        Selection::class => __('Підбірка'),
+                                    ])
+                                    ->required()
+                                    ->live()
+                                    ->afterStateUpdated(fn (callable $set) => $set('commentable_id', null)),
                             ]),
+
+                        Select::make('commentable_id')
+                            ->label(__('Об\'єкт'))
+                            ->options(function (callable $get) {
+                                $type = $get('commentable_type');
+                                if (!$type) {
+                                    return [];
+                                }
+
+                                return match ($type) {
+                                    Movie::class => Movie::pluck('name', 'id')->toArray(),
+                                    Episode::class => Episode::pluck('name', 'id')->toArray(),
+                                    Selection::class => Selection::pluck('name', 'id')->toArray(),
+                                    default => [],
+                                };
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn (callable $set) => $set('parent_id', null)),
+
+                        Select::make('parent_id')
+                            ->label(__('Відповідь на'))
+                            ->options(function (callable $get) {
+                                $type = $get('commentable_type');
+                                $id = $get('commentable_id');
+
+                                if (!$type || !$id) {
+                                    return [];
+                                }
+
+                                return Comment::where('commentable_type', $type)
+                                    ->where('commentable_id', $id)
+                                    ->whereNull('parent_id')
+                                    ->pluck('body', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->placeholder(__('Це основний коментар')),
 
                         Textarea::make('body')
                             ->label(__('Текст коментаря'))
@@ -176,7 +207,7 @@ class CommentResource extends Resource
                     ->description(fn($record) => $record->user->email ?? 'unknown')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('body')
                     ->label(__('Текст'))
                     ->limit(50)

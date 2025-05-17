@@ -68,38 +68,59 @@ class PaymentController extends Controller
      */
     public function store(PaymentStoreRequest $request, CreatePayment $action): PaymentResource|JsonResponse
     {
+        // Check if payment method is LiqPay
+        if ($request->input('payment_method') === 'LiqPay') {
+            // Redirect to LiqPay payment page
+            return response()->json([
+                'redirect_url' => url('/api/v1/liqpay/create-payment?tariff_id=' . $request->input('tariff_id')),
+                'message' => 'Redirecting to LiqPay payment page'
+            ]);
+        }
+
+        // For other payment methods, proceed with the original flow
         $dto = PaymentStoreDTO::fromRequest($request);
         $payment = $action->handle($dto);
 
         // If payment is successful, create a subscription
         if ($payment->isSuccessful()) {
-            $tariff = Tariff::findOrFail($payment->tariff_id);
-            $userId = $payment->user_id;
-
-            // Check if user already has an active subscription
-            $existingSubscription = UserSubscription::where('user_id', $userId)
-                ->where('is_active', true)
-                ->first();
-
-            if ($existingSubscription) {
-                // Extend the existing subscription
-                $existingSubscription->end_date = Carbon::parse($existingSubscription->end_date)
-                    ->addDays($tariff->duration_days);
-                $existingSubscription->save();
-            } else {
-                // Create a new subscription
-                $subscription = new UserSubscription();
-                $subscription->user_id = $userId;
-                $subscription->tariff_id = $tariff->id;
-                $subscription->start_date = now();
-                $subscription->end_date = now()->addDays($tariff->duration_days);
-                $subscription->is_active = true;
-                $subscription->auto_renew = false;
-                $subscription->save();
-            }
+            $this->processSuccessfulPayment($payment);
         }
 
         return new PaymentResource($payment);
+    }
+
+    /**
+     * Process successful payment by creating or extending subscription
+     *
+     * @param Payment $payment
+     * @return void
+     */
+    private function processSuccessfulPayment(Payment $payment): void
+    {
+        $tariff = Tariff::findOrFail($payment->tariff_id);
+        $userId = $payment->user_id;
+
+        // Check if user already has an active subscription
+        $existingSubscription = UserSubscription::where('user_id', $userId)
+            ->where('is_active', true)
+            ->first();
+
+        if ($existingSubscription) {
+            // Extend the existing subscription
+            $existingSubscription->end_date = Carbon::parse($existingSubscription->end_date)
+                ->addDays($tariff->duration_days);
+            $existingSubscription->save();
+        } else {
+            // Create a new subscription
+            $subscription = new UserSubscription();
+            $subscription->user_id = $userId;
+            $subscription->tariff_id = $tariff->id;
+            $subscription->start_date = now();
+            $subscription->end_date = now()->addDays($tariff->duration_days);
+            $subscription->is_active = true;
+            $subscription->auto_renew = false;
+            $subscription->save();
+        }
     }
 
     /**

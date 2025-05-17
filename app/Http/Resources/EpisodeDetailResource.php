@@ -33,6 +33,7 @@ class EpisodeDetailResource extends JsonResource
             'is_filler' => $this->is_filler,
             'pictures_url' => $this->pictures_url,
             'video_players' => $this->video_players,
+            'default_video_url' => asset('storage/videos/example.mp4'),
             'comments_count' => $this->comments_count,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

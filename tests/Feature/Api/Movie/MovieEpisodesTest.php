@@ -49,7 +49,15 @@ test('episodes endpoint returns episodes for a movie', function () {
                     'number',
                     'movie_id',
                     'air_date',
-                    'picture_url'
+                    'picture_url',
+                    'pictures',
+                    'pictures_url',
+                    'video_players',
+                    'meta_title',
+                    'meta_description',
+                    'meta_image',
+                    'meta_image_url',
+                    'comments_count'
                 ]
             ]
         ]);

@@ -31,6 +31,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -61,7 +62,7 @@ class EpisodeResource extends Resource
     {
         return __('Епізоди');
     }
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -217,15 +218,9 @@ class EpisodeResource extends Resource
                     ->label(__('№'))
                     ->sortable(),
 
-                ImageColumn::make('pictures')
+                ImageColumn::make('pictureUrl')
                     ->label(__('Зображення'))
-                    ->circular()
-                    ->stacked()
-                    ->limit(3)
-                    ->limitedRemainingText()
-                    ->state(function (Episode $record): array {
-                        return $record->pictures ? $record->pictures->toArray() : [];
-                    }),
+                    ->circular(),
 
                 TextColumn::make('name')
                     ->label(__('Назва'))
@@ -343,7 +338,7 @@ class EpisodeResource extends Resource
                 Action::make('view_movie')
                     ->label(__('Переглянути фільм'))
                     ->icon('heroicon-o-film')
-                    ->url(fn(Episode $record) => route('filament.admin.resources.movies.edit', $record->movie))
+                    ->url(fn(Episode $record) => route('filament.admin.resources.movies.edit', ['record' => $record->movie_id]))
                     ->openUrlInNewTab(),
 
                 ViewAction::make(),

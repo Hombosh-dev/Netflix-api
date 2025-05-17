@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Episode model representing TV series episodes.
@@ -97,15 +98,27 @@ class Episode extends Model implements Listable, Commentable
                     return null;
                 }
 
-                $pictures = is_string($this->pictures) ? json_decode($this->pictures, true) : $this->pictures;
+                $pictures = $this->pictures;
+
+                // Якщо pictures - це рядок, перетворюємо його в масив
+                if (is_string($pictures)) {
+                    $pictures = json_decode($pictures, true);
+                }
+
+                // Якщо pictures - це колекція, перетворюємо її в масив
+                if ($pictures instanceof \Illuminate\Support\Collection) {
+                    $pictures = $pictures->toArray();
+                }
 
                 if (empty($pictures)) {
                     return null;
                 }
 
-                $firstPicture = is_array($pictures) ? reset($pictures) : $pictures;
+                // Отримуємо перше зображення
+                $firstPicture = reset($pictures);
 
-                return is_string($firstPicture) ? $this->getFileUrl($firstPicture) : null;
+                // Повертаємо URL зображення
+                return $firstPicture ? Storage::url($firstPicture) : null;
             }
         );
     }

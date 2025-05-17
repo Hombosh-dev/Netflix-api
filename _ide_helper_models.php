@@ -520,6 +520,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property string|null $searchable
+ * @property \Illuminate\Support\Collection|null $api_sources
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Movie> $movies
  * @property-read int|null $movies_count
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio byName(string $name)
@@ -531,6 +532,7 @@ namespace App\Models{
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio query()
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio search(string $search, array $fields = [], float $trigramThreshold = '0.5')
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio whereAliases($value)
+ * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio whereApiSources($value)
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio whereCreatedAt($value)
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio whereDescription($value)
  * @method static \App\Models\Builders\StudioQueryBuilder<static>|Studio whereId($value)
