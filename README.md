@@ -1,66 +1,1006 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Netflix API - Клон сервісу потокового відео
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/1280px-Netflix_2015_logo.svg.png" width="400" alt="Netflix Logo">
 </p>
 
-## About Laravel
+<p align="center">
+  <a href="https://laravel.com/docs/12.x"><img src="https://img.shields.io/badge/Laravel-12.x-red.svg" alt="Laravel Version"></a>
+  <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2+-blue.svg" alt="PHP Version"></a>
+  <a href="https://postgresql.org"><img src="https://img.shields.io/badge/PostgreSQL-14+-blue.svg" alt="PostgreSQL Version"></a>
+  <a href="https://github.com/filamentphp/filament"><img src="https://img.shields.io/badge/Filament-3.x-purple.svg" alt="Filament Version"></a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Зміст
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Про проект](#про-проект)
+- [Архітектура](#архітектура)
+- [Функціональні можливості](#функціональні-можливості)
+- [Встановлення](#встановлення)
+- [API документація](#api-документація)
+- [Тестування](#тестування)
+- [Розробка](#розробка)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Про проект
 
-## Learning Laravel
+Netflix API - це бекенд частина клону сервісу потокового відео, розроблена на Laravel 12. Проект надає повний набір API для управління контентом, користувачами, підписками та платежами.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Система розроблена з урахуванням сучасних практик розробки програмного забезпечення та архітектурних патернів. Вона забезпечує високу продуктивність, масштабованість та безпеку. Проект використовує RESTful API для взаємодії з клієнтськими додатками та надає широкі можливості для інтеграції з іншими системами.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Основні переваги системи:
+- **Висока продуктивність** - оптимізована робота з базою даних, кешування та ефективне використання ресурсів
+- **Безпека** - захист від CSRF, XSS, SQL-ін'єкцій та інших типів атак
+- **Масштабованість** - можливість горизонтального масштабування для обробки великої кількості запитів
+- **Гнучкість** - модульна архітектура, яка дозволяє легко додавати нові функції
+- **Документація** - автоматично генерована документація API для розробників
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Технологічний стек
 
-## Laravel Sponsors
+- **Фреймворк**: Laravel 12.x
+  - Використовується найновіша версія Laravel з підтримкою PHP 8.2+
+  - Реалізовано патерн Repository для роботи з даними
+  - Використання Actions для бізнес-логіки
+  - Dependency Injection для зменшення зв'язності коду
+  - Middleware для обробки запитів та авторизації
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **База даних**: PostgreSQL 14+
+  - Повнотекстовий пошук з використанням tsvector
+  - Використання JSON типів для гнучких структур даних
+  - Оптимізовані індекси для швидкого пошуку
+  - Міграції та сіди для управління структурою бази даних
+  - Використання ULID замість звичайних ID для підвищення безпеки
 
-### Premium Partners
+- **Аутентифікація**: Laravel Sanctum
+  - Токен-базована аутентифікація для API
+  - Підтримка багатьох пристроїв одночасно
+  - Налаштовані політики доступу (Policies)
+  - Захист від CSRF атак
+  - Підтримка OAuth для соціальних мереж
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Адмін-панель**: Filament 3.x
+  - Сучасний адміністративний інтерфейс
+  - Розширені можливості для управління контентом
+  - Інтерактивні графіки та статистика
+  - Система сповіщень для адміністраторів
+  - Налаштовані ролі та дозволи
 
-## Contributing
+- **Документація API**: Scribe
+  - Автоматична генерація документації API
+  - Інтерактивні приклади запитів
+  - Підтримка Postman колекцій
+  - Документація параметрів та відповідей
+  - Підтримка OpenAPI специфікації
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Платіжна система**: LiqPay
+  - Безпечна обробка платежів
+  - Підтримка різних методів оплати
+  - Автоматичне продовження підписок
+  - Система сповіщень про платежі
+  - Детальна історія транзакцій
 
-## Code of Conduct
+- **Тестування**: Pest PHP
+  - Сучасний фреймворк для тестування
+  - Покриття коду тестами
+  - Функціональні та модульні тести
+  - Тестування API ендпоінтів
+  - Мок-об'єкти для ізоляції тестів
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Вимоги до системи
 
-## Security Vulnerabilities
+#### Серверні вимоги
+- **PHP 8.2+**
+  - Рекомендовано PHP 8.2 або вище для оптимальної продуктивності
+  - Налаштований php.ini з достатнім обсягом пам'яті (min. 128MB)
+  - Увімкнений OPcache для кращої продуктивності
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Composer 2.0+**
+  - Необхідний для встановлення залежностей
+  - Рекомендовано останню версію для кращої сумісності
 
-## License
+- **PostgreSQL 14+**
+  - Необхідна підтримка JSON типів та повнотекстового пошуку
+  - Рекомендовано виділити не менше 1GB пам'яті для бази даних
+  - Налаштований pg_trgm модуль для нечіткого пошуку
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Розширення PHP**
+  - pdo_pgsql: для роботи з PostgreSQL
+  - gd: для обробки зображень
+  - intl: для інтернаціоналізації
+  - opcache: для кешування байт-коду
+  - fileinfo: для визначення MIME типів файлів
+  - mbstring: для роботи з багатобайтовими рядками
+  - xml: для обробки XML
+  - zip: для роботи з архівами
+
+
+## Архітектура
+
+Проект побудований на основі сучасних архітектурних патернів та принципів, що забезпечує його гнучкість, масштабованість та легкість підтримки.
+
+### Загальна архітектура
+
+Система використовує багатошарову архітектуру з чітким розділенням відповідальності між компонентами:
+
+```plantuml
+@startuml
+!theme plain
+skinparam linetype ortho
+
+package "Netflix API" {
+  [API Controllers] as Controllers
+  [Models] as Models
+  [Services] as Services
+  [Actions] as Actions
+  [DTOs] as DTOs
+  [Interfaces] as Interfaces
+  [Enums] as Enums
+}
+
+database "PostgreSQL" as DB
+
+[Клієнтський додаток] --> Controllers : HTTP запити
+Controllers --> Actions : Виклик дій
+Actions --> Services : Використання сервісів
+Actions --> DTOs : Використання DTO
+Services --> Models : Робота з моделями
+Models --> DB : Запити до БД
+Models ..> Interfaces : Реалізація
+Models ..> Enums : Використання
+
+@enduml
+```
+
+#### Опис компонентів архітектури
+
+1. **API Controllers** - контролери, які обробляють HTTP запити від клієнтів:
+   - Валідація вхідних даних
+   - Авторизація доступу
+   - Делегування бізнес-логіки до Actions
+   - Форматування відповідей
+
+2. **Actions** - класи, що інкапсулюють бізнес-логіку:
+   - Реалізація конкретних бізнес-операцій
+   - Використання сервісів для складних операцій
+   - Робота з DTO для передачі даних
+   - Дотримання принципу єдиної відповідальності
+
+3. **DTOs (Data Transfer Objects)** - об'єкти для передачі даних між шарами:
+   - Валідація даних
+   - Типізація даних
+   - Іммутабельність для безпеки
+
+4. **Services** - сервісні класи для складної бізнес-логіки:
+   - Реалізація складних алгоритмів
+   - Інтеграція з зовнішніми сервісами
+   - Транзакційна логіка
+
+5. **Models** - моделі даних Eloquent:
+   - Визначення структури даних
+   - Відносини між моделями
+   - Мутатори та аксесори
+   - Області запитів (Query Scopes)
+
+6. **Interfaces** - інтерфейси для забезпечення гнучкості:
+   - Контракти для реалізації
+   - Можливість заміни реалізацій
+   - Підтримка принципу інверсії залежностей
+
+7. **Enums** - перелічення для типізації:
+   - Типізовані константи
+   - Методи для роботи з константами
+   - Підвищення читабельності коду
+
+#### Потік даних
+
+1. Клієнт надсилає HTTP запит до API
+2. Middleware обробляє запит (аутентифікація, CSRF захист тощо)
+3. Контролер отримує запит та валідує дані
+4. Контролер викликає відповідний Action
+5. Action використовує Services та Models для виконання бізнес-логіки
+6. Результат повертається назад через контролер до клієнта
+
+#### Принципи проектування
+
+- **SOLID** - дотримання принципів об'єктно-орієнтованого проектування
+- **DRY (Don't Repeat Yourself)** - уникнення дублювання коду
+- **KISS (Keep It Simple, Stupid)** - простота та зрозумілість коду
+- **Separation of Concerns** - розділення відповідальності між компонентами
+- **Dependency Injection** - впровадження залежностей для зменшення зв'язності
+
+### Структура бази даних
+
+```plantuml
+@startuml
+!theme plain
+skinparam linetype ortho
+
+entity "users" {
+  * id : ulid <<PK>>
+  --
+  * name : string
+  * email : string
+  * password : string
+  * role : enum
+  avatar : string
+  backdrop : string
+  gender : enum
+  description : string
+  birthday : date
+  allow_adult : boolean
+  last_seen_at : timestamp
+  is_auto_next : boolean
+  is_auto_play : boolean
+  is_auto_skip_intro : boolean
+  is_private_favorites : boolean
+  is_banned : boolean
+  remember_token : string
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "movies" {
+  * id : ulid <<PK>>
+  --
+  * slug : string
+  * name : string
+  * description : text
+  * image_name : string
+  * studio_id : ulid <<FK>>
+  * kind : enum
+  * status : enum
+  aliases : json
+  countries : json
+  poster : string
+  duration : integer
+  episodes_count : integer
+  first_air_date : date
+  last_air_date : date
+  imdb_score : decimal
+  attachments : json
+  related : json
+  similars : json
+  is_published : boolean
+  meta_title : string
+  meta_description : string
+  meta_image : string
+  searchable : tsvector
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "episodes" {
+  * id : ulid <<PK>>
+  --
+  * movie_id : ulid <<FK>>
+  * number : integer
+  * slug : string
+  * name : string
+  description : text
+  duration : integer
+  air_date : date
+  is_filler : boolean
+  pictures : json
+  video_players : json
+  meta_title : string
+  meta_description : string
+  meta_image : string
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "people" {
+  * id : ulid <<PK>>
+  --
+  * slug : string
+  * name : string
+  * type : enum
+  original_name : string
+  description : text
+  photo : string
+  gender : enum
+  birthday : date
+  meta_title : string
+  meta_description : string
+  meta_image : string
+  searchable : tsvector
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "movie_person" {
+  * movie_id : ulid <<FK>>
+  * person_id : ulid <<FK>>
+  --
+  voice_person_id : ulid <<FK>>
+  character_name : string
+  searchable : tsvector
+}
+
+entity "tags" {
+  * id : ulid <<PK>>
+  --
+  * slug : string
+  * name : string
+  description : text
+  is_genre : boolean
+  meta_title : string
+  meta_description : string
+  meta_image : string
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "movie_tag" {
+  * movie_id : ulid <<FK>>
+  * tag_id : ulid <<FK>>
+}
+
+entity "ratings" {
+  * id : ulid <<PK>>
+  --
+  * user_id : ulid <<FK>>
+  * movie_id : ulid <<FK>>
+  * number : integer
+  review : text
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "comments" {
+  * id : ulid <<PK>>
+  --
+  * commentable_id : ulid
+  * commentable_type : string
+  * user_id : ulid <<FK>>
+  parent_id : ulid <<FK>>
+  is_spoiler : boolean
+  * body : text
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "tariffs" {
+  * id : ulid <<PK>>
+  --
+  * name : string
+  * description : text
+  * price : decimal
+  * currency : string
+  * duration_days : integer
+  features : json
+  is_active : boolean
+  slug : string
+  meta_title : string
+  meta_description : string
+  meta_image : string
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "user_subscriptions" {
+  * id : ulid <<PK>>
+  --
+  * user_id : ulid <<FK>>
+  * tariff_id : ulid <<FK>>
+  * start_date : timestamp
+  * end_date : timestamp
+  is_active : boolean
+  auto_renew : boolean
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "payments" {
+  * id : ulid <<PK>>
+  --
+  * user_id : ulid <<FK>>
+  * tariff_id : ulid <<FK>>
+  * amount : decimal
+  * currency : string
+  * payment_method : string
+  * transaction_id : string
+  * status : enum
+  liqpay_data : json
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+users ||--o{ ratings
+users ||--o{ comments
+users ||--o{ user_subscriptions
+users ||--o{ payments
+
+movies ||--o{ episodes
+movies ||--o{ ratings
+movies ||--o{ movie_person
+movies ||--o{ movie_tag
+
+people ||--o{ movie_person
+
+tags ||--o{ movie_tag
+
+tariffs ||--o{ user_subscriptions
+tariffs ||--o{ payments
+
+@enduml
+```
+
+#### Опис основних таблиць
+
+1. **users** - користувачі системи:
+   - Зберігає інформацію про користувачів (ім'я, email, пароль)
+   - Містить налаштування користувача (автовідтворення, пропуск інтро)
+   - Зберігає дані про останню активність
+   - Підтримує різні ролі користувачів (адміністратор, звичайний користувач)
+
+2. **movies** - фільми та серіали:
+   - Основна інформація (назва, опис, постер)
+   - Метадані (рейтинг IMDb, дати виходу)
+   - SEO-інформація (мета-теги)
+   - Повнотекстовий пошук через tsvector
+   - Зв'язки з іншими таблицями (студії, теги, персони)
+
+3. **episodes** - епізоди серіалів:
+   - Прив'язка до конкретного серіалу
+   - Інформація про епізод (назва, опис, тривалість)
+   - Дані про відеоплеєри та зображення
+   - Метадані для SEO
+
+4. **people** - актори, режисери та інші учасники:
+   - Основна інформація (ім'я, фото, біографія)
+   - Тип персони (актор, режисер, продюсер тощо)
+   - Метадані (дата народження, стать)
+   - Повнотекстовий пошук
+
+5. **tags** - теги та жанри:
+   - Назва та опис
+   - Прапорець для визначення жанрів
+   - SEO-інформація
+
+6. **ratings** - оцінки фільмів:
+   - Зв'язок з користувачем та фільмом
+   - Числова оцінка (від 1 до 10)
+   - Текстовий відгук
+
+7. **comments** - коментарі до контенту:
+   - Поліморфний зв'язок з коментованим об'єктом
+   - Підтримка вкладених коментарів
+   - Прапорець для спойлерів
+
+8. **tariffs** - тарифні плани:
+   - Інформація про тариф (назва, опис, ціна)
+   - Тривалість підписки в днях
+   - Список функцій, доступних за тарифом
+
+9. **user_subscriptions** - підписки користувачів:
+   - Зв'язок з користувачем та тарифом
+   - Дати початку та закінчення підписки
+   - Прапорець для автоматичного продовження
+
+10. **payments** - платежі:
+    - Інформація про платіж (сума, валюта, метод)
+    - Зв'язок з користувачем та тарифом
+    - Статус платежу
+    - Дані від платіжної системи
+
+#### Особливості бази даних
+
+- **ULID замість звичайних ID** - для підвищення безпеки та уникнення послідовних ідентифікаторів
+- **Повнотекстовий пошук** - використання tsvector для ефективного пошуку
+- **JSON поля** - для зберігання гнучких структур даних
+- **Поліморфні зв'язки** - для універсальних відносин (коментарі, списки)
+- **Оптимізовані індекси** - для швидкого пошуку та сортування
+- **Enum типи** - для типізованих полів (статуси, типи, ролі)
+
+## Функціональні можливості
+
+### Управління контентом
+
+#### Фільми та серіали
+- **Створення та редагування**: Повний CRUD для фільмів та серіалів
+- **Детальна інформація**: Назва, опис, постер, рейтинг, дати виходу, тривалість
+- **Метадані**: Країни виробництва, мови, рейтинг IMDb, посилання на зовнішні ресурси
+- **Зв'язки**: Прив'язка до студій, тегів, жанрів та персон
+- **Публікація**: Можливість керувати статусом публікації
+- **SEO**: Налаштування мета-тегів для кращої індексації
+- **Пошук**: Повнотекстовий пошук по назві та опису
+- **Фільтрація**: За жанрами, роками, рейтингом, країнами
+
+#### Епізоди
+- **Управління епізодами**: Створення, редагування та видалення епізодів для серіалів
+- **Нумерація**: Автоматична та ручна нумерація епізодів
+- **Відеоплеєри**: Додавання різних джерел відео з різною якістю
+- **Зображення**: Завантаження скріншотів та постерів
+- **Метадані**: Дата виходу, тривалість, опис
+- **Позначення філерів**: Можливість позначити епізод як філер (не пов'язаний з основним сюжетом)
+
+#### Персони
+- **Управління персонами**: Актори, режисери, сценаристи та інші
+- **Профілі**: Детальна інформація, фото, біографія
+- **Фільмографія**: Зв'язок з фільмами та серіалами
+- **Ролі**: Вказання ролей та персонажів у фільмах
+- **Озвучка**: Прив'язка акторів озвучки до персонажів
+
+#### Студії
+- **Управління студіями**: Компанії, які створюють контент
+- **Профілі студій**: Логотип, опис, історія
+- **Фільмографія**: Список фільмів та серіалів студії
+- **Статистика**: Рейтинги та популярність контенту студії
+
+#### Теги та жанри
+- **Управління тегами**: Створення, редагування та видалення тегів
+- **Жанри**: Спеціальні теги для категоризації за жанрами
+- **Ієрархія**: Можливість створювати підкатегорії
+- **Популярність**: Відстеження популярних тегів та жанрів
+
+### Користувачі та авторизація
+
+#### Реєстрація та авторизація
+- **Реєстрація**: Створення облікового запису з підтвердженням email
+- **Авторизація**: Вхід за допомогою email та пароля
+- **Токен-автентифікація**: Використання Laravel Sanctum для API
+- **Відновлення пароля**: Повний цикл відновлення забутого пароля
+- **Соціальні мережі**: Можливість входу через соціальні мережі (опціонально)
+- **Захист від атак**: Обмеження кількості спроб входу, CSRF захист
+
+#### Профілі користувачів
+- **Персональна інформація**: Ім'я, аватар, опис, дата народження
+- **Налаштування перегляду**: Автовідтворення, автоперехід до наступного епізоду, пропуск інтро
+- **Приватність**: Налаштування видимості списків та активності
+- **Сповіщення**: Налаштування email-сповіщень
+- **Історія активності**: Відстеження останньої активності
+- **Зміна пароля**: Можливість змінити пароль з поточного профілю
+
+#### Ролі та права
+- **Система ролей**: Адміністратори, модератори, звичайні користувачі
+- **Права доступу**: Детальне налаштування прав для кожної ролі
+- **Адміністративний доступ**: Спеціальні права для управління контентом
+- **Модерація**: Можливість модерувати коментарі та скарги
+- **Блокування**: Можливість блокувати порушників правил
+- **Аудит дій**: Логування дій адміністраторів для безпеки
+
+### Взаємодія з контентом
+
+#### Коментарі
+- **Система коментарів**: Можливість коментувати фільми, серіали та епізоди
+- **Вкладені коментарі**: Підтримка відповідей на коментарі (деревовидна структура)
+- **Форматування**: Базове форматування тексту (жирний, курсив, посилання)
+- **Спойлери**: Можливість позначити коментар як спойлер з приховуванням вмісту
+- **Лайки/дизлайки**: Оцінка коментарів іншими користувачами
+- **Скарги**: Система скарг на неприйнятний вміст
+- **Модерація**: Інструменти для модераторів (видалення, редагування, блокування)
+- **Сповіщення**: Сповіщення про відповіді на коментарі
+
+#### Оцінки та рейтинги
+- **Система оцінок**: Можливість оцінювати фільми та серіали за 10-бальною шкалою
+- **Відгуки**: Текстові відгуки до оцінок
+- **Статистика**: Середній рейтинг, кількість оцінок, розподіл оцінок
+- **Рекомендації**: Використання оцінок для формування рекомендацій
+- **Популярність**: Рейтинг популярності контенту на основі оцінок та переглядів
+- **Тренди**: Відстеження трендів та зростання популярності
+
+#### Персональні списки
+- **Типи списків**: Улюблене, переглянуто, заплановано, дивлюсь зараз, кинув дивитись
+- **Управління списками**: Додавання та видалення контенту зі списків
+- **Прогрес перегляду**: Відстеження прогресу перегляду серіалів
+- **Приватність**: Налаштування видимості списків для інших користувачів
+- **Сортування та фільтрація**: Можливість сортувати та фільтрувати вміст списків
+- **Статистика**: Статистика переглядів та вподобань
+
+#### Підбірки контенту
+- **Тематичні колекції**: Створення тематичних підбірок фільмів та серіалів
+- **Користувацькі підбірки**: Можливість для користувачів створювати власні підбірки
+- **Редакційні підбірки**: Офіційні підбірки від адміністрації
+- **Сезонні підбірки**: Спеціальні колекції до свят та подій
+- **Популярні підбірки**: Відображення найпопулярніших підбірок
+- **Рекомендовані підбірки**: Персоналізовані рекомендації підбірок
+
+### Підписки та платежі
+
+#### Тарифні плани
+- **Різноманітні тарифи**: Базовий, стандартний, преміум з різними можливостями
+- **Гнучкі періоди**: Місячні, квартальні, річні підписки
+- **Функції за тарифами**: Різні набори функцій для кожного тарифу
+- **Знижки**: Система знижок для довгострокових підписок
+- **Пробний період**: Безкоштовний пробний період для нових користувачів
+- **Порівняння тарифів**: Зручна таблиця порівняння можливостей тарифів
+
+#### Платіжна система
+- **Інтеграція з LiqPay**: Безпечна обробка платежів через LiqPay
+- **Підтримка різних методів**: Банківські картки, електронні гаманці, мобільні платежі
+- **Захист платежів**: Шифрування даних та захист від шахрайства
+- **Автоматичні платежі**: Підтримка рекурентних платежів для автопродовження
+- **Історія платежів**: Детальна історія всіх транзакцій
+- **Чеки та квитанції**: Автоматична генерація чеків для користувачів
+
+#### Управління підписками
+- **Активація підписок**: Миттєва активація після успішної оплати
+- **Деактивація**: Можливість скасувати підписку в будь-який момент
+- **Автоматичне продовження**: Налаштування автоматичного продовження підписки
+- **Зміна тарифу**: Можливість змінити тариф під час активної підписки
+- **Сповіщення**: Нагадування про закінчення підписки
+- **Відновлення**: Швидке відновлення раніше скасованої підписки
+
+#### Аналітика та звітність
+- **Статистика продажів**: Детальна статистика продажів за періодами
+- **Аналіз конверсії**: Відстеження конверсії від реєстрації до оплати
+- **Популярність тарифів**: Аналіз популярності різних тарифних планів
+- **Прогнозування доходу**: Інструменти для прогнозування майбутніх доходів
+- **Експорт даних**: Можливість експорту даних для подальшого аналізу
+- **Панель моніторингу**: Зручна панель для відстеження ключових показників
+
+## Встановлення
+
+### Клонування репозиторію
+
+```bash
+git clone https://github.com/yourusername/netflix-api.git
+cd netflix-api
+```
+
+### Встановлення залежностей
+
+```bash
+composer install
+npm install
+```
+
+### Налаштування середовища
+
+1. Скопіюйте файл `.env.example` в `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Згенеруйте ключ додатку:
+   ```bash
+   php artisan key:generate
+   ```
+
+3. Налаштуйте підключення до бази даних у файлі `.env`:
+   ```
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=netflix
+   DB_USERNAME=postgres
+   DB_PASSWORD=your_password
+   ```
+
+4. Налаштуйте LiqPay (для платежів):
+   ```
+   LIQPAY_PUBLIC_KEY=your_public_key
+   LIQPAY_PRIVATE_KEY=your_private_key
+   ```
+
+### Міграції та сіди
+
+1. Запустіть міграції для створення структури бази даних:
+   ```bash
+   php artisan migrate
+   ```
+
+2. Заповніть базу даних тестовими даними:
+   ```bash
+   php artisan db:seed
+   ```
+
+### Запуск проекту
+
+```bash
+php artisan serve
+```
+
+Додаток буде доступний за адресою: http://localhost:8000
+
+## API документація
+
+API документація автоматично генерується за допомогою Scribe і доступна за адресою:
+
+```
+http://localhost:8000/docs
+```
+
+### Особливості документації
+
+- **Інтерактивна документація**: Можливість тестувати API прямо з браузера
+- **Автоматична генерація**: Документація оновлюється автоматично при зміні API
+- **Приклади запитів**: Готові приклади запитів для різних мов програмування
+- **Опис параметрів**: Детальний опис всіх параметрів запитів та відповідей
+- **Автентифікація**: Інформація про методи автентифікації
+- **Postman колекція**: Можливість завантажити готову Postman колекцію
+- **OpenAPI специфікація**: Відповідність стандарту OpenAPI 3.0
+
+### Основні групи ендпоінтів
+
+#### Автентифікація та користувачі
+- `POST /api/v1/register` - Реєстрація нового користувача
+- `POST /api/v1/login` - Авторизація користувача
+- `POST /api/v1/logout` - Вихід з системи
+- `POST /api/v1/forgot-password` - Запит на відновлення пароля
+- `POST /api/v1/reset-password` - Скидання пароля
+- `GET /api/v1/user` - Отримання інформації про поточного користувача
+- `PUT /api/v1/users/{user}` - Оновлення профілю користувача
+
+#### Фільми та серіали
+- `GET /api/v1/movies` - Отримання списку фільмів з фільтрацією та пагінацією
+- `GET /api/v1/movies/{movie}` - Отримання детальної інформації про фільм
+- `GET /api/v1/movies/{movie}/episodes` - Отримання епізодів для серіалу
+- `GET /api/v1/movies/{movie}/persons` - Отримання акторів та творців фільму
+- `GET /api/v1/movies/{movie}/tags` - Отримання тегів та жанрів фільму
+- `GET /api/v1/movies/{movie}/ratings` - Отримання оцінок фільму
+- `GET /api/v1/movies/{movie}/comments` - Отримання коментарів до фільму
+
+#### Епізоди
+- `GET /api/v1/episodes` - Отримання списку епізодів
+- `GET /api/v1/episodes/{episode}` - Отримання інформації про епізод
+- `GET /api/v1/episodes/movie/{movie}` - Отримання всіх епізодів серіалу
+- `GET /api/v1/episodes/aired-after/{date}` - Отримання епізодів, випущених після вказаної дати
+
+#### Персони та студії
+- `GET /api/v1/people` - Отримання списку персон
+- `GET /api/v1/people/{person}` - Отримання інформації про персону
+- `GET /api/v1/people/{person}/movies` - Отримання фільмографії персони
+- `GET /api/v1/studios` - Отримання списку студій
+- `GET /api/v1/studios/{studio}` - Отримання інформації про студію
+
+#### Теги та підбірки
+- `GET /api/v1/tags` - Отримання списку тегів
+- `GET /api/v1/tags/{tag}` - Отримання інформації про тег
+- `GET /api/v1/tags/{tag}/movies` - Отримання фільмів за тегом
+- `GET /api/v1/selections` - Отримання списку підбірок
+- `GET /api/v1/selections/{selection}` - Отримання інформації про підбірку
+- `GET /api/v1/selections/{selection}/movies` - Отримання фільмів з підбірки
+
+#### Взаємодія з контентом
+- `POST /api/v1/ratings` - Додавання оцінки фільму
+- `PUT /api/v1/ratings/{rating}` - Оновлення оцінки
+- `DELETE /api/v1/ratings/{rating}` - Видалення оцінки
+- `POST /api/v1/comments` - Додавання коментаря
+- `PUT /api/v1/comments/{comment}` - Оновлення коментаря
+- `DELETE /api/v1/comments/{comment}` - Видалення коментаря
+- `POST /api/v1/comment-likes` - Додавання лайку до коментаря
+- `DELETE /api/v1/comment-likes/{commentLike}` - Видалення лайку
+
+#### Підписки та платежі
+- `GET /api/v1/tariffs` - Отримання списку тарифів
+- `GET /api/v1/tariffs/{tariff}` - Отримання інформації про тариф
+- `POST /api/v1/user-subscriptions` - Створення підписки
+- `GET /api/v1/user-subscriptions/active` - Отримання активних підписок
+- `POST /api/v1/liqpay/create-payment` - Створення платежу
+- `GET /api/v1/payments` - Отримання історії платежів
+
+#### Адміністративні ендпоінти
+- `POST /api/v1/admin/movies` - Створення нового фільму
+- `PUT /api/v1/admin/movies/{movie}` - Оновлення фільму
+- `DELETE /api/v1/admin/movies/{movie}` - Видалення фільму
+- `GET /api/v1/admin/stats/users` - Статистика користувачів
+- `GET /api/v1/admin/stats/content` - Статистика контенту
+- `GET /api/v1/admin/stats/subscriptions` - Статистика підписок
+
+## Тестування
+
+Проект використовує Pest PHP для тестування. Система тестування забезпечує високу якість коду та стабільність роботи API.
+
+### Типи тестів
+
+#### Модульні тести (Unit Tests)
+- Тестування окремих компонентів системи ізольовано
+- Перевірка бізнес-логіки в Actions та Services
+- Тестування моделей та їх відносин
+- Перевірка валідації в DTO
+
+#### Функціональні тести (Feature Tests)
+- Тестування API ендпоінтів
+- Перевірка повного циклу запит-відповідь
+- Тестування авторизації та прав доступу
+- Перевірка валідації вхідних даних
+
+#### Інтеграційні тести (Integration Tests)
+- Тестування взаємодії між компонентами
+- Перевірка роботи з базою даних
+- Тестування кешування
+- Перевірка інтеграції з зовнішніми сервісами (LiqPay)
+
+### Запуск тестів
+
+#### Запуск всіх тестів
+```bash
+php artisan test
+```
+
+#### Запуск конкретної групи тестів
+```bash
+php artisan test --group=api
+```
+
+#### Запуск тестів з певного файлу
+```bash
+php artisan test tests/Feature/MovieTest.php
+```
+
+#### Запуск тестів з покриттям коду
+```bash
+php artisan test --coverage
+```
+
+### Структура тестів
+
+- `tests/Unit/` - Модульні тести
+  - `tests/Unit/Models/` - Тести моделей
+  - `tests/Unit/Actions/` - Тести класів дій
+  - `tests/Unit/Services/` - Тести сервісів
+
+- `tests/Feature/` - Функціональні тести
+  - `tests/Feature/Api/` - Тести API ендпоінтів
+  - `tests/Feature/Auth/` - Тести автентифікації
+  - `tests/Feature/Admin/` - Тести адміністративних функцій
+
+### Мокування та фабрики
+
+- **Фабрики моделей**: Для створення тестових даних
+- **Мок-об'єкти**: Для ізоляції тестованого коду
+- **Фейкові сервіси**: Для тестування без зовнішніх залежностей
+- **Сіди для тестів**: Спеціальні сіди для наповнення тестової бази даних
+
+## Розробка
+
+### Структура проекту
+
+#### Основні директорії
+- `app/` - Основний код додатку
+  - `Actions/` - Класи дій (за патерном Action)
+    - `Movies/` - Дії для роботи з фільмами
+    - `Users/` - Дії для роботи з користувачами
+    - `Payments/` - Дії для роботи з платежами
+  - `DTOs/` - Data Transfer Objects
+    - `Movies/` - DTO для фільмів
+    - `Users/` - DTO для користувачів
+    - `Payments/` - DTO для платежів
+  - `Enums/` - Перелічення
+    - `Kind.php` - Типи контенту (фільм, серіал)
+    - `Status.php` - Статуси контенту
+    - `Role.php` - Ролі користувачів
+  - `Http/Controllers/` - Контролери API
+    - `Auth/` - Контролери автентифікації
+    - `Admin/` - Адміністративні контролери
+  - `Models/` - Моделі Eloquent
+    - `Builders/` - Кастомні білдери запитів
+    - `Scopes/` - Області запитів
+    - `Traits/` - Трейти для моделей
+  - `Services/` - Сервісні класи
+    - `Payment/` - Сервіси для роботи з платежами
+    - `Search/` - Сервіси для пошуку
+  - `Interfaces/` - Інтерфейси
+  - `Rules/` - Правила валідації
+  - `Exceptions/` - Кастомні винятки
+  - `Filament/` - Компоненти адмін-панелі
+- `config/` - Конфігураційні файли
+- `database/` - Міграції та сіди
+  - `migrations/` - Міграції бази даних
+  - `seeders/` - Сіди для наповнення бази
+  - `factories/` - Фабрики для тестування
+- `routes/` - Маршрути додатку
+  - `api.php` - API маршрути
+  - `web.php` - Веб-маршрути
+- `tests/` - Тести
+  - `Feature/` - Функціональні тести
+  - `Unit/` - Модульні тести
+- `resources/` - Ресурси
+  - `views/` - Шаблони Blade
+  - `js/` - JavaScript файли
+  - `css/` - CSS файли
+- `public/` - Публічні файли
+  - `docs/` - Згенерована документація API
+
+#### Ключові файли
+- `composer.json` - Залежності PHP
+- `package.json` - Залежності JavaScript
+- `phpunit.xml` - Конфігурація тестування
+- `.env.example` - Приклад конфігурації середовища
+- `artisan` - Консольний інтерфейс Laravel
+
+### Стандарти кодування
+
+Проект дотримується стандартів кодування PSR-12 та інших кращих практик розробки.
+
+#### Інструменти для перевірки коду
+- **Laravel Pint** - Форматування коду за стандартами
+  ```bash
+  composer pint
+  ```
+
+- **PHP Stan** - Статичний аналіз коду
+  ```bash
+  composer analyse
+  ```
+
+- **PHP CS Fixer** - Виправлення стилю коду
+  ```bash
+  composer fix
+  ```
+
+#### Принципи розробки
+- **Чистий код** - Зрозумілі імена, короткі методи, чітка відповідальність
+- **SOLID** - Дотримання принципів об'єктно-орієнтованого проектування
+- **DRY** - Уникнення дублювання коду
+- **Документування** - Коментарі PHPDoc для класів та методів
+- **Типізація** - Використання строгої типізації PHP 8.2+
+
+### Робочий процес розробки
+
+#### Гілки Git
+- `main` - Основна гілка, стабільна версія
+- `develop` - Гілка розробки
+- `feature/*` - Гілки для нових функцій
+- `bugfix/*` - Гілки для виправлення помилок
+- `release/*` - Гілки для підготовки релізів
+
+#### Процес внесення змін
+1. Створення гілки з `develop`
+2. Розробка функціоналу
+3. Написання тестів
+4. Перевірка коду (Pint, PHPStan)
+5. Створення Pull Request
+6. Код-ревю
+7. Злиття з `develop`
+
+#### Середовище розробки
+- **IDE**: PHPStorm або VSCode з PHP плагінами
+- **Локальний сервер**: Laravel Sail (Docker) або Valet
+- **Бази даних**: PostgreSQL
+- **Кешування**: Redis (опціонально)
+
+### Корисні команди
+
+#### Робота з базою даних
+```bash
+# Запуск міграцій
+php artisan migrate
+
+# Відкат міграцій
+php artisan migrate:rollback
+
+# Скидання та повторне застосування міграцій
+php artisan migrate:fresh
+
+# Наповнення бази тестовими даними
+php artisan db:seed
+```
+
+#### Генерація коду
+```bash
+# Створення міграції
+php artisan make:migration create_table_name
+
+# Створення моделі з міграцією та фабрикою
+php artisan make:model ModelName -mf
+
+# Створення контролера
+php artisan make:controller ControllerName
+
+# Створення Action класу
+php artisan make:action ActionName
+```
+
+#### Робота з документацією
+```bash
+# Генерація API документації
+php artisan scribe:generate
+```
+
+#### Кешування
+```bash
+# Очищення кешу
+php artisan cache:clear
+
+# Очищення кешу маршрутів
+php artisan route:clear
+
+# Очищення кешу конфігурації
+php artisan config:clear
+```
+
+## Ліцензія
+
+Цей проект розповсюджується під ліцензією MIT.
