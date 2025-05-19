@@ -25,7 +25,9 @@ class RegisteredUserController extends Controller
         $dto = RegisterDTO::fromRequest($request);
         $user = $action->handle($dto);
 
-        // Return 204 No Content as expected by the test
-        return response()->json(null, 204);
+        return response()->json([
+            'user' => new UserResource($user),
+            'token' => $user->createToken('auth_token')->plainTextToken,
+        ]);
     }
 }
